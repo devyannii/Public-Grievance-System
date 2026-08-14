@@ -1,0 +1,481 @@
+/* =========================================
+   ISSUE DETAILS PAGE
+========================================= */
+
+.issue-details-page {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding: 20px 0;
+
+  background: #eef7f9;
+
+  font-family: "Inter", Arial, sans-serif;
+
+  color: #071426;
+}
+
+
+/* =========================================
+   MAIN CARD
+========================================= */
+
+.issue-details-card {
+  width: 100%;
+  max-width: 380px;
+  height: 780px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 12px 35px rgba(30, 60, 70, 0.12);
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.issue-details-header {
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 16px;
+
+  border-bottom: 1px solid #edf0f2;
+
+  position: relative;
+
+  background: #ffffff;
+}
+
+.issue-details-header h1 {
+  position: absolute;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  margin: 0;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.issue-details-back {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #182535;
+
+  cursor: pointer;
+}
+
+.issue-header-space {
+  flex: 1;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.issue-details-content {
+  height: calc(100% - 128px);
+
+  overflow-y: auto;
+
+  padding: 14px 14px 20px;
+}
+
+
+/* =========================================
+   IMAGE
+========================================= */
+
+.issue-details-image {
+  width: 100%;
+  height: 150px;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+
+  background: #edf0f1;
+
+  margin-bottom: 12px;
+}
+
+.issue-details-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* =========================================
+   TITLE
+========================================= */
+
+.issue-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 8px;
+}
+
+.issue-title-row h2 {
+  margin: 0;
+
+  color: #071426;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.issue-status {
+  flex-shrink: 0;
+
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  background: #fff0c9;
+
+  color: #d99100;
+
+  font-size: 8px;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   INFO
+========================================= */
+
+.issue-info-row {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 7px;
+
+  color: #60738a;
+
+  font-size: 9px;
+}
+
+.issue-info-row svg {
+  flex-shrink: 0;
+
+  color: #71849a;
+}
+
+
+/* =========================================
+   DESCRIPTION
+========================================= */
+
+.issue-description {
+  padding: 8px 0 10px;
+
+  border-bottom: 1px solid #e7ebee;
+}
+
+.issue-description h3,
+.issue-timeline h3 {
+  margin: 0 0 7px;
+
+  color: #071426;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.issue-description p {
+  margin: 0;
+
+  color: #60738a;
+
+  font-size: 9px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================
+   TIMELINE
+========================================= */
+
+.issue-timeline {
+  padding-top: 10px;
+}
+
+.timeline-item {
+  min-height: 55px;
+
+  display: flex;
+
+  position: relative;
+}
+
+.timeline-item:not(.last)::after {
+  content: "";
+
+  position: absolute;
+
+  left: 6px;
+  top: 14px;
+  bottom: 0;
+
+  width: 1.5px;
+
+  background: #d5dde3;
+}
+
+.timeline-item.completed::after {
+  background: #00a982;
+}
+
+.timeline-item.current::after {
+  background: #f2a900;
+}
+
+
+/* =========================================
+   TIMELINE DOT
+========================================= */
+
+.timeline-dot {
+  width: 13px;
+  height: 13px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 1px;
+
+  border-radius: 50%;
+
+  border: 2px solid #cbd5dc;
+
+  background: #ffffff;
+
+  position: relative;
+
+  z-index: 2;
+
+  color: #ffffff;
+
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.timeline-item.completed .timeline-dot {
+  border-color: #00a982;
+
+  background: #00a982;
+}
+
+.timeline-item.current .timeline-dot {
+  border-color: #f2a900;
+
+  background: #ffffff;
+}
+
+
+/* =========================================
+   TIMELINE CONTENT
+========================================= */
+
+.timeline-content {
+  padding-left: 10px;
+}
+
+.timeline-content h4 {
+  margin: 0 0 2px;
+
+  color: #071426;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.timeline-content p {
+  margin: 0;
+
+  color: #60738a;
+
+  font-size: 8px;
+
+  line-height: 1.4;
+}
+
+.timeline-content small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #81909e;
+
+  font-size: 7px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+.issue-details-navigation {
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: 64px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr 1fr 1fr 1fr;
+
+  align-items: center;
+
+  background: #ffffff;
+
+  border-top: 1px solid #edf0f2;
+
+  z-index: 10;
+}
+
+
+/* =========================================
+   NAV ITEMS
+========================================= */
+
+.issue-nav-item {
+  height: 64px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #667382;
+
+  font-family: inherit;
+
+  font-size: 8px;
+
+  cursor: pointer;
+}
+
+.issue-nav-item svg {
+  stroke-width: 1.8;
+}
+
+.issue-nav-item.active {
+  color: #00a982;
+
+  font-weight: 600;
+}
+
+
+/* =========================================
+   ADD BUTTON
+========================================= */
+
+.issue-nav-add {
+  width: 48px;
+  height: 48px;
+
+  align-self: center;
+  justify-self: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #00a982;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 5px 15px rgba(0, 169, 130, 0.28);
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .issue-details-page {
+    padding: 0;
+
+    background: #ffffff;
+  }
+
+  .issue-details-card {
+    max-width: 380px;
+
+    min-height: 100vh;
+
+    height: 100vh;
+
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,93 @@
+/* =========================================
+   ADMIN LAYOUT
+========================================= */
+
+.admin-layout {
+  min-height: 100vh;
+  width: 100%;
+
+  background: #f7f9f7;
+
+  font-family: "Inter", sans-serif;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================
+   MAIN AREA
+========================================= */
+
+.admin-main {
+  min-height: 100vh;
+
+  margin-left: 260px;
+
+  width: calc(100% - 260px);
+
+  min-width: 0;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.admin-content {
+  min-height: 100vh;
+
+  width: 100%;
+  max-width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 100px 32px 32px;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1200px) {
+
+  .admin-content {
+    padding-left: 26px;
+    padding-right: 26px;
+  }
+
+}
+
+
+@media (max-width: 900px) {
+
+  .admin-main {
+    margin-left: 220px;
+
+    width: calc(100% - 220px);
+  }
+
+
+  .admin-content {
+    padding: 92px 24px 24px;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .admin-main {
+    margin-left: 76px;
+
+    width: calc(100% - 76px);
+  }
+
+
+  .admin-content {
+    padding: 84px 16px 20px;
+  }
+
+}

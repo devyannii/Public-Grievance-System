@@ -1,0 +1,1042 @@
+/* =========================================
+   USER AUTH PAGE
+========================================= */
+
+.user-auth-page {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  background: #edf4f8;
+
+  font-family: "Inter", sans-serif;
+}
+
+
+/* =========================================
+   AUTH CARD
+========================================= */
+
+.user-auth-card {
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 0;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border-radius: 22px;
+
+  border: 1px solid #e8eeea;
+
+  box-shadow:
+    0 12px 35px rgba(24, 73, 42, 0.10);
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* =========================================
+   HERO IMAGE
+========================================= */
+
+.user-auth-hero {
+  position: relative;
+
+  width: 100%;
+  height: 255px;
+
+  flex-shrink: 0;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+
+/* =========================================
+   HERO OVERLAY
+========================================= */
+
+.user-hero-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.02) 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      rgba(255, 255, 255, 0.94) 100%
+    );
+
+  z-index: 1;
+
+  pointer-events: none;
+}
+
+
+/* =========================================
+   BRANDING
+========================================= */
+
+.user-brand {
+  position: relative;
+
+  z-index: 3;
+
+  width: 100%;
+
+  padding-top: 24px;
+
+  text-align: center;
+}
+
+
+.user-brand h1 {
+  margin: 0;
+
+  color: #087c3c;
+
+  font-size: 25px;
+
+  line-height: 1.12;
+
+  font-weight: 800;
+
+  letter-spacing: 0.3px;
+
+  text-shadow:
+    0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+
+.user-brand h1 span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #087c3c;
+
+  font-size: 22px;
+
+  font-weight: 800;
+}
+
+
+.brand-divider {
+  width: 28px;
+
+  height: 2px;
+
+  margin: 8px auto 5px;
+
+  background: #178448;
+
+  border-radius: 10px;
+}
+
+
+.user-brand p {
+  margin: 0;
+
+  color: #3f604e;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  letter-spacing: 0.2px;
+}
+
+
+/* =========================================
+   AUTH CONTENT
+========================================= */
+
+.user-auth-content {
+  position: relative;
+
+  z-index: 5;
+
+  padding: 20px 28px 28px;
+
+  background: #ffffff;
+
+  border-radius: 28px 28px 22px 22px;
+}
+
+
+/* =========================================
+   HEADING
+========================================= */
+
+.user-auth-content h2 {
+  margin: -2px 0 4px;
+
+  text-align: center;
+
+  color: #101820;
+
+  font-size: 22px;
+
+  line-height: 1.2;
+
+  font-weight: 700;
+}
+
+
+.auth-subtitle {
+  margin: 0 0 23px;
+
+  text-align: center;
+
+  color: #687482;
+
+  font-size: 12px;
+}
+
+
+/* =========================================
+   FORM GROUP
+========================================= */
+
+.user-form-group {
+  margin-bottom: 14px;
+}
+
+
+.user-form-group label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #1b2730;
+
+  font-size: 10px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================
+   INPUT WRAPPER
+========================================= */
+
+.user-input-wrapper {
+  position: relative;
+
+  width: 100%;
+}
+
+
+/* =========================================
+   INPUT ICON
+========================================= */
+
+.user-input-icon {
+  position: absolute;
+
+  left: 12px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #32944f;
+
+  pointer-events: none;
+}
+
+
+/* =========================================
+   INPUT
+========================================= */
+
+.user-input-wrapper input {
+  width: 100%;
+
+  height: 40px;
+
+  box-sizing: border-box;
+
+  padding: 0 38px;
+
+  border: 1px solid #d9e1df;
+
+  border-radius: 7px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #1b2730;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  transition: 0.2s ease;
+}
+
+
+.user-input-wrapper input::placeholder {
+  color: #7b8791;
+}
+
+
+.user-input-wrapper input:focus {
+  border-color: #319653;
+
+  box-shadow:
+    0 0 0 3px rgba(49, 150, 83, 0.08);
+}
+
+
+/* =========================================
+   PASSWORD TOGGLE
+========================================= */
+
+.user-password-toggle {
+  position: absolute;
+
+  right: 10px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 3px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #71808b;
+
+  cursor: pointer;
+}
+
+
+.user-password-toggle:hover {
+  color: #238242;
+}
+
+
+/* =========================================
+   FORGOT PASSWORD
+========================================= */
+
+.user-forgot-row {
+  display: flex;
+
+  justify-content: flex-end;
+
+  margin-top: -3px;
+
+  margin-bottom: 14px;
+}
+
+
+.user-forgot-button {
+  border: none;
+
+  padding: 0;
+
+  background: transparent;
+
+  color: #238242;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.user-forgot-button:hover {
+  color: #116a31;
+
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   LOGIN / CREATE ACCOUNT BUTTON
+========================================= */
+
+.user-login-button {
+  width: 100%;
+
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      90deg,
+      #188442,
+      #117b3b
+    );
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.user-login-button:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 5px 12px rgba(20, 126, 62, 0.18);
+}
+
+
+.user-login-button:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================
+   DIVIDER
+========================================= */
+
+.user-divider {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin: 13px 0;
+}
+
+
+.user-divider span {
+  flex: 1;
+
+  height: 1px;
+
+  background: #dce3e0;
+}
+
+
+.user-divider p {
+  margin: 0;
+
+  color: #68747e;
+
+  font-size: 10px;
+}
+
+
+/* =========================================
+   GOOGLE LOGIN
+========================================= */
+
+.google-login-button {
+  width: 100%;
+
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  border: 1px solid #d7e0dd;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #27323a;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.google-login-button:hover {
+  background: #f8fbf9;
+
+  border-color: #c8d6cf;
+}
+
+
+/* =========================================
+   GOOGLE ICON
+========================================= */
+
+.google-icon {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  color: #4285f4;
+}
+
+
+/* =========================================
+   REGISTER / LOGIN LINK
+========================================= */
+
+.register-link-row {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 17px;
+
+  font-size: 10px;
+
+  color: #586671;
+}
+
+
+.register-link-row button {
+  border: none;
+
+  padding: 0;
+
+  background: transparent;
+
+  color: #18803f;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.register-link-row button:hover {
+  color: #116a31;
+
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   REGISTRATION PAGE
+========================================= */
+
+.user-auth-content:has(#full-name) {
+  padding-top: 18px;
+
+  padding-bottom: 24px;
+}
+
+
+.user-auth-content:has(#full-name) h2 {
+  font-size: 20px;
+
+  margin-bottom: 4px;
+}
+
+
+.user-auth-content:has(#full-name) .auth-subtitle {
+  margin-bottom: 18px;
+}
+
+
+.user-auth-content:has(#full-name) .user-form-group {
+  margin-bottom: 10px;
+}
+
+
+.user-auth-content:has(#full-name)
+.user-input-wrapper input {
+  height: 38px;
+}
+
+
+.user-auth-content:has(#full-name)
+.user-login-button {
+  margin-top: 3px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 767px) {
+
+  .user-auth-page {
+    min-height: 100vh;
+
+    padding: 12px;
+
+    align-items: flex-start;
+  }
+
+
+  .user-auth-card {
+    width: 100%;
+
+    max-width: 430px;
+
+    margin: 12px auto;
+  }
+
+
+  .user-auth-hero {
+    height: 235px;
+  }
+
+
+  .user-brand {
+    padding-top: 20px;
+  }
+
+
+  .user-brand h1 {
+    font-size: 23px;
+  }
+
+
+  .user-brand h1 span {
+    font-size: 20px;
+  }
+
+
+  .user-brand p {
+    font-size: 9px;
+  }
+
+
+  .user-auth-content {
+    padding: 18px 24px 22px;
+  }
+
+
+  .user-auth-content h2 {
+    font-size: 21px;
+  }
+
+
+  .auth-subtitle {
+    margin-bottom: 17px;
+
+    font-size: 11px;
+  }
+
+
+  .user-form-group {
+    margin-bottom: 9px;
+  }
+
+
+  .user-form-group label {
+    margin-bottom: 5px;
+
+    font-size: 9px;
+  }
+
+
+  .user-input-wrapper input {
+    height: 38px;
+
+    font-size: 10px;
+  }
+
+
+  .user-input-icon {
+    left: 11px;
+  }
+
+
+  .user-password-toggle {
+    right: 9px;
+  }
+
+
+  /* Registration */
+
+  .user-auth-content:has(#full-name) {
+    padding-top: 16px;
+
+    padding-bottom: 18px;
+  }
+
+
+  .user-auth-content:has(#full-name) h2 {
+    font-size: 20px;
+  }
+
+
+  .user-auth-content:has(#full-name)
+  .auth-subtitle {
+    margin-bottom: 14px;
+  }
+
+
+  .user-auth-content:has(#full-name)
+  .user-form-group {
+    margin-bottom: 8px;
+  }
+
+
+  .user-auth-content:has(#full-name)
+  .user-input-wrapper input {
+    height: 37px;
+  }
+
+
+  .user-auth-content:has(#full-name)
+  .user-login-button {
+    height: 38px;
+
+    margin-top: 2px;
+  }
+
+
+  .user-divider {
+    margin: 10px 0;
+  }
+
+
+  .google-login-button {
+    height: 35px;
+  }
+
+
+  .register-link-row {
+    margin-top: 12px;
+  }
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 390px) {
+
+  .user-auth-page {
+    padding: 10px;
+  }
+
+
+  .user-auth-card {
+    max-width: 100%;
+
+    margin: 8px auto;
+  }
+
+
+  .user-auth-content {
+    padding-left: 22px;
+
+    padding-right: 22px;
+  }
+
+
+  .user-auth-hero {
+    height: 225px;
+  }
+
+
+  .user-brand h1 {
+    font-size: 22px;
+  }
+
+
+  .user-brand h1 span {
+    font-size: 19px;
+  }
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 350px) {
+
+  .user-auth-page {
+    padding: 8px;
+  }
+
+
+  .user-auth-card {
+    margin: 4px auto;
+  }
+
+
+  .user-auth-content {
+    padding-left: 19px;
+
+    padding-right: 19px;
+  }
+
+
+  .user-auth-hero {
+    height: 210px;
+  }
+
+
+  .user-brand {
+    padding-top: 16px;
+  }
+
+
+  .user-brand h1 {
+    font-size: 20px;
+  }
+
+
+  .user-brand h1 span {
+    font-size: 17px;
+  }
+
+
+  .user-auth-content h2 {
+    font-size: 19px;
+  }
+
+
+  .auth-subtitle {
+    font-size: 10px;
+  }
+
+
+  .user-form-group label {
+    font-size: 8px;
+  }
+
+
+  .user-input-wrapper input {
+    height: 36px;
+
+    font-size: 9px;
+  }
+
+
+  .user-login-button {
+    height: 36px;
+
+    font-size: 11px;
+  }
+
+
+  .google-login-button {
+    height: 34px;
+
+    font-size: 9px;
+  }
+
+
+  .register-link-row {
+    font-size: 9px;
+  }
+
+
+  .register-link-row button {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================
+   SHORT PHONE SCREENS
+========================================= */
+
+@media (max-width: 767px) and (max-height: 750px) {
+
+  .user-auth-page {
+    padding: 8px;
+
+    align-items: flex-start;
+  }
+
+
+  .user-auth-card {
+    margin: 5px auto;
+  }
+
+
+  .user-auth-hero {
+    height: 210px;
+  }
+
+
+  .user-brand {
+    padding-top: 16px;
+  }
+
+
+  .user-brand h1 {
+    font-size: 21px;
+  }
+
+
+  .user-brand h1 span {
+    font-size: 18px;
+  }
+
+
+  .user-auth-content {
+    padding: 14px 22px 16px;
+  }
+
+
+  .user-auth-content:has(#full-name) {
+    padding-top: 13px;
+
+    padding-bottom: 15px;
+  }
+
+
+  .user-auth-content:has(#full-name)
+  .auth-subtitle {
+    margin-bottom: 11px;
+  }
+
+
+  .user-auth-content:has(#full-name)
+  .user-form-group {
+    margin-bottom: 6px;
+  }
+
+
+  .user-auth-content:has(#full-name)
+  .user-input-wrapper input {
+    height: 35px;
+  }
+
+
+  .user-auth-content:has(#full-name)
+  .user-login-button {
+    height: 36px;
+  }
+
+
+  .user-divider {
+    margin: 8px 0;
+  }
+
+
+  .google-login-button {
+    height: 33px;
+  }
+
+
+  .register-link-row {
+    margin-top: 9px;
+  }
+}
+
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media (min-width: 768px) {
+
+  .user-auth-page {
+    min-height: 100vh;
+
+    padding: 30px;
+  }
+
+
+  .user-auth-card {
+    width: 430px;
+
+    max-width: 430px;
+
+    min-height: auto;
+  }
+
+
+  .user-auth-hero {
+    height: 255px;
+  }
+}
+
+
+/* =========================================
+   ACCESSIBILITY
+========================================= */
+
+.user-login-button:focus-visible,
+.google-login-button:focus-visible,
+.user-forgot-button:focus-visible,
+.register-link-row button:focus-visible,
+.user-password-toggle:focus-visible {
+  outline: 2px solid #238242;
+
+  outline-offset: 2px;
+}

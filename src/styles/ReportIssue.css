@@ -1,0 +1,523 @@
+/* =========================================
+   REPORT ISSUE PAGE
+========================================= */
+
+.report-issue-page {
+  width: 100%;
+  max-width: 380px;
+  min-height: 100vh;
+
+  margin: 0 auto;
+
+  background: #ffffff;
+
+  color: #071426;
+
+  font-family: "Inter", Arial, sans-serif;
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.report-issue-header {
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 16px;
+
+  border-bottom: 1px solid #edf0f2;
+
+  position: relative;
+
+  background: #ffffff;
+}
+
+.report-issue-header h1 {
+  position: absolute;
+
+  left: 50%;
+  transform: translateX(-50%);
+
+  margin: 0;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.report-issue-back {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #182535;
+
+  cursor: pointer;
+}
+
+.report-header-space {
+  flex: 1;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.report-issue-content {
+  padding: 14px 14px 82px;
+}
+
+
+/* =========================================
+   SECTION
+========================================= */
+
+.report-form-section {
+  margin-bottom: 16px;
+}
+
+.report-section-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #071426;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =========================================
+   ISSUE TYPES
+========================================= */
+
+.issue-type-list {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  gap: 7px;
+}
+
+.issue-type-card {
+  height: 58px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  padding: 5px 3px;
+
+  border: 1px solid #e1e6e9;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #243143;
+
+  font-family: inherit;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.issue-type-card svg {
+  color: #344054;
+
+  stroke-width: 1.8;
+}
+
+.issue-type-card span {
+  font-size: 8px;
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+.issue-type-card.selected {
+  border: 1.5px solid #008f70;
+
+  background: #f8fffc;
+
+  color: #007f65;
+}
+
+.issue-type-card.selected svg {
+  color: #007f65;
+}
+
+
+/* =========================================
+   LOCATION
+========================================= */
+
+.location-field {
+  width: 100%;
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 11px;
+
+  border: 1px solid #e1e6e9;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  font-family: inherit;
+
+  cursor: pointer;
+}
+
+.location-left {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.location-left svg {
+  flex-shrink: 0;
+
+  color: #009b78;
+
+  fill: #009b78;
+
+  stroke: white;
+}
+
+.location-left span {
+  overflow: hidden;
+
+  color: #253343;
+
+  font-size: 9px;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.change-location {
+  flex-shrink: 0;
+
+  margin-left: 8px;
+
+  color: #008e6e;
+
+  font-size: 8px;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   DESCRIPTION
+========================================= */
+
+.description-wrapper {
+  position: relative;
+}
+
+.description-wrapper textarea {
+  width: 100%;
+  height: 80px;
+
+  display: block;
+
+  box-sizing: border-box;
+
+  padding: 11px;
+
+  resize: none;
+
+  border: 1px solid #e1e6e9;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #273545;
+
+  font-family: inherit;
+
+  font-size: 9px;
+
+  line-height: 1.5;
+}
+
+.description-wrapper textarea:focus {
+  border-color: #009b78;
+}
+
+.description-wrapper textarea::placeholder {
+  color: #9aa4ad;
+}
+
+.character-count {
+  position: absolute;
+
+  right: 10px;
+  bottom: 7px;
+
+  color: #8a959e;
+
+  font-size: 8px;
+}
+
+
+/* =========================================
+   UPLOAD PHOTO
+========================================= */
+
+.upload-container {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.uploaded-image {
+  width: 74px;
+  height: 62px;
+
+  overflow: hidden;
+
+  border-radius: 7px;
+
+  background: #edf0f1;
+}
+
+.uploaded-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+.add-photo-button {
+  width: 52px;
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px dashed #aebac2;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #182535;
+
+  cursor: pointer;
+}
+
+.add-photo-button svg {
+  stroke-width: 1.6;
+}
+
+
+/* =========================================
+   SUBMIT BUTTON
+========================================= */
+
+.submit-report-button {
+  width: 100%;
+  height: 38px;
+
+  margin-top: 2px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #009b78;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.submit-report-button:hover {
+  background: #008a6b;
+}
+
+.submit-report-button:active {
+  transform: scale(0.99);
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+.report-bottom-navigation {
+  position: fixed;
+
+  left: 50%;
+  bottom: 0;
+
+  transform: translateX(-50%);
+
+  width: 100%;
+  max-width: 380px;
+
+  height: 64px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr 1fr 1fr 1fr;
+
+  align-items: center;
+
+  background: #ffffff;
+
+  border-top: 1px solid #edf0f2;
+
+  z-index: 100;
+}
+
+.report-bottom-item {
+  height: 64px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #667382;
+
+  font-family: inherit;
+
+  font-size: 8px;
+
+  cursor: pointer;
+}
+
+.report-bottom-item svg {
+  stroke-width: 1.8;
+}
+
+.report-add-button {
+  width: 48px;
+  height: 48px;
+
+  align-self: center;
+  justify-self: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #00a982;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 5px 15px rgba(0, 169, 130, 0.28);
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   DESKTOP PREVIEW
+========================================= */
+
+@media (min-width: 700px) {
+
+  body {
+    background: #eef7f9;
+  }
+
+  .report-issue-page {
+    min-height: 680px;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    border-radius: 24px;
+
+    box-shadow:
+      0 12px 35px rgba(30, 60, 70, 0.12);
+  }
+
+  .report-bottom-navigation {
+    position: absolute;
+
+    border-radius:
+      0 0 24px 24px;
+  }
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+  .report-issue-page {
+    max-width: 100%;
+  }
+
+  .report-issue-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .issue-type-list {
+    gap: 5px;
+  }
+
+  .issue-type-card span {
+    font-size: 7px;
+  }
+}
