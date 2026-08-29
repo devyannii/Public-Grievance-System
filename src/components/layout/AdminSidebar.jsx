@@ -1,6 +1,3 @@
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-
 import {
   LayoutDashboard,
   ClipboardList,
@@ -14,53 +11,12 @@ import {
 import "../../styles/AdminSidebar.css";
 
 function AdminSidebar() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const navigationItems = [
-    {
-      name: "Dashboard",
-      icon: LayoutDashboard,
-      path: "/admin/dashboard",
-    },
-    {
-      name: "Complaints",
-      icon: ClipboardList,
-      path: "/admin/complaints",
-    },
-    {
-      name: "Categories",
-      icon: Grid2X2,
-      path: "/admin/categories",
-    },
-    {
-      name: "Residents",
-      icon: Users,
-      path: "/admin/residents",
-    },
-    {
-      name: "Departments",
-      icon: Building2,
-      path: "/admin/departments",
-    },
-    {
-      name: "Reports",
-      icon: BarChart3,
-      path: "/admin/reports",
-    },
-    {
-      name: "Settings",
-      icon: Settings,
-      path: "/admin/settings",
-    },
-  ];
-
   return (
     <aside className="admin-sidebar">
 
-      {/* =========================
+      {/* =========================================
           BRAND
-      ========================= */}
+      ========================================= */}
 
       <div className="sidebar-brand">
 
@@ -86,45 +42,115 @@ function AdminSidebar() {
       </div>
 
 
-      {/* =========================
+      {/* =========================================
           NAVIGATION
-      ========================= */}
+      ========================================= */}
 
       <nav className="sidebar-navigation">
 
-        {navigationItems.map((item) => {
+        <button
+          className="sidebar-item active"
+          onClick={() => {
+            window.location.href = "/admin/dashboard";
+          }}
+        >
+          <LayoutDashboard size={19} />
 
-          const Icon = item.icon;
+          <span>
+            Dashboard
+          </span>
+        </button>
 
-          const isActive =
-            location.pathname === item.path;
 
-          return (
-            <button
-              key={item.name}
-              className={`sidebar-item ${
-                isActive ? "active" : ""
-              }`}
-              onClick={() => navigate(item.path)}
-            >
+        <button
+          className="sidebar-item"
+          onClick={() => {
+            window.location.href = "/admin/complaints";
+          }}
+        >
+          <ClipboardList size={19} />
 
-              <Icon size={19} />
+          <span>
+            Complaints
+          </span>
+        </button>
 
-              <span>
-                {item.name}
-              </span>
 
-            </button>
-          );
+        <button
+          className="sidebar-item"
+          onClick={() => {
+            console.log("Categories clicked");
+          }}
+        >
+          <Grid2X2 size={19} />
 
-        })}
+          <span>
+            Categories
+          </span>
+        </button>
+
+
+        <button
+          className="sidebar-item"
+          onClick={() => {
+            console.log("Residents clicked");
+          }}
+        >
+          <Users size={19} />
+
+          <span>
+            Residents
+          </span>
+        </button>
+
+
+        <button
+          className="sidebar-item"
+          onClick={() => {
+            console.log("Departments clicked");
+          }}
+        >
+          <Building2 size={19} />
+
+          <span>
+            Departments
+          </span>
+        </button>
+
+
+        <button
+          className="sidebar-item"
+          onClick={() => {
+            console.log("Reports clicked");
+          }}
+        >
+          <BarChart3 size={19} />
+
+          <span>
+            Reports
+          </span>
+        </button>
+
+
+        <button
+          className="sidebar-item"
+          onClick={() => {
+            console.log("Settings clicked");
+          }}
+        >
+          <Settings size={19} />
+
+          <span>
+            Settings
+          </span>
+        </button>
 
       </nav>
 
 
-      {/* =========================
-          BOTTOM ILLUSTRATION
-      ========================= */}
+      {/* =========================================
+          ILLUSTRATION
+      ========================================= */}
 
       <div className="sidebar-illustration">
 
@@ -133,9 +159,9 @@ function AdminSidebar() {
       </div>
 
 
-      {/* =========================
+      {/* =========================================
           ADMIN PROFILE
-      ========================= */}
+      ========================================= */}
 
       <div className="sidebar-profile">
 
@@ -144,6 +170,7 @@ function AdminSidebar() {
           <Users size={19} />
 
         </div>
+
 
         <div className="profile-info">
 
@@ -156,6 +183,7 @@ function AdminSidebar() {
           </span>
 
         </div>
+
 
         <span className="profile-arrow">
           ⌄

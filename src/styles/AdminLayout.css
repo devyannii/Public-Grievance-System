@@ -3,8 +3,10 @@
 ========================================= */
 
 .admin-layout {
-  min-height: 100vh;
   width: 100%;
+  min-height: 100vh;
+
+  display: flex;
 
   background: #f7f9f7;
 
@@ -19,11 +21,13 @@
 ========================================= */
 
 .admin-main {
+  width: calc(100% - 260px);
   min-height: 100vh;
 
   margin-left: 260px;
 
-  width: calc(100% - 260px);
+  display: flex;
+  flex-direction: column;
 
   min-width: 0;
 }
@@ -32,34 +36,56 @@
 /* =========================================
    CONTENT
 ========================================= */
-
 .admin-content {
   min-height: 100vh;
-
   width: 100%;
   max-width: 100%;
 
   box-sizing: border-box;
 
-  padding: 100px 32px 32px;
+  padding: 100px 48px 48px;
 
   overflow-x: hidden;
+  overflow-y: visible;
 }
 
-
 /* =========================================
-   RESPONSIVE
+   DESKTOP
 ========================================= */
 
-@media (max-width: 1200px) {
+@media (min-width: 1201px) {
 
-  .admin-content {
-    padding-left: 26px;
-    padding-right: 26px;
+  .admin-main {
+    margin-left: 260px;
+
+    width: calc(100% - 260px);
   }
 
 }
 
+
+/* =========================================
+   LAPTOP
+========================================= */
+
+@media (max-width: 1200px) {
+
+  .admin-main {
+    margin-left: 280px;
+
+    width: calc(100% - 280px);
+  }
+
+  .admin-content {
+    padding: 26px;
+  }
+
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
 
 @media (max-width: 900px) {
 
@@ -69,13 +95,16 @@
     width: calc(100% - 220px);
   }
 
-
   .admin-content {
-    padding: 92px 24px 24px;
+    padding: 24px;
   }
 
 }
 
+
+/* =========================================
+   MOBILE
+========================================= */
 
 @media (max-width: 700px) {
 
@@ -85,9 +114,8 @@
     width: calc(100% - 76px);
   }
 
-
   .admin-content {
-    padding: 84px 16px 20px;
+    padding: 20px 16px 30px;
   }
 
 }

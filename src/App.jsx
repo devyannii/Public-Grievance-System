@@ -11,10 +11,9 @@ import ReportIssue from "./pages/User/ReportIssue";
 import IssueDetails from "./pages/User/IssueDetails";
 import MapView from "./pages/User/MapView";
 import Profile from "./pages/User/Profile";
-import UserDashboard from "./pages/User/UserDashboard";
 
 /* =========================
-   AUTH PAGES
+   USER AUTH
 ========================= */
 
 import UserLogin from "./pages/Auth/UserLogin";
@@ -26,6 +25,7 @@ import UserRegister from "./pages/Auth/UserRegister";
 
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AdminComplaints from "./pages/Admin/AdminComplaints";
 
 
 function App() {
@@ -34,11 +34,10 @@ function App() {
 
       <Routes>
 
-        {/* =================================================
+        {/* =========================
             USER
-        ================================================= */}
+        ========================= */}
 
-        {/* User Landing */}
         <Route
           path="/"
           element={<UserLanding />}
@@ -49,69 +48,35 @@ function App() {
           element={<UserLanding />}
         />
 
-
-        {/* =================================================
-            USER AUTHENTICATION
-        ================================================= */}
-
-        {/* User Login */}
         <Route
           path="/user/login"
           element={<UserLogin />}
         />
 
-        {/* User Register */}
         <Route
           path="/user/register"
           element={<UserRegister />}
         />
-
-
-        {/* =================================================
-            USER DASHBOARD
-        ================================================= */}
-
-        <Route
-          path="/user/dashboard"
-          element={<UserDashboard />}
-        />
-
-
-        {/* =================================================
-            USER REPORTS
-        ================================================= */}
 
         <Route
           path="/user/reports"
           element={<MyReports />}
         />
 
-        {/* Report an Issue */}
         <Route
           path="/user/report"
           element={<ReportIssue />}
         />
 
-        {/* Issue Details */}
         <Route
           path="/user/issue/:id"
           element={<IssueDetails />}
         />
 
-
-        {/* =================================================
-            USER MAP
-        ================================================= */}
-
         <Route
           path="/user/map"
           element={<MapView />}
         />
-
-
-        {/* =================================================
-            USER PROFILE
-        ================================================= */}
 
         <Route
           path="/user/profile"
@@ -119,20 +84,37 @@ function App() {
         />
 
 
-        {/* =================================================
-            ADMIN
-        ================================================= */}
+        {/* =========================
+            ADMIN LOGIN
+        ========================= */}
 
-        {/* Admin Login */}
         <Route
           path="/admin/login"
           element={<AdminLogin />}
         />
 
-        {/* Admin Dashboard */}
+
+        {/* =========================
+            ADMIN DASHBOARD
+            IMPORTANT:
+            NO AdminLayout HERE
+            because AdminDashboard
+            already contains it.
+        ========================= */}
+
         <Route
           path="/admin/dashboard"
           element={<AdminDashboard />}
+        />
+
+
+        {/* =========================
+            ADMIN COMPLAINTS
+        ========================= */}
+
+        <Route
+          path="/admin/complaints"
+          element={<AdminComplaints />}
         />
 
       </Routes>

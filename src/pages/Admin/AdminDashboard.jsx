@@ -1,24 +1,42 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   ClipboardList,
   Clock3,
   CheckCircle2,
   Hourglass,
-  CalendarDays,
-  Download,
-  Plus,
-  ClipboardCheck,
-  Megaphone,
-  UserPlus,
   BarChart3,
-  Settings,
+  UserPlus,
+  Megaphone,
+  ArrowUp,
+  ArrowDown,
+  ChevronDown,
   MoreVertical,
+  MapPin,
+  CalendarDays,
 } from "lucide-react";
 
 import AdminLayout from "../../components/layout/AdminLayout";
+
+import potholeImage from "../../assets/images/pothole.png";
+import garbageImage from "../../assets/images/garbage-overflow.png";
+import streetLightImage from "../../assets/images/broken-streetlight.png";
+import leakageImage from "../../assets/images/leaking-pipe.png";
+
 import "../../styles/AdminDashboard.css";
 
+
 function AdminDashboard() {
-  const complaints = [
+
+  const navigate = useNavigate();
+
+
+  /* =========================================
+     RECENT COMPLAINTS
+  ========================================= */
+
+  const recentComplaints = [
     {
       id: "#UGS-1287",
       title: "Street light not working",
@@ -26,7 +44,9 @@ function AdminDashboard() {
       location: "Block A, Road 3",
       status: "In Progress",
       date: "May 26, 2025",
+      image: streetLightImage,
     },
+
     {
       id: "#UGS-1286",
       title: "Water leakage in parking",
@@ -34,7 +54,9 @@ function AdminDashboard() {
       location: "Basement Parking",
       status: "Pending",
       date: "May 26, 2025",
+      image: leakageImage,
     },
+
     {
       id: "#UGS-1285",
       title: "Garbage not collected",
@@ -42,7 +64,9 @@ function AdminDashboard() {
       location: "Block B, Road 1",
       status: "Pending",
       date: "May 25, 2025",
+      image: garbageImage,
     },
+
     {
       id: "#UGS-1284",
       title: "Security guard on duty",
@@ -50,53 +74,35 @@ function AdminDashboard() {
       location: "Main Gate",
       status: "Resolved",
       date: "May 25, 2025",
-    },
-    {
-      id: "#UGS-1283",
-      title: "Playground maintenance",
-      category: "Maintenance",
-      location: "Central Park",
-      status: "Resolved",
-      date: "May 24, 2025",
+      image: potholeImage,
     },
   ];
 
-  const categories = [
-    {
-      name: "Maintenance",
-      value: 42,
-      percentage: "32.8%",
-      className: "maintenance",
-    },
-    {
-      name: "Cleanliness",
-      value: 28,
-      percentage: "21.9%",
-      className: "cleanliness",
-    },
-    {
-      name: "Security",
-      value: 20,
-      percentage: "15.6%",
-      className: "security",
-    },
-    {
-      name: "Infrastructure",
-      value: 18,
-      percentage: "14.1%",
-      className: "infrastructure",
-    },
-    {
-      name: "Others",
-      value: 20,
-      percentage: "15.6%",
-      className: "others",
-    },
-  ];
+
+  /* =========================================
+     STATUS CLASS
+  ========================================= */
+
+  const getStatusClass = (status) => {
+
+    if (status === "Resolved") {
+      return "status-resolved";
+    }
+
+    if (status === "Pending") {
+      return "status-pending";
+    }
+
+    return "status-progress";
+  };
+
 
   return (
+
     <AdminLayout>
+
       <div className="dashboard-page">
+
 
         {/* =========================================
             HEADER
@@ -105,30 +111,39 @@ function AdminDashboard() {
         <div className="dashboard-header">
 
           <div>
-            <h1>Dashboard</h1>
+
+            <h1>
+              Dashboard
+            </h1>
 
             <p>
-              Welcome back, Admin! Here's what's happening
-              in your community.
+              Welcome back, Admin! Here's what's happening in your community.
             </p>
+
           </div>
 
 
           <div className="dashboard-header-actions">
 
-            <button className="date-button">
+            <button className="date-selector">
+
               <CalendarDays size={17} />
 
-              <span>May 20 – May 26, 2025</span>
+              <span>
+                May 20 – May 26, 2025
+              </span>
 
-              <span className="date-arrow">⌄</span>
+              <ChevronDown size={15} />
+
             </button>
 
 
             <button className="download-button">
-              <Download size={17} />
 
-              <span>Download Report</span>
+              <BarChart3 size={17} />
+
+              Download Report
+
             </button>
 
           </div>
@@ -137,234 +152,246 @@ function AdminDashboard() {
 
 
         {/* =========================================
-            STATISTICS
+            STAT CARDS
         ========================================= */}
 
-        <section className="stats-grid">
+        <div className="stats-grid">
 
-          {/* Total */}
+
+          {/* TOTAL */}
+
           <div className="stat-card">
 
-            <div className="stat-icon green">
+            <div className="stat-icon stat-green">
               <ClipboardList size={23} />
             </div>
 
             <div className="stat-content">
 
-              <span className="stat-label">
+              <span>
                 Total Complaints
               </span>
 
-              <strong>128</strong>
+              <strong>
+                128
+              </strong>
 
-              <p className="stat-change positive">
-                ↑ 12%
-                <span>from last week</span>
-              </p>
+              <small className="trend-up">
+                <ArrowUp size={13} />
+                12% from last week
+              </small>
 
             </div>
 
           </div>
 
 
-          {/* Pending */}
+          {/* PENDING */}
+
           <div className="stat-card">
 
-            <div className="stat-icon yellow">
+            <div className="stat-icon stat-yellow">
               <Clock3 size={23} />
             </div>
 
             <div className="stat-content">
 
-              <span className="stat-label">
+              <span>
                 Pending Complaints
               </span>
 
-              <strong>42</strong>
+              <strong>
+                42
+              </strong>
 
-              <p className="stat-change warning">
-                ↑ 8%
-                <span>from last week</span>
-              </p>
+              <small className="trend-yellow">
+                <ArrowUp size={13} />
+                8% from last week
+              </small>
 
             </div>
 
           </div>
 
 
-          {/* Resolved */}
+          {/* RESOLVED */}
+
           <div className="stat-card">
 
-            <div className="stat-icon green">
+            <div className="stat-icon stat-green">
               <CheckCircle2 size={23} />
             </div>
 
             <div className="stat-content">
 
-              <span className="stat-label">
+              <span>
                 Resolved Complaints
               </span>
 
-              <strong>78</strong>
+              <strong>
+                78
+              </strong>
 
-              <p className="stat-change positive">
-                ↑ 15%
-                <span>from last week</span>
-              </p>
+              <small className="trend-up">
+                <ArrowUp size={13} />
+                15% from last week
+              </small>
 
             </div>
 
           </div>
 
 
-          {/* In Progress */}
+          {/* IN PROGRESS */}
+
           <div className="stat-card">
 
-            <div className="stat-icon blue">
+            <div className="stat-icon stat-blue">
               <Hourglass size={23} />
             </div>
 
             <div className="stat-content">
 
-              <span className="stat-label">
+              <span>
                 In Progress
               </span>
 
-              <strong>8</strong>
+              <strong>
+                8
+              </strong>
 
-              <p className="stat-change blue-text">
-                ↓ 5%
-                <span>from last week</span>
-              </p>
+              <small className="trend-down">
+                <ArrowDown size={13} />
+                5% from last week
+              </small>
 
             </div>
 
           </div>
 
-        </section>
+        </div>
 
 
         {/* =========================================
             CHARTS ROW
         ========================================= */}
 
-        <section className="dashboard-charts-grid">
+        <div className="dashboard-charts">
 
-          {/* Complaints Overview */}
 
-          <div className="dashboard-card overview-card">
+          {/* COMPLAINT OVERVIEW */}
+
+          <section className="dashboard-card overview-card">
 
             <div className="card-header">
 
-              <h2>Complaints Overview</h2>
+              <h2>
+                Complaints Overview
+              </h2>
 
-              <button className="small-select">
+              <button className="small-selector">
                 This Week
-                <span>⌄</span>
+                <ChevronDown size={14} />
               </button>
 
             </div>
 
 
-            {/* Legend */}
-
             <div className="chart-legend">
 
               <span>
-                <i className="legend-dot received"></i>
+                <i className="legend-green"></i>
                 Received
               </span>
 
               <span>
-                <i className="legend-dot resolved"></i>
+                <i className="legend-blue"></i>
                 Resolved
               </span>
 
               <span>
-                <i className="legend-dot pending"></i>
+                <i className="legend-yellow"></i>
                 Pending
               </span>
 
             </div>
 
 
-            {/* Simple chart */}
-
             <div className="line-chart">
 
-              <div className="chart-y-axis">
-                <span>40</span>
-                <span>30</span>
-                <span>20</span>
-                <span>10</span>
-                <span>0</span>
+              <div className="chart-grid-lines">
+
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+
               </div>
 
 
-              <div className="chart-area">
+              <svg
+                viewBox="0 0 800 250"
+                preserveAspectRatio="none"
+                className="chart-svg"
+              >
 
-                <div className="chart-grid-line line-1"></div>
-                <div className="chart-grid-line line-2"></div>
-                <div className="chart-grid-line line-3"></div>
-                <div className="chart-grid-line line-4"></div>
-                <div className="chart-grid-line line-5"></div>
+                {/* RECEIVED */}
 
-
-                <svg
-                  className="chart-svg"
-                  viewBox="0 0 700 220"
-                  preserveAspectRatio="none"
-                >
-
-                  {/* Received */}
-                  <polyline
-                    points="0,112 100,55 200,82 300,32 400,58 500,50 600,82 700,58"
-                    className="chart-line received-line"
-                  />
-
-                  {/* Resolved */}
-                  <polyline
-                    points="0,165 100,125 200,145 300,105 400,132 500,108 600,142 700,118"
-                    className="chart-line resolved-line"
-                  />
-
-                  {/* Pending */}
-                  <polyline
-                    points="0,190 100,174 200,177 300,158 400,177 500,165 600,176 700,160"
-                    className="chart-line pending-line"
-                  />
-
-                </svg>
+                <polyline
+                  points="0,180 115,95 230,130 345,55 460,92 575,78 690,125 800,90"
+                  className="chart-line received-line"
+                />
 
 
-                <div className="chart-x-axis">
-                  <span>May 20</span>
-                  <span>May 21</span>
-                  <span>May 22</span>
-                  <span>May 23</span>
-                  <span>May 24</span>
-                  <span>May 25</span>
-                  <span>May 26</span>
-                </div>
+                {/* RESOLVED */}
+
+                <polyline
+                  points="0,215 115,160 230,185 345,125 460,160 575,130 690,180 800,145"
+                  className="chart-line resolved-line"
+                />
+
+
+                {/* PENDING */}
+
+                <polyline
+                  points="0,235 115,210 230,215 345,190 460,215 575,195 690,210 800,185"
+                  className="chart-line pending-line"
+                />
+
+              </svg>
+
+
+              <div className="chart-labels">
+
+                <span>May 20</span>
+                <span>May 21</span>
+                <span>May 22</span>
+                <span>May 23</span>
+                <span>May 24</span>
+                <span>May 25</span>
+                <span>May 26</span>
 
               </div>
 
             </div>
 
-          </div>
+          </section>
 
 
-          {/* Category Chart */}
+          {/* CATEGORY */}
 
-          <div className="dashboard-card category-card">
+          <section className="dashboard-card category-card">
 
             <div className="card-header">
 
-              <h2>Complaints by Category</h2>
+              <h2>
+                Complaints by Category
+              </h2>
 
-              <button className="small-select">
+              <button className="small-selector">
                 This Month
-                <span>⌄</span>
+                <ChevronDown size={14} />
               </button>
 
             </div>
@@ -372,11 +399,19 @@ function AdminDashboard() {
 
             <div className="category-content">
 
+
               <div className="donut-chart">
 
                 <div className="donut-hole">
-                  <strong>128</strong>
-                  <span>Total</span>
+
+                  <strong>
+                    128
+                  </strong>
+
+                  <span>
+                    Total
+                  </span>
+
                 </div>
 
               </div>
@@ -384,244 +419,286 @@ function AdminDashboard() {
 
               <div className="category-list">
 
-                {categories.map((category) => (
-                  <div
-                    className="category-item"
-                    key={category.name}
-                  >
+                <div>
+                  <span className="category-dot maintenance"></span>
+                  <span>Maintenance</span>
+                  <strong>42 <small>(32.8%)</small></strong>
+                </div>
 
-                    <div className="category-name">
+                <div>
+                  <span className="category-dot cleanliness"></span>
+                  <span>Cleanliness</span>
+                  <strong>28 <small>(21.9%)</small></strong>
+                </div>
 
-                      <span
-                        className={`category-dot ${category.className}`}
-                      ></span>
+                <div>
+                  <span className="category-dot security"></span>
+                  <span>Security</span>
+                  <strong>20 <small>(15.6%)</small></strong>
+                </div>
 
-                      <span>{category.name}</span>
+                <div>
+                  <span className="category-dot infrastructure"></span>
+                  <span>Infrastructure</span>
+                  <strong>18 <small>(14.1%)</small></strong>
+                </div>
 
-                    </div>
-
-                    <span className="category-value">
-                      {category.value}
-                      {" "}
-                      <small>
-                        ({category.percentage})
-                      </small>
-                    </span>
-
-                  </div>
-                ))}
+                <div>
+                  <span className="category-dot others"></span>
+                  <span>Others</span>
+                  <strong>20 <small>(15.6%)</small></strong>
+                </div>
 
               </div>
 
             </div>
 
-          </div>
+          </section>
 
-        </section>
+        </div>
 
 
         {/* =========================================
             BOTTOM ROW
         ========================================= */}
 
-        <section className="dashboard-bottom-grid">
+        <div className="dashboard-bottom">
 
-          {/* Recent Complaints */}
 
-          <div className="dashboard-card complaints-card">
+          {/* =====================================
+              RECENT COMPLAINTS
+          ===================================== */}
+
+          <section className="dashboard-card recent-card">
 
             <div className="card-header">
 
-              <h2>Recent Complaints</h2>
+              <h2>
+                Recent Complaints
+              </h2>
 
-              <button className="view-all-button">
+              <button
+                className="view-all-button"
+                onClick={() => navigate("/admin/complaints")}
+              >
                 View All
               </button>
 
             </div>
 
 
-            <div className="complaints-table-wrapper">
-
-              <table className="complaints-table">
-
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Location</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th></th>
-                  </tr>
-                </thead>
+            <div className="complaints-table">
 
 
-                <tbody>
+              <div className="table-header">
 
-                  {complaints.map((complaint) => (
-                    <tr key={complaint.id}>
+                <span>ID</span>
+                <span>Complaint</span>
+                <span>Category</span>
+                <span>Location</span>
+                <span>Status</span>
+                <span>Date</span>
+                <span></span>
 
-                      <td className="complaint-id">
-                        {complaint.id}
-                      </td>
+              </div>
 
-                      <td>
-                        {complaint.title}
-                      </td>
 
-                      <td>
-                        <span
-                          className={`category-badge ${complaint.category
-                            .toLowerCase()
-                            .replace(" ", "-")}`}
-                        >
-                          {complaint.category}
-                        </span>
-                      </td>
+              {recentComplaints.map((complaint) => (
 
-                      <td>
-                        {complaint.location}
-                      </td>
+                <div
+                  className="complaint-row"
+                  key={complaint.id}
+                >
 
-                      <td>
-                        <span
-                          className={`status-badge ${complaint.status
-                            .toLowerCase()
-                            .replace(" ", "-")}`}
-                        >
-                          {complaint.status}
-                        </span>
-                      </td>
+                  <span className="complaint-id">
+                    {complaint.id}
+                  </span>
 
-                      <td>
-                        {complaint.date}
-                      </td>
 
-                      <td>
-                        <button className="more-button">
-                          <MoreVertical size={16} />
-                        </button>
-                      </td>
+                  <div className="complaint-title">
 
-                    </tr>
-                  ))}
+                    <img
+                      src={complaint.image}
+                      alt={complaint.title}
+                    />
 
-                </tbody>
+                    <strong>
+                      {complaint.title}
+                    </strong>
 
-              </table>
+                  </div>
+
+
+                  <span>
+                    <span className="category-badge">
+                      {complaint.category}
+                    </span>
+                  </span>
+
+
+                  <span className="location-cell">
+
+                    <MapPin size={14} />
+
+                    {complaint.location}
+
+                  </span>
+
+
+                  <span>
+
+                    <span
+                      className={`status-badge ${getStatusClass(
+                        complaint.status
+                      )}`}
+                    >
+                      {complaint.status}
+                    </span>
+
+                  </span>
+
+
+                  <span>
+                    {complaint.date}
+                  </span>
+
+
+                  <button className="more-button">
+
+                    <MoreVertical size={17} />
+
+                  </button>
+
+                </div>
+
+              ))}
 
             </div>
 
-          </div>
+          </section>
 
 
-          {/* Quick Actions */}
+          {/* =====================================
+              QUICK ACTIONS
+          ===================================== */}
 
-          <div className="dashboard-card quick-actions-card">
+          <section className="dashboard-card quick-actions-card">
 
             <div className="card-header">
 
-              <h2>Quick Actions</h2>
+              <h2>
+                Quick Actions
+              </h2>
 
             </div>
 
 
             <div className="quick-actions-grid">
 
-              <button className="quick-action green-action">
+
+              {/* =================================
+                  ASSIGN COMPLAINT
+              ================================= */}
+
+              <button
+                className="quick-action green-action"
+                onClick={() => navigate("/admin/departments")}
+              >
 
                 <div className="quick-action-icon">
-                  <Plus size={20} />
+
+                  <UserPlus size={23} />
+
                 </div>
 
-                <div>
-                  <strong>New Complaint</strong>
-                  <span>Register a new complaint</span>
+                <div className="quick-action-text">
+
+                  <strong>
+                    Assign Complaint
+                  </strong>
+
+                  <span>
+                    Assign to staff/department
+                  </span>
+
                 </div>
 
               </button>
 
 
-              <button className="quick-action blue-action">
+              {/* =================================
+                  VIEW ALL REPORTS
+              ================================= */}
+
+              <button
+                className="quick-action blue-action"
+                onClick={() => navigate("/admin/reports")}
+              >
 
                 <div className="quick-action-icon">
-                  <ClipboardCheck size={20} />
+
+                  <BarChart3 size={23} />
+
                 </div>
 
-                <div>
-                  <strong>Assign Task</strong>
-                  <span>Assign to staff/committee</span>
+                <div className="quick-action-text">
+
+                  <strong>
+                    View All Reports
+                  </strong>
+
+                  <span>
+                    Check detailed reports
+                  </span>
+
                 </div>
 
               </button>
 
 
-              <button className="quick-action yellow-action">
+              {/* =================================
+                  ADD ANNOUNCEMENT
+              ================================= */}
+
+              <button
+                className="quick-action red-action"
+                onClick={() => navigate("/admin/announcements")}
+              >
 
                 <div className="quick-action-icon">
-                  <Megaphone size={20} />
+
+                  <Megaphone size={23} />
+
                 </div>
 
-                <div>
-                  <strong>Announcement</strong>
-                  <span>Send announcement</span>
+                <div className="quick-action-text">
+
+                  <strong>
+                    Add Announcement
+                  </strong>
+
+                  <span>
+                    Send an announcement
+                  </span>
+
                 </div>
 
               </button>
 
-
-              <button className="quick-action purple-action">
-
-                <div className="quick-action-icon">
-                  <UserPlus size={20} />
-                </div>
-
-                <div>
-                  <strong>Add Resident</strong>
-                  <span>Add new resident</span>
-                </div>
-
-              </button>
-
-
-              <button className="quick-action teal-action">
-
-                <div className="quick-action-icon">
-                  <BarChart3 size={20} />
-                </div>
-
-                <div>
-                  <strong>View Reports</strong>
-                  <span>Check detailed reports</span>
-                </div>
-
-              </button>
-
-
-              <button className="quick-action gray-action">
-
-                <div className="quick-action-icon">
-                  <Settings size={20} />
-                </div>
-
-                <div>
-                  <strong>Settings</strong>
-                  <span>Manage system settings</span>
-                </div>
-
-              </button>
 
             </div>
 
-          </div>
+          </section>
 
-        </section>
+        </div>
+
 
       </div>
+
     </AdminLayout>
+
   );
 }
+
 
 export default AdminDashboard;
