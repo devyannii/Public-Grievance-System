@@ -3,7 +3,15 @@
 ========================================= */
 
 .map-view-page {
-  min-height: 780px;
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  height: 100dvh;
+
+  margin: 0 auto;
 
   display: flex;
   flex-direction: column;
@@ -15,6 +23,8 @@
   color: #071426;
 
   font-family: "Inter", Arial, sans-serif;
+
+  box-sizing: border-box;
 }
 
 
@@ -41,6 +51,8 @@
   position: relative;
 
   z-index: 10;
+
+  box-sizing: border-box;
 }
 
 
@@ -121,6 +133,8 @@
   position: relative;
 
   z-index: 9;
+
+  box-sizing: border-box;
 }
 
 
@@ -202,7 +216,7 @@
 
   overflow: hidden;
 
-  margin-bottom: 70px;
+  margin-bottom: 76px;
 
   background: #dceff3;
 }
@@ -348,7 +362,7 @@
   position: absolute;
 
   right: 16px;
-  bottom: 16px;
+  bottom: 92px;
 
   width: 48px;
   height: 48px;
@@ -380,124 +394,33 @@
 
 
 /* =========================================
-   BOTTOM NAVIGATION
-========================================= */
-
-.map-bottom-navigation {
-  position: absolute;
-
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  width: 100%;
-  height: 70px;
-
-  display: grid;
-
-  grid-template-columns:
-    1fr 1fr 1fr 1fr 1fr;
-
-  align-items: center;
-
-  background: #ffffff;
-
-  border-top: 1px solid #edf0f2;
-
-  z-index: 20;
-}
-
-
-.map-bottom-item {
-  height: 70px;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 4px;
-
-  border: none;
-
-  background: transparent;
-
-  color: #667382;
-
-  font-family: inherit;
-
-  font-size: 10px;
-  font-weight: 500;
-
-  cursor: pointer;
-}
-
-
-.map-bottom-item svg {
-  stroke-width: 1.8;
-}
-
-
-.map-bottom-item.active {
-  color: #00a982;
-}
-
-
-.map-bottom-item.active svg {
-  stroke-width: 2.2;
-}
-
-
-/* =========================================
-   PLUS BUTTON
-========================================= */
-
-.map-add-button {
-  width: 54px;
-  height: 54px;
-
-  align-self: center;
-  justify-self: center;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border: none;
-
-  border-radius: 50%;
-
-  background: #00a982;
-
-  color: #ffffff;
-
-  box-shadow:
-    0 6px 16px rgba(0, 169, 130, 0.30);
-
-  cursor: pointer;
-
-  z-index: 25;
-}
-
-
-.map-add-button svg {
-  stroke-width: 1.8;
-}
-
-
-/* =========================================
    DESKTOP PREVIEW
 ========================================= */
 
 @media (min-width: 700px) {
 
-  .map-view-page {
-    min-height: 780px;
+  body {
+    background: #eef7f9;
   }
 
+  .map-view-page {
+    width: 100%;
+    max-width: 430px;
+
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    height: 100dvh;
+
+    margin: 0 auto;
+
+    border-radius: 24px;
+
+    box-shadow:
+      0 12px 35px rgba(30, 60, 70, 0.12);
+
+    overflow: hidden;
+  }
 }
 
 
@@ -508,9 +431,17 @@
 @media (max-width: 699px) {
 
   .map-view-page {
-    min-height: 100vh;
+    width: 100%;
+    max-width: 430px;
+
+    min-height: 100dvh;
+    height: 100dvh;
+
+    margin: 0;
 
     border-radius: 0;
+
+    box-shadow: none;
   }
 
 
@@ -541,24 +472,6 @@
     padding: 0 13px;
 
     font-size: 11px;
-  }
-
-
-  .map-bottom-navigation {
-    height: 68px;
-  }
-
-
-  .map-bottom-item {
-    height: 68px;
-
-    font-size: 9px;
-  }
-
-
-  .map-add-button {
-    width: 50px;
-    height: 50px;
   }
 
 

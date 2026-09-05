@@ -17,6 +17,7 @@ import streetlightImage from "../../assets/images/broken-streetlight.png";
 import leakageImage from "../../assets/images/leaking-pipe.png";
 
 import "../../styles/MyReports.css";
+import "../../styles/UserAppLayout.css";
 
 const reports = [
   {

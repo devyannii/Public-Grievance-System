@@ -1,198 +1,173 @@
+import React from "react";
+import { NavLink } from "react-router-dom";
+
 import {
   LayoutDashboard,
   ClipboardList,
   Grid2X2,
-  Users,
+  UsersRound,
   Building2,
   BarChart3,
+  Map,
   Settings,
+  ChevronRight,
+  UserRound,
+  ChevronDown,
+  Leaf,
 } from "lucide-react";
 
 import "../../styles/AdminSidebar.css";
 
+
 function AdminSidebar() {
+
+  const navigation = [
+    {
+      name: "Dashboard",
+      path: "/admin/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Complaints",
+      path: "/admin/complaints",
+      icon: ClipboardList,
+    },
+    {
+      name: "Categories",
+      path: "/admin/categories",
+      icon: Grid2X2,
+    },
+    {
+      name: "Residents",
+      path: "/admin/residents",
+      icon: UsersRound,
+    },
+    {
+      name: "Departments",
+      path: "/admin/departments",
+      icon: Building2,
+    },
+    {
+      name: "Reports",
+      path: "/admin/reports",
+      icon: BarChart3,
+    },
+    {
+      name: "Map View",
+      path: "/admin/map",
+      icon: Map,
+    },
+    {
+      name: "Settings",
+      path: "/admin/settings",
+      icon: Settings,
+    },
+  ];
+
+
   return (
     <aside className="admin-sidebar">
 
-      {/* =========================================
+      {/* =====================================
           BRAND
-      ========================================= */}
+      ===================================== */}
 
       <div className="sidebar-brand">
 
         <div className="brand-icon">
           <Building2
-            size={34}
-            strokeWidth={1.7}
+            size={40}
+            strokeWidth={1.8}
           />
         </div>
 
-        <div className="brand-text">
+        <h1>Grievance</h1>
 
-          <h1>
-            Grievance
-          </h1>
+        <p>Management System</p>
 
-          <span>
-            Management System
-          </span>
+
+        {/* Small nature divider */}
+
+        <div className="brand-divider">
+
+          <span></span>
+
+          <Leaf
+            size={14}
+            strokeWidth={1.8}
+          />
+
+          <span></span>
 
         </div>
 
       </div>
 
 
-      {/* =========================================
+      {/* =====================================
           NAVIGATION
-      ========================================= */}
+      ===================================== */}
 
       <nav className="sidebar-navigation">
 
-        <button
-          className="sidebar-item active"
-          onClick={() => {
-            window.location.href = "/admin/dashboard";
-          }}
-        >
-          <LayoutDashboard size={19} />
+        {navigation.map((item) => {
 
-          <span>
-            Dashboard
-          </span>
-        </button>
+          const Icon = item.icon;
 
+          return (
+            <NavLink
+              key={item.name}
+              to={item.path}
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? "active" : ""}`
+              }
+            >
 
-        <button
-          className="sidebar-item"
-          onClick={() => {
-            window.location.href = "/admin/complaints";
-          }}
-        >
-          <ClipboardList size={19} />
+              <div className="sidebar-link-left">
 
-          <span>
-            Complaints
-          </span>
-        </button>
+                <div className="sidebar-icon">
 
+                  <Icon
+                    size={19}
+                    strokeWidth={1.8}
+                  />
 
-        <button
-          className="sidebar-item"
-          onClick={() => {
-            console.log("Categories clicked");
-          }}
-        >
-          <Grid2X2 size={19} />
+                </div>
 
-          <span>
-            Categories
-          </span>
-        </button>
+                <span>{item.name}</span>
+
+              </div>
 
 
-        <button
-          className="sidebar-item"
-          onClick={() => {
-            console.log("Residents clicked");
-          }}
-        >
-          <Users size={19} />
+              <ChevronRight
+                className="sidebar-arrow"
+                size={16}
+                strokeWidth={1.8}
+              />
 
-          <span>
-            Residents
-          </span>
-        </button>
+            </NavLink>
+          );
 
-
-        <button
-          className="sidebar-item"
-          onClick={() => {
-            console.log("Departments clicked");
-          }}
-        >
-          <Building2 size={19} />
-
-          <span>
-            Departments
-          </span>
-        </button>
-
-
-        <button
-          className="sidebar-item"
-          onClick={() => {
-            console.log("Reports clicked");
-          }}
-        >
-          <BarChart3 size={19} />
-
-          <span>
-            Reports
-          </span>
-        </button>
-
-
-        <button
-          className="sidebar-item"
-          onClick={() => {
-            console.log("Settings clicked");
-          }}
-        >
-          <Settings size={19} />
-
-          <span>
-            Settings
-          </span>
-        </button>
+        })}
 
       </nav>
 
 
-      {/* =========================================
-          ILLUSTRATION
-      ========================================= */}
+      {/* =====================================
+          LOWER LANDSCAPE
+      ===================================== */}
 
-      <div className="sidebar-illustration">
+      <div className="sidebar-bottom">
 
-        <div className="illustration-overlay"></div>
+        {/* Uses YOUR existing image */}
 
-      </div>
-
-
-      {/* =========================================
-          ADMIN PROFILE
-      ========================================= */}
-
-      <div className="sidebar-profile">
-
-        <div className="profile-avatar">
-
-          <Users size={19} />
-
-        </div>
-
-
-        <div className="profile-info">
-
-          <strong>
-            Admin User
-          </strong>
-
-          <span>
-            Super Administrator
-          </span>
-
-        </div>
-
-
-        <span className="profile-arrow">
-          ⌄
-        </span>
+        <div className="sidebar-landscape"></div>
 
       </div>
 
     </aside>
   );
 }
+
 
 export default AdminSidebar;

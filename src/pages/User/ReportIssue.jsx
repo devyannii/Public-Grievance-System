@@ -15,10 +15,13 @@ import {
   User,
 } from "lucide-react";
 
+import { supabase } from "../../lib/supabaseClient";
+
 import potholeImage from "../../assets/images/pothole.png";
 
 import "../../styles/ReportIssue.css";
 
+import "../../styles/UserAppLayout.css";
 const issueTypes = [
   {
     name: "Pothole",

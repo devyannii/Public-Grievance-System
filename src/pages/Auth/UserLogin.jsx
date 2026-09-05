@@ -7,8 +7,9 @@ import {
   Eye,
   EyeOff,
   LogIn,
-  Mail,
 } from "lucide-react";
+
+import { supabase } from "../../lib/supabaseClient";
 
 import loginImage from "../../assets/images/user-login-image.png";
 import "../../styles/UserAuth.css";
@@ -18,26 +19,139 @@ function UserLogin() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e) => {
+  // =========================================
+  // FORM VALUES
+  // =========================================
+
+  const [loginValue, setLoginValue] = useState("");
+  const [password, setPassword] = useState("");
+
+  // =========================================
+  // UI STATES
+  // =========================================
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+
+  // =========================================
+  // LOGIN
+  // =========================================
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    console.log("User login submitted");
+    setError("");
 
-    // After successful login
-    navigate("/user");
+    if (!loginValue.trim()) {
+      setError("Please enter your email.");
+      return;
+    }
+
+    if (!password) {
+      setError("Please enter your password.");
+      return;
+    }
+
+    // -----------------------------------------
+    // Email login for now
+    // -----------------------------------------
+
+    const isEmail = loginValue.includes("@");
+
+    if (!isEmail) {
+      setError(
+        "Phone login will be available after we configure Phone Authentication."
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const { data, error: loginError } =
+        await supabase.auth.signInWithPassword({
+          email: loginValue.trim(),
+          password: password,
+        });
+
+      if (loginError) {
+        throw loginError;
+      }
+
+      console.log("Login successful:", data);
+
+      // -----------------------------------------
+      // Supabase session now exists
+      // -----------------------------------------
+
+      navigate("/user");
+
+    } catch (error) {
+      console.error("Login error:", error);
+
+      setError(
+        error.message ||
+          "Unable to login. Please check your email and password."
+      );
+
+    } finally {
+      setLoading(false);
+    }
   };
+
+
+  // =========================================
+  // REGISTER
+  // =========================================
 
   const handleRegister = () => {
     navigate("/user/register");
   };
 
+
+  // =========================================
+  // FORGOT PASSWORD
+  // =========================================
+
   const handleForgotPassword = () => {
     console.log("Forgot password clicked");
   };
 
-  const handleGoogleLogin = () => {
-    console.log("Google login clicked");
+
+  // =========================================
+  // GOOGLE LOGIN
+  // =========================================
+
+  const handleGoogleLogin = async () => {
+    setError("");
+
+    try {
+      const { error } =
+        await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: `${window.location.origin}/user`,
+          },
+        });
+
+      if (error) {
+        throw error;
+      }
+
+    } catch (error) {
+      console.error(
+        "Google login error:",
+        error
+      );
+
+      setError(
+        error.message ||
+          "Unable to continue with Google."
+      );
+    }
   };
+
 
   return (
     <div className="user-auth-page">
@@ -93,6 +207,17 @@ function UserLogin() {
 
 
           {/* =====================================
+              ERROR MESSAGE
+          ===================================== */}
+
+          {error && (
+            <div className="auth-error-message">
+              {error}
+            </div>
+          )}
+
+
+          {/* =====================================
               LOGIN FORM
           ===================================== */}
 
@@ -118,6 +243,10 @@ function UserLogin() {
                   type="text"
                   placeholder="Enter your email or mobile number"
                   autoComplete="username"
+                  value={loginValue}
+                  onChange={(e) =>
+                    setLoginValue(e.target.value)
+                  }
                   required
                 />
 
@@ -150,6 +279,10 @@ function UserLogin() {
                   }
                   placeholder="Enter your password"
                   autoComplete="current-password"
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
                   required
                 />
 
@@ -199,12 +332,15 @@ function UserLogin() {
             <button
               type="submit"
               className="user-login-button"
+              disabled={loading}
             >
 
               <LogIn size={18} />
 
               <span>
-                Login
+                {loading
+                  ? "Logging in..."
+                  : "Login"}
               </span>
 
             </button>
@@ -235,6 +371,7 @@ function UserLogin() {
             type="button"
             className="google-login-button"
             onClick={handleGoogleLogin}
+            disabled={loading}
           >
 
             <span className="google-icon">

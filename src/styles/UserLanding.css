@@ -5,6 +5,7 @@
 .user-landing-page {
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
 
   display: flex;
   align-items: center;
@@ -27,6 +28,7 @@
   max-width: 430px;
 
   min-height: 100vh;
+  min-height: 100dvh;
 
   display: flex;
   flex-direction: column;
@@ -36,6 +38,8 @@
   overflow: hidden;
 
   position: relative;
+
+  box-sizing: border-box;
 }
 
 
@@ -48,9 +52,9 @@
 
   flex: 1;
 
-  min-height: calc(100vh - 76px);
+  min-height: calc(100dvh - 76px);
 
-  background-size: cover;
+  background-size: 100% 100%;
 
   background-position: center;
 
@@ -58,7 +62,6 @@
 
   overflow: hidden;
 }
-
 
 /* =========================================
    IMAGE OVERLAY
@@ -308,138 +311,24 @@
 
 
 /* =========================================
-   BOTTOM NAVIGATION
-========================================= */
-
-.user-bottom-navigation {
-  width: 100%;
-
-  height: 76px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-around;
-
-  padding: 0 10px;
-
-  box-sizing: border-box;
-
-  background: #ffffff;
-
-  border-top: 1px solid #edf0ef;
-
-  box-shadow:
-    0 -4px 15px rgba(25, 55, 42, 0.05);
-
-  z-index: 10;
-}
-
-
-/* =========================================
-   NAV ITEMS
-========================================= */
-
-.bottom-nav-item {
-  width: 52px;
-
-  height: 55px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 4px;
-
-  border: none;
-
-  background: transparent;
-
-  color: #53616d;
-
-  font-family: inherit;
-
-  font-size: 8px;
-
-  font-weight: 500;
-
-  cursor: pointer;
-}
-
-
-.bottom-nav-item svg {
-  stroke-width: 1.8;
-}
-
-
-.bottom-nav-item.active {
-  color: #07875e;
-
-  font-weight: 650;
-}
-
-
-/* =========================================
-   CENTER PLUS BUTTON
-========================================= */
-
-.bottom-add-button {
-  width: 48px;
-
-  height: 48px;
-
-  margin-top: -20px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  border: 4px solid #ffffff;
-
-  border-radius: 50%;
-
-  background: #079875;
-
-  color: #ffffff;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 5px 13px rgba(0, 121, 91, 0.22);
-}
-
-
-/* =========================================
    TABLET / DESKTOP
    KEEP THE SAME MOBILE DESIGN
 ========================================= */
 
 @media (min-width: 600px) {
 
-  .user-landing-page {
-    padding: 30px;
-  }
-
   .user-landing-card {
-    min-height: 780px;
+    width: 430px;
+    max-width: 430px;
 
-    height: 850px;
+    min-height: 100vh;
+    min-height: 100dvh;
 
     border-radius: 22px;
 
     box-shadow:
       0 15px 40px rgba(29, 62, 48, 0.10);
   }
-
 }
 
 
@@ -448,6 +337,12 @@
 ========================================= */
 
 @media (max-width: 380px) {
+
+  .user-landing-card {
+    width: 100%;
+    max-width: 430px;
+  }
+
 
   .landing-content {
     padding-top: 85px;

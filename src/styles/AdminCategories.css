@@ -1,0 +1,640 @@
+/* =========================================================
+   CATEGORIES PAGE
+========================================================= */
+
+.categories-page {
+  width: 100%;
+
+  min-height: calc(100vh - 72px);
+
+  box-sizing: border-box;
+
+  padding: 28px 42px 36px;
+
+  background: #f7faf8;
+
+  color: #17221c;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.categories-header {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 22px;
+
+  gap: 20px;
+}
+
+
+/* =========================================================
+   TITLE AREA
+========================================================= */
+
+.categories-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+
+/* BACK BUTTON */
+
+.back-button {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid #dce7df;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #66736c;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.back-button:hover {
+  background: #edf7ef;
+
+  color: #198b48;
+
+  border-color: #b9d9c1;
+}
+
+
+/* =========================================================
+   PAGE TITLE
+========================================================= */
+
+.categories-title h1 {
+  margin: 0;
+
+  font-size: 30px;
+
+  line-height: 1.2;
+
+  font-weight: 700;
+
+  color: #111a15;
+}
+
+
+.categories-title p {
+  margin: 5px 0 0;
+
+  font-size: 15px;
+
+  color: #6c7972;
+}
+
+
+/* =========================================================
+   ADD CATEGORY
+========================================================= */
+
+.add-category-button {
+  height: 44px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 18px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #198b48;
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 10px rgba(25, 139, 72, 0.16);
+
+  transition: 0.2s ease;
+}
+
+
+.add-category-button:hover {
+  background: #14783d;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.categories-card {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #dfe8e2;
+
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 2px 8px rgba(29, 65, 42, 0.04);
+}
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.categories-toolbar {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  box-sizing: border-box;
+
+  padding: 16px 20px;
+
+  border-bottom: 1px solid #e5ebe7;
+}
+
+
+/* SEARCH */
+
+.category-search {
+  flex: 1;
+
+  height: 42px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 0 13px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #dbe5de;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #7b8981;
+}
+
+
+.category-search:focus-within {
+  border-color: #8fc6a1;
+
+  box-shadow:
+    0 0 0 3px rgba(25, 139, 72, 0.07);
+}
+
+
+.category-search input {
+  width: 100%;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  font-family: inherit;
+
+  font-size: 15px;
+
+  color: #17221c;
+}
+
+
+.category-search input::placeholder {
+  color: #8a9790;
+}
+
+
+/* FILTER */
+
+.filter-button {
+  height: 42px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 17px;
+
+  border: 1px solid #dbe5de;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #3d4942;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+
+.filter-button:hover {
+  background: #f5f9f6;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.categories-table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+
+.categories-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  table-layout: fixed;
+}
+
+
+/* =========================================================
+   COLUMN WIDTHS
+========================================================= */
+
+.categories-table th:nth-child(1),
+.categories-table td:nth-child(1) {
+  width: 23%;
+}
+
+
+.categories-table th:nth-child(2),
+.categories-table td:nth-child(2) {
+  width: 36%;
+}
+
+
+.categories-table th:nth-child(3),
+.categories-table td:nth-child(3) {
+  width: 15%;
+}
+
+
+.categories-table th:nth-child(4),
+.categories-table td:nth-child(4) {
+  width: 12%;
+}
+
+
+.categories-table th:nth-child(5),
+.categories-table td:nth-child(5) {
+  width: 14%;
+}
+
+
+/* =========================================================
+   TABLE HEADER
+========================================================= */
+
+.categories-table thead {
+  background: #f7faf8;
+}
+
+
+.categories-table th {
+  height: 48px;
+
+  padding: 0 20px;
+
+  text-align: left;
+
+  vertical-align: middle;
+
+  border-bottom: 1px solid #dfe7e2;
+
+  color: #46534b;
+
+  font-size: 13px;
+
+  font-weight: 650;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   TABLE ROW
+========================================================= */
+
+.categories-table tbody tr {
+  height: 72px;
+
+  border-bottom: 1px solid #e7ece9;
+
+  transition: background 0.15s ease;
+}
+
+
+.categories-table tbody tr:hover {
+  background: #fbfdfb;
+}
+
+
+.categories-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+
+/* CELLS */
+
+.categories-table td {
+  padding: 10px 20px;
+
+  vertical-align: middle;
+
+  font-size: 15px;
+
+  color: #26322b;
+}
+
+
+/* =========================================================
+   CATEGORY NAME
+========================================================= */
+
+.category-name {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  font-size: 16px;
+
+  font-weight: 650;
+
+  color: #142019;
+}
+
+
+/* ICON */
+
+.category-icon {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+
+  background: #f0f7f2;
+
+  border: 1px solid #dce9df;
+
+  font-size: 20px;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.category-description {
+  display: block;
+
+  max-width: 480px;
+
+  font-size: 14px;
+
+  line-height: 1.4;
+
+  color: #68766e;
+}
+
+
+/* =========================================================
+   NUMBER
+========================================================= */
+
+.complaint-number {
+  font-size: 16px;
+
+  font-weight: 650;
+
+  color: #17221c;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.active-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  height: 29px;
+
+  padding: 0 11px;
+
+  border-radius: 999px;
+
+  background: #e3f5e8;
+
+  color: #168044;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.category-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+}
+
+
+.category-actions button {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+/* EDIT */
+
+.edit-button {
+  border: 1px solid #dce6df;
+
+  color: #647169;
+}
+
+
+.edit-button:hover {
+  color: #198b48;
+
+  background: #eff8f1;
+
+  border-color: #b9dac2;
+}
+
+
+/* DELETE */
+
+.delete-button {
+  border: 1px solid #f0d6d6;
+
+  color: #ef5b5b;
+}
+
+
+.delete-button:hover {
+  background: #fff3f3;
+
+  border-color: #eabcbc;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.categories-footer {
+  height: 42px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 0 20px;
+
+  box-sizing: border-box;
+
+  border-top: 1px solid #e7ece9;
+
+  color: #7b8881;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .categories-page {
+    padding: 24px;
+  }
+
+}
+
+
+@media (max-width: 800px) {
+
+  .categories-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+
+  .add-category-button {
+    width: 100%;
+  }
+
+
+  .categories-toolbar {
+    flex-direction: column;
+  }
+
+
+  .category-search,
+  .filter-button {
+    width: 100%;
+  }
+
+}

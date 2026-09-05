@@ -1040,3 +1040,73 @@
 
   outline-offset: 2px;
 }
+.auth-error-message {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff1f0;
+  color: #b42318;
+  border: 1px solid #f5c2c0;
+  font-size: 14px;
+}
+
+.auth-success-message {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #eef8f0;
+  color: #287a3e;
+  border: 1px solid #c9e6ce;
+  font-size: 14px;
+}
+
+.user-login-button:disabled,
+.google-login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   UNIFIED LOGIN + REGISTER CARD
+========================================= */
+
+.user-auth-card {
+  width: 100%;
+  max-width: 430px;
+  height: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Same hero size on both */
+.user-auth-hero {
+  height: 255px;
+  flex-shrink: 0;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .user-auth-card {
+    width: 430px;
+    max-width: 430px;
+    height: 780px;
+  }
+
+  .user-auth-hero {
+    height: 255px;
+  }
+}
+
+/* Phones */
+@media (max-width: 767px) {
+  .user-auth-card {
+    width: 100%;
+    max-width: 430px;
+    height: 700px;
+  }
+
+  .user-auth-hero {
+    height: 235px;
+  }
+}

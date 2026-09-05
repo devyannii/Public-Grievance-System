@@ -14,6 +14,7 @@ import {
 import potholeImage from "../../assets/images/pothole.png";
 
 import "../../styles/IssueDetails.css";
+import "../../styles/UserAppLayout.css";
 
 function IssueDetails() {
   const navigate = useNavigate();

@@ -10,6 +10,8 @@ import {
   Mail,
 } from "lucide-react";
 
+import { supabase } from "../../lib/supabaseClient";
+
 import loginImage from "../../assets/images/user-login-image.png";
 import "../../styles/UserAuth.css";
 
@@ -19,21 +21,141 @@ function UserRegister() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleRegister = (e) => {
+  // Form values
+  const [fullName, setFullName] = useState("");
+  const [loginValue, setLoginValue] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // UI states
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    console.log("User registration submitted");
+    setError("");
+    setMessage("");
 
-    // After successful registration
-    navigate("/user");
+    // -----------------------------
+    // Basic validation
+    // -----------------------------
+
+    if (!fullName.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    if (!loginValue.trim()) {
+      setError("Please enter your email or mobile number.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    // -----------------------------
+    // Currently Supabase Email Auth
+    // -----------------------------
+
+    const isEmail = loginValue.includes("@");
+
+    if (!isEmail) {
+      setError(
+        "Phone registration will be available after we configure SMS/Phone authentication. Please use an email address for now."
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const { data, error: signUpError } =
+        await supabase.auth.signUp({
+          email: loginValue.trim(),
+          password: password,
+
+          options: {
+            data: {
+              full_name: fullName.trim(),
+              preferred_language: "English",
+            },
+          },
+        });
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      console.log("Supabase registration successful:", data);
+
+      // --------------------------------------
+      // Email confirmation handling
+      // --------------------------------------
+
+      if (data.user && !data.session) {
+        setMessage(
+          "Account created successfully! Please check your email to verify your account."
+        );
+
+        return;
+      }
+
+      // --------------------------------------
+      // If email confirmation is disabled
+      // --------------------------------------
+
+      if (data.session) {
+        navigate("/user");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      setError(
+        error.message ||
+          "Unable to create your account. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogin = () => {
     navigate("/user/login");
   };
 
-  const handleGoogleRegister = () => {
-    console.log("Google registration clicked");
+  const handleGoogleRegister = async () => {
+    setError("");
+    setMessage("");
+
+    try {
+      const { error } =
+        await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: `${window.location.origin}/user`,
+          },
+        });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error("Google registration error:", error);
+
+      setError(
+        error.message ||
+          "Unable to continue with Google."
+      );
+    }
   };
 
   return (
@@ -88,6 +210,23 @@ function UserRegister() {
 
 
           {/* =====================================
+              ERROR / SUCCESS MESSAGE
+          ===================================== */}
+
+          {error && (
+            <div className="auth-error-message">
+              {error}
+            </div>
+          )}
+
+          {message && (
+            <div className="auth-success-message">
+              {message}
+            </div>
+          )}
+
+
+          {/* =====================================
               REGISTRATION FORM
           ===================================== */}
 
@@ -113,6 +252,10 @@ function UserRegister() {
                   type="text"
                   placeholder="Enter your full name"
                   autoComplete="name"
+                  value={fullName}
+                  onChange={(e) =>
+                    setFullName(e.target.value)
+                  }
                   required
                 />
 
@@ -141,6 +284,10 @@ function UserRegister() {
                   type="text"
                   placeholder="Enter your email or mobile number"
                   autoComplete="email"
+                  value={loginValue}
+                  onChange={(e) =>
+                    setLoginValue(e.target.value)
+                  }
                   required
                 />
 
@@ -173,6 +320,10 @@ function UserRegister() {
                   }
                   placeholder="Create a password"
                   autoComplete="new-password"
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
                   required
                 />
 
@@ -226,6 +377,12 @@ function UserRegister() {
                   }
                   placeholder="Confirm your password"
                   autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) =>
+                    setConfirmPassword(
+                      e.target.value
+                    )
+                  }
                   required
                 />
 
@@ -262,12 +419,15 @@ function UserRegister() {
             <button
               type="submit"
               className="user-login-button"
+              disabled={loading}
             >
 
               <UserPlus size={18} />
 
               <span>
-                Create Account
+                {loading
+                  ? "Creating Account..."
+                  : "Create Account"}
               </span>
 
             </button>
@@ -298,6 +458,7 @@ function UserRegister() {
             type="button"
             className="google-login-button"
             onClick={handleGoogleRegister}
+            disabled={loading}
           >
 
             <span className="google-icon">

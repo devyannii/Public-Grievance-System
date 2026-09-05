@@ -12,7 +12,8 @@ import {
 
 import landingImage from "../../assets/images/user-landing-image.png";
 import "../../styles/UserLanding.css";
-
+import "../../styles/UserAppLayout.css";
+import "../../styles/BottomNavigation.css";
 
 function UserLanding() {
 

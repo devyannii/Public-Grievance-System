@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -16,10 +16,129 @@ import {
   User,
 } from "lucide-react";
 
+import { supabase } from "../../lib/supabaseClient";
+
 import "../../styles/Profile.css";
+import "../../styles/UserAppLayout.css";
 
 function Profile() {
   const navigate = useNavigate();
+
+  const [profile, setProfile] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // =========================================
+  // LOAD CURRENT USER + PROFILE
+  // =========================================
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        setLoading(true);
+
+        // Get currently logged-in Supabase user
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError) {
+          throw userError;
+        }
+
+        if (!user) {
+          navigate("/user/login");
+          return;
+        }
+
+        setUser(user);
+
+        // Get profile information from profiles table
+        const { data: profileData, error: profileError } =
+          await supabase
+            .from("profiles")
+            .select("full_name, phone, preferred_language")
+            .eq("id", user.id)
+            .single();
+
+        if (profileError) {
+          console.error(
+            "Profile loading error:",
+            profileError
+          );
+
+          // Still show Auth information if profile
+          // isn't available
+          setProfile({
+            full_name:
+              user.user_metadata?.full_name || "User",
+            phone: user.phone || "",
+            preferred_language:
+              user.user_metadata?.preferred_language ||
+              "English",
+          });
+
+          return;
+        }
+
+        setProfile(profileData);
+
+      } catch (error) {
+        console.error(
+          "Unable to load profile:",
+          error
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, [navigate]);
+
+
+  // =========================================
+  // LOGOUT
+  // =========================================
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        throw error;
+      }
+
+      navigate("/user/login");
+
+    } catch (error) {
+      console.error(
+        "Logout error:",
+        error
+      );
+    }
+  };
+
+
+  // =========================================
+  // DISPLAY VALUES
+  // =========================================
+
+  const displayName =
+    profile?.full_name ||
+    user?.user_metadata?.full_name ||
+    "User";
+
+  const displayPhone =
+    profile?.phone ||
+    user?.phone ||
+    "Phone number not added";
+
+  const displayEmail =
+    user?.email ||
+    "Email not available";
+
 
   return (
     <div className="user-page profile-page">
@@ -56,11 +175,20 @@ function Profile() {
             <User size={42} />
           </div>
 
-          <h2>Priya Sharma</h2>
+          {loading ? (
+            <>
+              <h2>Loading...</h2>
+              <p>Loading profile...</p>
+            </>
+          ) : (
+            <>
+              <h2>{displayName}</h2>
 
-          <p>+91 98765 43210</p>
+              <p>{displayPhone}</p>
 
-          <p>priya.sharma@email.com</p>
+              <p>{displayEmail}</p>
+            </>
+          )}
 
         </section>
 
@@ -154,7 +282,10 @@ function Profile() {
 
         {/* LOGOUT */}
 
-        <button className="profile-logout">
+        <button
+          className="profile-logout"
+          onClick={handleLogout}
+        >
 
           <LogOut size={18} />
 

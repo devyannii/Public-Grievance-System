@@ -26,6 +26,7 @@ import UserRegister from "./pages/Auth/UserRegister";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AdminComplaints from "./pages/Admin/AdminComplaints";
+import AdminCategories from "./pages/Admin/AdminCategories";
 
 
 function App() {
@@ -96,10 +97,6 @@ function App() {
 
         {/* =========================
             ADMIN DASHBOARD
-            IMPORTANT:
-            NO AdminLayout HERE
-            because AdminDashboard
-            already contains it.
         ========================= */}
 
         <Route
@@ -112,9 +109,35 @@ function App() {
             ADMIN COMPLAINTS
         ========================= */}
 
+        {/* All complaints */}
         <Route
           path="/admin/complaints"
           element={<AdminComplaints />}
+        />
+
+        {/* Individual complaint */}
+        <Route
+          path="/admin/complaints/:id"
+          element={<AdminComplaints />}
+        />
+
+      
+        {/* =========================
+         ADMIN CATEGORIES
+        ========================= */}
+
+        <Route
+          path="/admin/categories"
+          element={<AdminCategories />}
+        />
+      
+        {/* =========================
+            ADMIN MAP
+        ========================= */}
+
+        <Route
+          path="/admin/map"
+          element={<MapView />}
         />
 
       </Routes>

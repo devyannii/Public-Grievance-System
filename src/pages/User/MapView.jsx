@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import "../../styles/MapView.css";
+import "../../styles/UserAppLayout.css";
 
 const filters = [
   { name: "All", icon: null },

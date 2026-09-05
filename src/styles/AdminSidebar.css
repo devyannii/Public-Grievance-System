@@ -4,6 +4,7 @@
 
 .admin-sidebar {
   position: fixed;
+
   top: 0;
   left: 0;
 
@@ -15,14 +16,9 @@
 
   box-sizing: border-box;
 
-  background: linear-gradient(
-    180deg,
-    #ffffff 0%,
-    #fbfdfb 55%,
-    #f3faf4 100%
-  );
+  background: #ffffff;
 
-  border-right: 1px solid #e5ebe6;
+  border-right: 1px solid #e5ebe7;
 
   overflow: hidden;
 
@@ -35,52 +31,100 @@
 ========================================= */
 
 .sidebar-brand {
-  width: 100%;
-
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  padding: 28px 20px 22px;
-
-  box-sizing: border-box;
+  padding: 32px 20px 14px;
 
   text-align: center;
+
+  flex-shrink: 0;
 }
 
+
+/* =========================================
+   BRAND ICON
+========================================= */
+
 .brand-icon {
-  width: 58px;
-  height: 58px;
+  width: 48px;
+  height: 48px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 8px;
+  margin-bottom: 7px;
 
-  color: #268a48;
+  color: #23934e;
 }
 
-.brand-text h1 {
+
+/* =========================================
+   BRAND TITLE
+========================================= */
+
+.sidebar-brand h1 {
   margin: 0;
 
   color: #111820;
 
   font-size: 23px;
+
   line-height: 1.15;
 
   font-weight: 700;
 }
 
-.brand-text span {
-  display: block;
 
-  margin-top: 3px;
+/* =========================================
+   BRAND SUBTITLE
+========================================= */
 
-  color: #237d42;
+.sidebar-brand p {
+  margin: 4px 0 0;
 
-  font-size: 15px;
+  color: #188343;
+
+  font-size: 14px;
+
+  line-height: 1.3;
+
   font-weight: 600;
+}
+
+
+/* =========================================
+   NATURE DIVIDER
+========================================= */
+
+.brand-divider {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 14px;
+
+  width: 125px;
+}
+
+
+.brand-divider span {
+  height: 1px;
+
+  width: 38px;
+
+  background: #b9d9c0;
+}
+
+
+.brand-divider svg {
+  color: #2b9650;
 }
 
 
@@ -89,220 +133,252 @@
 ========================================= */
 
 .sidebar-navigation {
-  width: 100%;
-
   display: flex;
+
   flex-direction: column;
 
-  gap: 5px;
+  gap: 3px;
 
-  padding: 12px 18px 0;
+  padding: 7px 16px 0;
 
-  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
-.sidebar-item {
+
+/* =========================================
+   NAVIGATION LINK
+========================================= */
+
+.sidebar-link {
+  position: relative;
+
   width: 100%;
-  height: 48px;
+
+  height: 47px;
 
   display: flex;
+
   align-items: center;
 
-  gap: 16px;
-
-  padding: 0 16px;
+  justify-content: space-between;
 
   box-sizing: border-box;
 
-  border: none;
-  border-radius: 9px;
+  padding: 5px 10px;
 
-  background: transparent;
+  border-radius: 10px;
 
-  color: #303a45;
+  color: #25302a;
 
-  font-family: inherit;
+  text-decoration: none;
+
   font-size: 15px;
+
   font-weight: 500;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  appearance: none;
 
   transition:
     background 0.2s ease,
     color 0.2s ease;
 }
 
-.sidebar-item svg {
-  width: 19px;
-  height: 19px;
 
-  flex-shrink: 0;
+/* =========================================
+   LINK LEFT SIDE
+========================================= */
 
-  color: #58636d;
-}
+.sidebar-link-left {
+  display: flex;
 
-.sidebar-item span {
-  display: block;
+  align-items: center;
 
-  white-space: nowrap;
-}
+  gap: 12px;
 
-.sidebar-item:hover {
-  background: #f0f7f1;
-
-  color: #19763a;
-}
-
-.sidebar-item:hover svg {
-  color: #19763a;
-}
-
-.sidebar-item.active {
-  background: #e8f5e9;
-
-  color: #176e36;
-
-  font-weight: 600;
-}
-
-.sidebar-item.active svg {
-  color: #218344;
+  min-width: 0;
 }
 
 
 /* =========================================
-   ILLUSTRATION
+   ICON BOX
 ========================================= */
 
-.sidebar-illustration {
+.sidebar-icon {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  box-sizing: border-box;
+
+  border-radius: 9px;
+
+  color: #68736d;
+
+  background: #fafcfb;
+
+  border: 1px solid #edf1ee;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+
+/* =========================================
+   HOVER
+========================================= */
+
+.sidebar-link:hover {
+  background: #f3f8f3;
+
+  color: #187a3e;
+}
+
+
+.sidebar-link:hover .sidebar-icon {
+  color: #21884a;
+
+  background: #f8fcf8;
+
+  border-color: #dfece2;
+}
+
+
+.sidebar-link:hover .sidebar-arrow {
+  color: #21884a;
+
+  transform: translateX(2px);
+}
+
+
+/* =========================================
+   ACTIVE
+========================================= */
+
+.sidebar-link.active {
+  background: #e7f4e8;
+
+  color: #14783c;
+
+  font-weight: 650;
+}
+
+
+/* Green active indicator */
+
+.sidebar-link.active::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+
+  top: 8px;
+
+  bottom: 8px;
+
+  width: 3px;
+
+  border-radius: 0 4px 4px 0;
+
+  background: #24924c;
+}
+
+
+/* Active icon */
+
+.sidebar-link.active .sidebar-icon {
+  color: #218b49;
+
+  background: #f4faf5;
+
+  border-color: #dcecdf;
+}
+
+
+/* Active arrow */
+
+.sidebar-link.active .sidebar-arrow {
+  color: #23874a;
+}
+
+
+/* =========================================
+   ARROW
+========================================= */
+
+.sidebar-arrow {
+  flex-shrink: 0;
+
+  color: #7a847e;
+
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+
+/* =========================================
+   LOWER SIDEBAR
+========================================= */
+
+.sidebar-bottom {
   position: relative;
 
   flex: 1;
 
-  min-height: 100px;
+  min-height: 270px;
 
-  margin-top: 10px;
+  margin-top: 5px;
 
   overflow: hidden;
+}
+
+
+/* =========================================
+   EXISTING LANDSCAPE IMAGE
+========================================= */
+
+.sidebar-landscape {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  width: 100%;
+
+  height: 330px;
 
   background-image:
     linear-gradient(
       to bottom,
+
       rgba(255, 255, 255, 1) 0%,
-      rgba(255, 255, 255, 0.7) 20%,
-      rgba(255, 255, 255, 0.1) 55%,
-      rgba(255, 255, 255, 0) 100%
+
+      rgba(255, 255, 255, 0.96) 10%,
+
+      rgba(255, 255, 255, 0.70) 24%,
+
+      rgba(255, 255, 255, 0.25) 43%,
+
+      rgba(255, 255, 255, 0) 65%
     ),
+
     url("../assets/images/login-background.jpeg.jpeg");
 
   background-size: cover;
 
   background-position: center bottom;
 
-  opacity: 0.85;
-}
+  background-repeat: no-repeat;
 
-.illustration-overlay {
-  position: absolute;
-
-  inset: 0;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(247, 252, 247, 0.6) 30%,
-    rgba(220, 242, 221, 0.1) 70%,
-    rgba(255, 255, 255, 0) 100%
-  );
-
-  pointer-events: none;
-}
-
-
-/* =========================================
-   ADMIN PROFILE
-========================================= */
-
-.sidebar-profile {
-  width: 100%;
-  min-height: 68px;
-
-  display: flex;
-  align-items: center;
-
-  gap: 10px;
-
-  padding: 10px 17px;
-
-  box-sizing: border-box;
-
-  background: rgba(255, 255, 255, 0.97);
-
-  border-top: 1px solid #e8ece9;
-}
-
-.profile-avatar {
-  width: 38px;
-  height: 38px;
-
-  flex-shrink: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  color: #218344;
-
-  background: #e9f5eb;
-}
-
-.profile-info {
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-
-  flex: 1;
-}
-
-.profile-info strong {
-  overflow: hidden;
-
-  color: #18212a;
-
-  font-size: 12px;
-
-  font-weight: 600;
-
-  white-space: nowrap;
-
-  text-overflow: ellipsis;
-}
-
-.profile-info span {
-  margin-top: 2px;
-
-  overflow: hidden;
-
-  color: #7a838b;
-
-  font-size: 10px;
-
-  white-space: nowrap;
-
-  text-overflow: ellipsis;
-}
-
-.profile-arrow {
-  color: #68727a;
-
-  font-size: 18px;
+  z-index: 0;
 }
 
 
@@ -313,12 +389,19 @@
 @media (max-width: 900px) {
 
   .admin-sidebar {
-    width: 260px;
+    width: 235px;
   }
+
 
   .sidebar-navigation {
     padding-left: 12px;
+
     padding-right: 12px;
+  }
+
+
+  .sidebar-link {
+    font-size: 14px;
   }
 
 }
@@ -330,36 +413,66 @@
     width: 76px;
   }
 
+
   .sidebar-brand {
-    padding: 22px 8px;
+    padding: 22px 8px 14px;
   }
 
-  .brand-text {
+
+  .brand-icon {
+    width: 42px;
+
+    height: 42px;
+  }
+
+
+  .sidebar-brand h1,
+  .sidebar-brand p,
+  .brand-divider {
     display: none;
   }
 
-  .sidebar-item {
+
+  .sidebar-navigation {
+    padding: 8px 10px;
+  }
+
+
+  .sidebar-link {
     justify-content: center;
 
-    padding: 0;
+    padding: 4px;
+
+    height: 47px;
   }
 
-  .sidebar-item span {
-    display: none;
-  }
 
-  .sidebar-illustration {
-    display: none;
-  }
-
-  .sidebar-profile {
+  .sidebar-link-left {
     justify-content: center;
-
-    padding: 10px;
   }
 
-  .profile-info,
-  .profile-arrow {
+
+  .sidebar-link span {
+    display: none;
+  }
+
+
+  .sidebar-arrow {
+    display: none;
+  }
+
+
+  .sidebar-link.active::before {
+    display: none;
+  }
+
+
+  .sidebar-bottom {
+    min-height: 100px;
+  }
+
+
+  .sidebar-landscape {
     display: none;
   }
 

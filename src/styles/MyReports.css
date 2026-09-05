@@ -4,8 +4,11 @@
 
 .my-reports-page {
   width: 100%;
-  max-width: 360px;
+  max-width: 430px;
+
   min-height: 100vh;
+  min-height: 100dvh;
+
   margin: 0 auto;
 
   background: #ffffff;
@@ -14,6 +17,8 @@
   color: #071426;
 
   position: relative;
+
+  box-sizing: border-box;
 
   overflow: hidden;
 }
@@ -36,6 +41,8 @@
   background: #ffffff;
 
   position: relative;
+
+  box-sizing: border-box;
 }
 
 .my-reports-header h1 {
@@ -84,6 +91,8 @@
 
 .my-reports-content {
   padding: 14px 14px 82px;
+
+  box-sizing: border-box;
 }
 
 
@@ -178,6 +187,8 @@
   cursor: pointer;
 
   transition: 0.2s ease;
+
+  box-sizing: border-box;
 }
 
 .my-report-card:hover {
@@ -321,131 +332,25 @@
 
 
 /* =========================================
-   BOTTOM NAVIGATION
-========================================= */
-
-.reports-bottom-nav {
-  position: fixed;
-
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  bottom: 0;
-
-  width: 100%;
-  max-width: 360px;
-
-  height: 64px;
-
-  display: grid;
-
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-
-  align-items: center;
-
-  background: #ffffff;
-
-  border-top: 1px solid #edf0f2;
-
-  z-index: 50;
-}
-
-
-/* =========================================
-   NAV ITEMS
-========================================= */
-
-.bottom-nav-item {
-  height: 64px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 4px;
-
-  border: none;
-
-  background: transparent;
-
-  color: #657180;
-
-  font-family: inherit;
-
-  font-size: 8px;
-  font-weight: 500;
-
-  cursor: pointer;
-}
-
-.bottom-nav-item svg {
-  width: 18px;
-  height: 18px;
-
-  stroke-width: 1.8;
-}
-
-.bottom-nav-item.active {
-  color: #009d78;
-}
-
-.bottom-nav-item.active svg {
-  stroke-width: 2.2;
-}
-
-
-/* =========================================
-   PLUS BUTTON
-========================================= */
-
-.report-add-button {
-  width: 48px;
-  height: 48px;
-
-  align-self: center;
-  justify-self: center;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: none;
-  border-radius: 50%;
-
-  background: #00a982;
-
-  color: #ffffff;
-
-  box-shadow:
-    0 5px 14px rgba(0, 169, 130, 0.28);
-
-  cursor: pointer;
-}
-
-.report-add-button svg {
-  width: 26px;
-  height: 26px;
-
-  stroke-width: 2;
-}
-
-
-/* =========================================
    DESKTOP / BROWSER PREVIEW
 ========================================= */
 
 @media (min-width: 700px) {
+
   body {
     background: #eef7f9;
   }
 
   .my-reports-page {
-    min-height: 648px;
+    width: 100%;
+    max-width: 430px;
 
-    margin-top: 20px;
-    margin-bottom: 20px;
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    height: 100dvh;
+
+    margin: 0 auto;
 
     border-radius: 24px;
 
@@ -455,16 +360,8 @@
     overflow: hidden;
   }
 
-  .reports-bottom-nav {
-    position: absolute;
-
-    bottom: 0;
-
-    border-radius: 0 0 24px 24px;
-  }
-
   .my-reports-content {
-    padding-bottom: 78px;
+    padding-bottom: 82px;
   }
 }
 
@@ -473,10 +370,26 @@
    SMALL PHONES
 ========================================= */
 
-@media (max-width: 380px) {
+@media (max-width: 430px) {
+
   .my-reports-page {
-    max-width: 100%;
+    width: 100%;
+    max-width: 430px;
+
+    min-height: 100dvh;
+
+    margin: 0;
+
+    border-radius: 0;
   }
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
 
   .my-reports-content {
     padding-left: 12px;
