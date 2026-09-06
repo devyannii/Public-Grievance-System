@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   MapPin,
@@ -11,29 +11,147 @@ import {
   User,
 } from "lucide-react";
 
-import potholeImage from "../../assets/images/pothole.png";
+import { supabase } from "../../lib/supabaseClient";
 
 import "../../styles/IssueDetails.css";
+import "../../styles/BottomNavigation.css";
 import "../../styles/UserAppLayout.css";
+
+function formatDate(dateString) {
+  if (!dateString) return "—";
+
+  return new Date(dateString).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function getStatusIndex(status) {
+  const statuses = ["Pending", "In Progress", "Resolved"];
+
+  if (status === "Rejected") return -1;
+
+  return statuses.indexOf(status);
+}
 
 function IssueDetails() {
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  const [complaint, setComplaint] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadComplaint = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        // Get the complaint from Supabase
+        const { data, error: complaintError } = await supabase
+          .from("complaints")
+          .select(`
+            id,
+            complaint_code,
+            title,
+            description,
+            status,
+            priority,
+            location_text,
+            latitude,
+            longitude,
+            created_at,
+            updated_at,
+            resolved_at
+          `)
+          .eq("id", id)
+          .single();
+
+        if (complaintError) {
+          throw complaintError;
+        }
+
+        if (!isMounted) return;
+
+        setComplaint(data);
+
+        // Get the first image belonging to this complaint
+        const { data: imageData, error: imageError } = await supabase
+          .from("complaint_images")
+          .select("storage_path")
+          .eq("complaint_id", data.id)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (imageError) {
+          console.warn("Could not load complaint image:", imageError);
+        }
+
+        if (imageData?.storage_path) {
+          const { data: signedImage, error: signedImageError } =
+            await supabase.storage
+              .from("complaint-images")
+              .createSignedUrl(imageData.storage_path, 3600);
+
+          if (signedImageError) {
+            console.warn(
+              "Could not create complaint image URL:",
+              signedImageError
+            );
+          } else if (isMounted) {
+            setImageUrl(signedImage?.signedUrl || "");
+          }
+        }
+      } catch (err) {
+        console.error("Issue details error:", err);
+
+        if (isMounted) {
+          setError(
+            err?.message || "Unable to load this complaint."
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    if (id) {
+      loadComplaint();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  const status = complaint?.status || "Pending";
+  const currentStatusIndex = getStatusIndex(status);
+
+  const locationText =
+    complaint?.location_text || "Location not available";
+
+  const title = complaint
+    ? complaint.location_text && complaint.title
+      ? `${complaint.title} on ${complaint.location_text.split(",")[0]}`
+      : complaint.title
+    : "Issue Details";
 
   return (
     <div className="issue-details-page">
-
-      {/* =========================
-          CARD
-      ========================= */}
-
       <div className="issue-details-card">
 
-        {/* =========================
-            HEADER
-        ========================= */}
-
+        {/* HEADER */}
         <header className="issue-details-header">
-
           <button
             className="issue-details-back"
             onClick={() => navigate("/user/reports")}
@@ -44,221 +162,233 @@ function IssueDetails() {
           <h1>Issue Details</h1>
 
           <div className="issue-header-space"></div>
-
         </header>
 
-
-        {/* =========================
-            CONTENT
-        ========================= */}
-
+        {/* CONTENT */}
         <main className="issue-details-content">
 
-          {/* IMAGE */}
-
-          <div className="issue-details-image">
-            <img
-              src={potholeImage}
-              alt="Pothole on MG Road"
-            />
-          </div>
-
-
-          {/* TITLE */}
-
-          <div className="issue-title-row">
-
-            <h2>
-              Pothole on MG Road
-            </h2>
-
-            <span className="issue-status">
-              In Progress
-            </span>
-
-          </div>
-
-
-          {/* LOCATION */}
-
-          <div className="issue-info-row">
-
-            <MapPin size={14} />
-
-            <span>
-              MG Road, Pune, Maharashtra
-            </span>
-
-          </div>
-
-
-          {/* DATE */}
-
-          <div className="issue-info-row">
-
-            <CalendarDays size={14} />
-
-            <span>
-              15 May 2024 at 10:30 AM
-            </span>
-
-          </div>
-
-
-          {/* DESCRIPTION */}
-
-          <section className="issue-description">
-
-            <h3>
-              Description
-            </h3>
-
-            <p>
-              There is a deep pothole on the road causing
-              traffic and vehicle damage.
-            </p>
-
-          </section>
-
-
-          {/* STATUS TIMELINE */}
-
-          <section className="issue-timeline">
-
-            <h3>
-              Status Timeline
-            </h3>
-
-
-            {/* REPORTED */}
-
-            <div className="timeline-item completed">
-
-              <div className="timeline-dot">
-                ✓
-              </div>
-
-              <div className="timeline-content">
-
-                <h4>
-                  Reported
-                </h4>
-
-                <p>
-                  15 May 2024, 10:30 AM
-                </p>
-
-              </div>
-
+          {loading && (
+            <div style={{ padding: "30px 0", textAlign: "center" }}>
+              Loading complaint...
             </div>
+          )}
 
+          {!loading && error && (
+            <div style={{ padding: "30px 0", textAlign: "center" }}>
+              <p style={{ color: "#d64545", fontSize: "13px" }}>
+                {error}
+              </p>
 
-            {/* IN PROGRESS */}
+              <button
+                type="button"
+                onClick={() => navigate("/user/reports")}
+                style={{
+                  marginTop: "10px",
+                  border: "none",
+                  background: "#00a982",
+                  color: "#fff",
+                  borderRadius: "8px",
+                  padding: "10px 16px",
+                  cursor: "pointer",
+                }}
+              >
+                Back to Reports
+              </button>
+            </div>
+          )}
 
-            <div className="timeline-item current">
-
-              <div className="timeline-dot"></div>
-
-              <div className="timeline-content">
-
-                <h4>
-                  In Progress
-                </h4>
-
-                <p>
-                  16 May 2024, 11:00 AM
-                </p>
-
-                <small>
-                  Issue assigned to Road Maintenance Department
-                </small>
-
+          {!loading && !error && complaint && (
+            <>
+              {/* IMAGE */}
+              <div className="issue-details-image">
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt={title}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#7b8794",
+                      fontSize: "13px",
+                    }}
+                  >
+                    No image available
+                  </div>
+                )}
               </div>
 
-            </div>
+              {/* TITLE */}
+              <div className="issue-title-row">
+                <h2>{title}</h2>
 
-
-            {/* PENDING */}
-
-            <div className="timeline-item pending">
-
-              <div className="timeline-dot"></div>
-
-              <div className="timeline-content">
-
-                <h4>
-                  Pending
-                </h4>
-
-                <p>
-                  Resolution in progress
-                </p>
-
+                <span className="issue-status">
+                  {status}
+                </span>
               </div>
 
-            </div>
+              {/* LOCATION */}
+              <div className="issue-info-row">
+                <MapPin size={14} />
 
-
-            {/* RESOLVED */}
-
-            <div className="timeline-item pending last">
-
-              <div className="timeline-dot"></div>
-
-              <div className="timeline-content">
-
-                <h4>
-                  Resolved
-                </h4>
-
-                <p>
-                  Will be updated soon
-                </p>
-
+                <span>{locationText}</span>
               </div>
 
-            </div>
+              {/* DATE */}
+              <div className="issue-info-row">
+                <CalendarDays size={14} />
 
-          </section>
+                <span>
+                  {formatDate(complaint.created_at)}
+                </span>
+              </div>
 
+              {/* DESCRIPTION */}
+              <section className="issue-description">
+                <h3>Description</h3>
+
+                <p>{complaint.description}</p>
+              </section>
+
+              {/* STATUS TIMELINE */}
+              <section className="issue-timeline">
+                <h3>Status Timeline</h3>
+
+                {/* REPORTED */}
+                <div className="timeline-item completed">
+                  <div className="timeline-dot">
+                    ✓
+                  </div>
+
+                  <div className="timeline-content">
+                    <h4>Reported</h4>
+
+                    <p>
+                      {formatDate(complaint.created_at)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* PENDING */}
+                <div
+                  className={`timeline-item ${
+                    status === "Pending"
+                      ? "current"
+                      : currentStatusIndex > 0
+                        ? "completed"
+                        : "pending"
+                  }`}
+                >
+                  <div className="timeline-dot">
+                    {status === "Pending" ? "" : currentStatusIndex > 0 ? "✓" : ""}
+                  </div>
+
+                  <div className="timeline-content">
+                    <h4>Pending</h4>
+
+                    <p>
+                      {status === "Pending"
+                        ? "Current status"
+                        : currentStatusIndex > 0
+                          ? "Completed"
+                          : "Waiting for processing"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* IN PROGRESS */}
+                <div
+                  className={`timeline-item ${
+                    status === "In Progress"
+                      ? "current"
+                      : currentStatusIndex > 1
+                        ? "completed"
+                        : "pending"
+                  }`}
+                >
+                  <div className="timeline-dot">
+                    {status === "In Progress"
+                      ? ""
+                      : currentStatusIndex > 1
+                        ? "✓"
+                        : ""}
+                  </div>
+
+                  <div className="timeline-content">
+                    <h4>In Progress</h4>
+
+                    <p>
+                      {status === "In Progress"
+                        ? "Current status"
+                        : currentStatusIndex > 1
+                          ? "Completed"
+                          : "Will be updated when processing begins"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* RESOLVED */}
+                <div
+                  className={`timeline-item ${
+                    status === "Resolved"
+                      ? "current"
+                      : "pending last"
+                  }`}
+                >
+                  <div className="timeline-dot">
+                    {status === "Resolved" ? "✓" : ""}
+                  </div>
+
+                  <div className="timeline-content">
+                    <h4>Resolved</h4>
+
+                    <p>
+                      {status === "Resolved"
+                        ? formatDate(complaint.resolved_at || complaint.updated_at)
+                        : "Will be updated when resolved"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* REJECTED */}
+                {status === "Rejected" && (
+                  <div className="timeline-item current last">
+                    <div className="timeline-dot"></div>
+
+                    <div className="timeline-content">
+                      <h4>Rejected</h4>
+
+                      <p>Current status</p>
+                    </div>
+                  </div>
+                )}
+              </section>
+            </>
+          )}
         </main>
 
-
-        {/* =========================
-            BOTTOM NAVIGATION
-        ========================= */}
-
+        {/* BOTTOM NAVIGATION */}
         <nav className="issue-details-navigation">
-
-          {/* HOME */}
-
           <button
             className="issue-nav-item"
             onClick={() => navigate("/user")}
           >
             <Home size={20} />
-
-            <span>
-              Home
-            </span>
+            <span>Home</span>
           </button>
-
-
-          {/* MAP */}
 
           <button
             className="issue-nav-item"
             onClick={() => navigate("/user/map")}
           >
             <Map size={20} />
-
-            <span>
-              Map
-            </span>
+            <span>Map</span>
           </button>
-
-
-          {/* ADD */}
 
           <button
             className="issue-nav-add"
@@ -267,38 +397,23 @@ function IssueDetails() {
             <Plus size={28} />
           </button>
 
-
-          {/* REPORTS */}
-
           <button
             className="issue-nav-item active"
             onClick={() => navigate("/user/reports")}
           >
             <FileText size={20} />
-
-            <span>
-              Reports
-            </span>
+            <span>Reports</span>
           </button>
-
-
-          {/* PROFILE */}
 
           <button
             className="issue-nav-item"
             onClick={() => navigate("/user/profile")}
           >
             <User size={20} />
-
-            <span>
-              Profile
-            </span>
+            <span>Profile</span>
           </button>
-
         </nav>
-
       </div>
-
     </div>
   );
 }
