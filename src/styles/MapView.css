@@ -4,14 +4,7 @@
 
 .map-view-page {
   width: 100%;
-  max-width: 430px;
-
-  min-height: 100vh;
-  min-height: 100dvh;
-
   height: 100dvh;
-
-  margin: 0 auto;
 
   display: flex;
   flex-direction: column;
@@ -19,12 +12,11 @@
   position: relative;
 
   background: #ffffff;
-
   color: #071426;
 
   font-family: "Inter", Arial, sans-serif;
 
-  box-sizing: border-box;
+  overflow: hidden;
 }
 
 
@@ -49,8 +41,7 @@
   border-bottom: 1px solid #edf0f2;
 
   position: relative;
-
-  z-index: 10;
+  z-index: 20;
 
   box-sizing: border-box;
 }
@@ -75,8 +66,8 @@
 }
 
 
-.map-menu-button,
-.map-location-button {
+.map-back-button,
+.map-location-header-button {
   width: 38px;
   height: 38px;
 
@@ -96,9 +87,15 @@
 }
 
 
-.map-menu-button svg,
-.map-location-button svg {
+.map-back-button svg,
+.map-location-header-button svg {
   stroke-width: 1.8;
+}
+
+
+.map-location-header-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 
@@ -131,8 +128,7 @@
   scrollbar-width: none;
 
   position: relative;
-
-  z-index: 9;
+  z-index: 20;
 
   box-sizing: border-box;
 }
@@ -151,8 +147,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  gap: 7px;
 
   padding: 0 15px;
 
@@ -177,11 +171,6 @@
 }
 
 
-.map-filter svg {
-  stroke-width: 1.7;
-}
-
-
 .map-filter:hover {
   border-color: #00a982;
 }
@@ -192,11 +181,6 @@
 
   border-color: #00a982;
 
-  color: #ffffff;
-}
-
-
-.map-filter.active svg {
   color: #ffffff;
 }
 
@@ -216,141 +200,21 @@
 
   overflow: hidden;
 
-  margin-bottom: 76px;
-
   background: #dceff3;
+
+  box-sizing: border-box;
 }
 
 
+/* =========================================
+   LEAFLET MAP
+========================================= */
+
 .real-map {
-  position: absolute;
-
-  inset: 0;
-
   width: 100%;
   height: 100%;
 
-  display: block;
-
-  border: none;
-}
-
-
-/* =========================================
-   CURRENT USER LOCATION
-========================================= */
-
-.current-location {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  transform: translate(-50%, -50%);
-
-  width: 28px;
-  height: 28px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  background: rgba(255, 255, 255, 0.9);
-
-  box-shadow:
-    0 2px 7px rgba(0, 0, 0, 0.18);
-
-  z-index: 5;
-}
-
-
-.current-location-dot {
-  width: 12px;
-  height: 12px;
-
-  border-radius: 50%;
-
-  background: #1689e8;
-
-  border: 2px solid #ffffff;
-
-  box-shadow:
-    0 0 0 2px rgba(22, 137, 232, 0.18);
-}
-
-
-/* =========================================
-   ISSUE MARKERS
-========================================= */
-
-.map-marker {
-  position: absolute;
-
-  width: 42px;
-  height: 42px;
-
-  transform: translate(-50%, -50%);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border: 3px solid #ffffff;
-
-  border-radius: 50%;
-
-  color: #ffffff;
-
-  box-shadow:
-    0 3px 9px rgba(0, 0, 0, 0.25);
-
-  cursor: pointer;
-
-  z-index: 6;
-
-  transition: transform 0.2s ease;
-}
-
-
-.map-marker:hover {
-  transform: translate(-50%, -50%) scale(1.08);
-}
-
-
-.map-marker svg {
-  stroke-width: 2.3;
-}
-
-
-/* Potholes */
-
-.marker-potholes {
-  background: #ef4444;
-}
-
-
-/* Garbage */
-
-.marker-garbage {
-  background: #22a447;
-}
-
-
-/* Street Light */
-
-.marker-street-light {
-  background: #f5a623;
-}
-
-
-/* Water Leakage */
-
-.marker-water-leakage {
-  background: #8b5cf6;
+  z-index: 1;
 }
 
 
@@ -362,7 +226,7 @@
   position: absolute;
 
   right: 16px;
-  bottom: 92px;
+  bottom: 16px;
 
   width: 48px;
   height: 48px;
@@ -370,6 +234,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  padding: 0;
 
   border: none;
 
@@ -384,43 +250,180 @@
 
   cursor: pointer;
 
-  z-index: 8;
+  z-index: 500;
 }
 
 
-.map-current-location-button svg {
-  stroke-width: 1.8;
+.map-current-location-button:hover {
+  background: #f5f8f6;
+}
+
+
+.map-current-location-button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
 }
 
 
 /* =========================================
-   DESKTOP PREVIEW
+   LEAFLET POPUP
 ========================================= */
 
-@media (min-width: 700px) {
+.leaflet-complaint-popup {
+  width: 210px;
 
-  body {
-    background: #eef7f9;
-  }
+  font-family: "Inter", Arial, sans-serif;
+}
 
-  .map-view-page {
-    width: 100%;
-    max-width: 430px;
 
-    min-height: 100vh;
-    min-height: 100dvh;
+.leaflet-complaint-popup h3 {
+  margin: 8px 0 7px;
 
-    height: 100dvh;
+  font-size: 14px;
+  line-height: 1.35;
 
-    margin: 0 auto;
+  color: #182535;
 
-    border-radius: 24px;
+  font-weight: 700;
+}
 
-    box-shadow:
-      0 12px 35px rgba(30, 60, 70, 0.12);
 
-    overflow: hidden;
-  }
+.map-popup-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 4px 8px;
+
+  border-radius: 12px;
+
+  font-size: 10px;
+
+  font-weight: 600;
+}
+
+
+.map-popup-status.pending {
+  background: #fff3d9;
+  color: #a86c00;
+}
+
+
+.map-popup-status.in-progress {
+  background: #e4f1ff;
+  color: #2672b8;
+}
+
+
+.map-popup-status.resolved {
+  background: #e2f7ed;
+  color: #168052;
+}
+
+
+.map-popup-location {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  margin: 0 0 7px;
+
+  font-size: 11px;
+
+  color: #667382;
+
+  line-height: 1.35;
+}
+
+
+.map-popup-location svg {
+  flex-shrink: 0;
+}
+
+
+.map-popup-id {
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-size: 10px;
+
+  color: #8a969f;
+}
+
+
+.map-popup-view-button {
+  width: 100%;
+
+  height: 34px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: #00a982;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.map-popup-view-button:hover {
+  background: #008f70;
+}
+
+
+/* =========================================
+   LEAFLET OVERRIDES
+========================================= */
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+
+  font-family: "Inter", Arial, sans-serif;
+
+  background: #dceff3;
+}
+
+
+.leaflet-popup-content {
+  margin: 12px;
+}
+
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+}
+
+
+.leaflet-popup-tip {
+  background: #ffffff;
+}
+
+
+.leaflet-control-zoom {
+  margin-right: 12px !important;
+  margin-bottom: 12px !important;
+}
+
+
+.leaflet-control-zoom a {
+  color: #182535 !important;
+
+  font-size: 20px !important;
+
+  line-height: 30px !important;
 }
 
 
@@ -431,17 +434,9 @@
 @media (max-width: 699px) {
 
   .map-view-page {
-    width: 100%;
-    max-width: 430px;
-
-    min-height: 100dvh;
     height: 100dvh;
 
-    margin: 0;
-
     border-radius: 0;
-
-    box-shadow: none;
   }
 
 
@@ -475,8 +470,44 @@
   }
 
 
-  .map-marker {
-    width: 38px;
-    height: 38px;
+  .map-current-location-button {
+    right: 14px;
+    bottom: 14px;
+
+    width: 46px;
+    height: 46px;
   }
+
+
+  .leaflet-control-zoom {
+    margin-right: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+}
+
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media (min-width: 700px) {
+
+  .map-view-page {
+    width: 430px;
+
+    max-width: 430px;
+
+    height: 100dvh;
+
+    margin: 0 auto;
+
+    border-radius: 24px;
+
+    box-shadow:
+      0 8px 35px rgba(20, 45, 35, 0.10);
+
+    overflow: hidden;
+  }
+
 }

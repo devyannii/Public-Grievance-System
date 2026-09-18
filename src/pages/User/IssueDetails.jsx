@@ -43,18 +43,25 @@ function IssueDetails() {
 
   const [complaint, setComplaint] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
+  const [categoryName, setCategoryName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let isMounted = true;
+    let pollTimer = null;
 
-    const loadComplaint = async () => {
-      setLoading(true);
+    const loadComplaint = async (showLoader = false) => {
+      if (showLoader) {
+        setLoading(true);
+      }
+
       setError("");
 
       try {
-        // Get the complaint from Supabase
+        // ------------------------------------------------
+        // Get the complaint
+        // ------------------------------------------------
         const { data, error: complaintError } = await supabase
           .from("complaints")
           .select(`
@@ -64,9 +71,11 @@ function IssueDetails() {
             description,
             status,
             priority,
-            location_text,
+            category_id,
+            department_id,
             latitude,
             longitude,
+            location_text,
             created_at,
             updated_at,
             resolved_at
@@ -82,7 +91,9 @@ function IssueDetails() {
 
         setComplaint(data);
 
-        // Get the first image belonging to this complaint
+        // ------------------------------------------------
+        // Get the first image
+        // ------------------------------------------------
         const { data: imageData, error: imageError } = await supabase
           .from("complaint_images")
           .select("storage_path")
@@ -110,6 +121,25 @@ function IssueDetails() {
             setImageUrl(signedImage?.signedUrl || "");
           }
         }
+        // ------------------------------------------------
+        // Get category name without using ambiguous joins
+        // ------------------------------------------------
+        if (data.category_id) {
+          const { data: categoryData, error: categoryError } =
+            await supabase
+              .from("categories")
+              .select("name")
+              .eq("id", data.category_id)
+              .maybeSingle();
+
+          if (!categoryError && isMounted) {
+            setCategoryName(categoryData?.name || "");
+          }
+        } else if (isMounted) {
+          setCategoryName("");
+        }
+
+
       } catch (err) {
         console.error("Issue details error:", err);
 
@@ -119,18 +149,28 @@ function IssueDetails() {
           );
         }
       } finally {
-        if (isMounted) {
+        if (isMounted && showLoader) {
           setLoading(false);
         }
       }
     };
 
     if (id) {
-      loadComplaint();
+      loadComplaint(true);
+
+      // Refresh the complaint briefly so AI-generated fields such as
+      // the title and description appear automatically after processing.
+      pollTimer = window.setInterval(() => {
+        loadComplaint(false);
+      }, 3000);
     }
 
     return () => {
       isMounted = false;
+
+      if (pollTimer) {
+        window.clearInterval(pollTimer);
+      }
     };
   }, [id]);
 
@@ -140,11 +180,7 @@ function IssueDetails() {
   const locationText =
     complaint?.location_text || "Location not available";
 
-  const title = complaint
-    ? complaint.location_text && complaint.title
-      ? `${complaint.title} on ${complaint.location_text.split(",")[0]}`
-      : complaint.title
-    : "Issue Details";
+  const title = complaint?.title || "Issue Details";
 
   return (
     <div className="issue-details-page">
@@ -252,7 +288,10 @@ function IssueDetails() {
               <section className="issue-description">
                 <h3>Description</h3>
 
-                <p>{complaint.description}</p>
+                <p>
+                  {complaint.description ||
+                    "Description is being generated from the submitted image."}
+                </p>
               </section>
 
               {/* STATUS TIMELINE */}

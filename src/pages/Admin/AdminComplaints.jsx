@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+
 import {
   ArrowLeft,
   Search,
@@ -18,283 +19,15 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabaseClient";
 
 import AdminLayout from "../../components/layout/AdminLayout";
 import "../../styles/AdminComplaints.css";
 
-
-// ======================================================
-// EXISTING PROJECT IMAGES
-// ======================================================
-
-import potholeImage from "../../assets/images/pothole.png";
-import garbageImage from "../../assets/images/garbage-overflow.png";
-import streetlightImage from "../../assets/images/broken-streetlight.png";
 import leakageImage from "../../assets/images/leaking-pipe.png";
 
-
-// ======================================================
-// COMPLAINT DATA
-// ======================================================
-
-const complaints = [
-  {
-    id: "UGS-1287",
-    title: "Pothole on MG Road",
-    shortTitle: "Pothole on MG Road",
-    reportedBy: "Priya Sharma",
-    category: "Pothole",
-    location: "MG Road, Near Gate 2",
-    date: "15 May 2024",
-    time: "10:30 AM",
-    status: "In Progress",
-    department: "Road Maintenance",
-    description:
-      "There is a deep pothole on the road causing traffic and vehicle damage.",
-    image: potholeImage,
-    photos: [potholeImage, potholeImage, potholeImage],
-    aiAnalysis: {
-      summary: "The image appears to show a significant road-surface defect that may affect vehicle safety.",
-      suggestedCategory: "Pothole",
-      priority: "High",
-      confidence: "94%",
-      department: "Road Maintenance",
-      duplicateRisk: "Low",
-    },
-    timeline: [
-      {
-        title: "Reported",
-        date: "15 May 2024",
-        time: "10:30 AM",
-        type: "reported",
-      },
-      {
-        title: "Assigned to: Maintenance Team",
-        date: "15 May 2024",
-        time: "11:00 AM",
-        type: "assigned",
-      },
-      {
-        title: "In Progress",
-        date: "15 May 2024",
-        time: "09:45 AM",
-        type: "progress",
-      },
-      {
-        title: "Resolved",
-        date: "-",
-        time: "",
-        type: "resolved",
-      },
-    ],
-  },
-
-  {
-    id: "UGS-1286",
-    title: "Garbage Overflow near Park Area",
-    reportedBy: "Amit Kumar",
-    category: "Garbage",
-    location: "Civil Lines, Pune",
-    date: "14 May 2024",
-    time: "09:15 AM",
-    status: "Resolved",
-    department: "Sanitation",
-    description:
-      "Garbage bins near the park area are overflowing and require immediate cleaning.",
-    image: garbageImage,
-    photos: [garbageImage, garbageImage],
-    aiAnalysis: {
-      summary: "The image appears to show accumulated waste around a collection point.",
-      suggestedCategory: "Garbage",
-      priority: "Medium",
-      confidence: "91%",
-      department: "Sanitation",
-      duplicateRisk: "Low",
-    },
-    timeline: [
-      {
-        title: "Reported",
-        date: "14 May 2024",
-        time: "09:15 AM",
-        type: "reported",
-      },
-      {
-        title: "Assigned to: Sanitation Team",
-        date: "14 May 2024",
-        time: "10:00 AM",
-        type: "assigned",
-      },
-      {
-        title: "In Progress",
-        date: "14 May 2024",
-        time: "11:30 AM",
-        type: "progress",
-      },
-      {
-        title: "Resolved",
-        date: "14 May 2024",
-        time: "03:20 PM",
-        type: "resolved",
-      },
-    ],
-  },
-
-  {
-    id: "UGS-1285",
-    title: "Broken Street Light near Gate 2",
-    reportedBy: "Sneha Patil",
-    category: "Street Light",
-    location: "MG Road, Pune",
-    date: "13 May 2026",
-    time: "08:45 PM",
-    status: "Pending",
-    department: "Electrical Department",
-    description:
-      "The street light near Gate 2 is not functioning and the area becomes very dark at night.",
-    image: streetlightImage,
-    photos: [streetlightImage],
-    aiAnalysis: {
-      summary: "The image appears consistent with a damaged or non-functioning street light.",
-      suggestedCategory: "Street Light",
-      priority: "Medium",
-      confidence: "89%",
-      department: "Electrical Department",
-      duplicateRisk: "Low",
-    },
-    timeline: [
-      {
-        title: "Reported",
-        date: "13 May 2024",
-        time: "08:45 PM",
-        type: "reported",
-      },
-      {
-        title: "Assigned to: Electrical Department",
-        date: "-",
-        time: "",
-        type: "assigned",
-      },
-      {
-        title: "In Progress",
-        date: "-",
-        time: "",
-        type: "progress",
-      },
-      {
-        title: "Resolved",
-        date: "-",
-        time: "",
-        type: "resolved",
-      },
-    ],
-  },
-
-  {
-    id: "UGS-1284",
-    title: "Water Leakage in Road 4",
-    reportedBy: "Rahul Mehta",
-    category: "Water Leakage",
-    location: "Road 4, Pune",
-    date: "12 May 2026",
-    time: "11:20 AM",
-    status: "In Progress",
-    department: "Water Department",
-    description:
-      "A water pipe is leaking on Road 4 and water is collecting near the roadside.",
-    image: leakageImage,
-    photos: [leakageImage, leakageImage],
-    aiAnalysis: {
-      summary: "The image appears to show water escaping from infrastructure and collecting near the road.",
-      suggestedCategory: "Water Leakage",
-      priority: "High",
-      confidence: "92%",
-      department: "Water Department",
-      duplicateRisk: "Low",
-    },
-    timeline: [
-      {
-        title: "Reported",
-        date: "12 May 2024",
-        time: "11:20 AM",
-        type: "reported",
-      },
-      {
-        title: "Assigned to: Water Department",
-        date: "12 May 2024",
-        time: "01:00 PM",
-        type: "assigned",
-      },
-      {
-        title: "In Progress",
-        date: "13 May 2024",
-        time: "09:00 AM",
-        type: "progress",
-      },
-      {
-        title: "Resolved",
-        date: "-",
-        time: "",
-        type: "resolved",
-      },
-    ],
-  },
-
-  {
-    id: "UGS-1283",
-    title: "Garbage Overflow near Community Hall",
-    reportedBy: "Neha Thakur",
-    category: "Garbage",
-    location: "Community Hall, Pune",
-    date: "11 May 2026",
-    time: "05:30 PM",
-    status: "Resolved",
-    department: "Sanitation",
-    description:
-      "Garbage has accumulated near the community hall and needs to be cleared.",
-    image: garbageImage,
-    photos: [garbageImage],
-    aiAnalysis: {
-      summary: "The image appears to show accumulated waste requiring sanitation attention.",
-      suggestedCategory: "Garbage",
-      priority: "Medium",
-      confidence: "90%",
-      department: "Sanitation",
-      duplicateRisk: "Low",
-    },
-    timeline: [
-      {
-        title: "Reported",
-        date: "11 May 2026",
-        time: "05:30 PM",
-        type: "reported",
-      },
-      {
-        title: "Assigned to: Sanitation Team",
-        date: "11 May 2026",
-        time: "06:00 PM",
-        type: "assigned",
-      },
-      {
-        title: "In Progress",
-        date: "12 May 2026",
-        time: "09:00 AM",
-        type: "progress",
-      },
-      {
-        title: "Resolved",
-        date: "12 May 2026",
-        time: "12:30 PM",
-        type: "resolved",
-      },
-    ],
-  },
-];
-
-
-// ======================================================
-// STATUS CLASS
-// ======================================================
+const fallbackImage = leakageImage;
 
 function getStatusClass(status) {
   if (status === "Resolved") return "status-resolved";
@@ -302,660 +35,1448 @@ function getStatusClass(status) {
   return "status-progress";
 }
 
-
-// ======================================================
-// MAIN COMPONENT
-// ======================================================
-
 function AdminComplaints() {
   const navigate = useNavigate();
-  const { id } = useParams();
 
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [showStatusMenu, setShowStatusMenu] = useState(false);
   const [statusOverrides, setStatusOverrides] = useState({});
+  const [complaints, setComplaints] = useState([]);
+  const [selectedComplaintId, setSelectedComplaintId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // ----------------------------------------------------
-  // FILTER COMPLAINTS
-  // ----------------------------------------------------
+  /* ======================================================
+     LOAD COMPLAINTS
+  ====================================================== */
+
+  useEffect(() => {
+    const loadComplaints = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const {
+          data,
+          error: complaintsError,
+        } = await supabase
+          .from("complaints")
+          .select(`
+            id,
+            complaint_code,
+            title,
+            description,
+            status,
+            priority,
+            location_text,
+            created_at,
+            department_id,
+
+            ai_detected_category,
+            ai_confidence,
+            ai_priority,
+            ai_priority_reason,
+            duplicate_detected,
+            duplicate_score,
+            ai_recommended_department,
+            automatically_assigned,
+            ai_summary,
+
+            profiles(full_name),
+            categories(name),
+
+            complaint_images(
+              id,
+              storage_path,
+              file_name,
+              file_type,
+              created_at
+            ),
+
+            ai_analysis(
+              detected_category,
+              image_confidence,
+              predicted_priority,
+              priority_reason,
+              recommended_department,
+              duplicate_risk,
+              duplicate_count,
+              duplicate_score,
+              summary,
+              model_name,
+              processing_status,
+              created_at
+            )
+          `)
+          .order("created_at", { ascending: false });
+
+        if (complaintsError) {
+          console.error(
+            "Error loading complaints:",
+            complaintsError
+          );
+
+          throw new Error(
+            complaintsError.message ||
+              "Unable to load complaints."
+          );
+        }
+
+        const formattedComplaints = await Promise.all(
+          (data || []).map(async (complaint) => {
+            /* ------------------------------------------------
+               FIRST IMAGE
+            ------------------------------------------------ */
+
+            const firstImage =
+              complaint.complaint_images?.[0];
+
+            let imageUrl = fallbackImage;
+
+            if (firstImage?.storage_path) {
+              const {
+                data: signedImage,
+                error: imageError,
+              } = await supabase.storage
+                .from("complaint-images")
+                .createSignedUrl(
+                  firstImage.storage_path,
+                  3600
+                );
+
+              if (
+                !imageError &&
+                signedImage?.signedUrl
+              ) {
+                imageUrl = signedImage.signedUrl;
+              }
+            }
+
+            /* ------------------------------------------------
+               DEPARTMENT
+            ------------------------------------------------ */
+
+            let department = "Not assigned";
+
+            if (complaint.department_id) {
+              const {
+                data: departmentData,
+                error: departmentError,
+              } = await supabase
+                .from("departments")
+                .select("name")
+                .eq("id", complaint.department_id)
+                .maybeSingle();
+
+              if (
+                !departmentError &&
+                departmentData?.name
+              ) {
+                department = departmentData.name;
+              }
+            }
+
+            /* ------------------------------------------------
+               LATEST AI ANALYSIS
+            ------------------------------------------------ */
+
+            let latestAI = null;
+
+            if (
+              complaint.ai_analysis &&
+              complaint.ai_analysis.length > 0
+            ) {
+              latestAI = [...complaint.ai_analysis].sort(
+                (a, b) =>
+                  new Date(b.created_at) -
+                  new Date(a.created_at)
+              )[0];
+            }
+
+            const ai = latestAI || {
+              detected_category:
+                complaint.ai_detected_category,
+
+              image_confidence:
+                complaint.ai_confidence,
+
+              predicted_priority:
+                complaint.ai_priority ||
+                complaint.priority,
+
+              priority_reason:
+                complaint.ai_priority_reason,
+
+              duplicate_risk:
+                complaint.duplicate_detected
+                  ? "High"
+                  : "Low",
+
+              duplicate_count: 0,
+
+              duplicate_score:
+                complaint.duplicate_score || 0,
+
+              summary:
+                complaint.ai_summary,
+
+              recommended_department:
+                complaint.ai_recommended_department,
+            };
+
+            /* ------------------------------------------------
+               DATE + TIME
+            ------------------------------------------------ */
+
+            const createdAt = new Date(
+              complaint.created_at
+            );
+
+            const formattedDate =
+              createdAt.toLocaleDateString(
+                "en-IN",
+                {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                }
+              );
+
+            const formattedTime =
+              createdAt.toLocaleTimeString(
+                "en-IN",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              );
+
+            /* ------------------------------------------------
+               AI CONFIDENCE
+            ------------------------------------------------ */
+
+            let confidence = "Not available";
+
+            if (
+              ai.image_confidence !== null &&
+              ai.image_confidence !== undefined
+            ) {
+              confidence = `${Math.round(
+                Number(ai.image_confidence) * 100
+              )}%`;
+            }
+
+            /* ------------------------------------------------
+               RETURN FORMATTED COMPLAINT
+            ------------------------------------------------ */
+
+            return {
+              id:
+                complaint.complaint_code ||
+                complaint.id,
+
+              uuid: complaint.id,
+
+              title:
+                complaint.title ||
+                "Untitled Complaint",
+
+              reportedBy:
+                complaint.profiles?.full_name ||
+                "Citizen",
+
+              category:
+                complaint.categories?.name ||
+                complaint.ai_detected_category ||
+                "Other",
+
+              location:
+                complaint.location_text ||
+                "Location not provided",
+
+              date: formattedDate,
+              time: formattedTime,
+
+              status:
+                complaint.status ||
+                "Pending",
+
+              department,
+
+              description:
+                complaint.description || "",
+
+              image: imageUrl,
+
+              automaticallyAssigned:
+                Boolean(
+                  complaint.automatically_assigned
+                ),
+
+              aiAnalysis: {
+                summary:
+                  ai.summary ||
+                  "AI analysis not available yet.",
+
+                suggestedCategory:
+                  ai.detected_category ||
+                  complaint.categories?.name ||
+                  "Not available",
+
+                priority:
+                  ai.predicted_priority ||
+                  complaint.priority ||
+                  "Medium",
+
+                confidence,
+
+                department:
+                  ai.recommended_department ||
+                  department ||
+                  "Not assigned",
+
+                duplicateRisk:
+                  ai.duplicate_risk ||
+                  "Low",
+
+                duplicateCount:
+                  ai.duplicate_count ?? 0,
+
+                duplicateScore:
+                  ai.duplicate_score
+                    ? `${Math.round(
+                        Number(ai.duplicate_score) * 100
+                      )}%`
+                    : "0%",
+
+                priorityReason:
+                  ai.priority_reason ||
+                  "Not available",
+
+                modelName:
+                  ai.model_name ||
+                  "AI Analysis",
+
+                processingStatus:
+                  ai.processing_status ||
+                  "completed",
+              },
+
+              timeline: [
+                {
+                  title: "Reported",
+                  date: formattedDate,
+                  time: formattedTime,
+                  type: "reported",
+                },
+                {
+                  title: "Assigned",
+                  date:
+                    complaint.automatically_assigned
+                      ? "Automatically assigned"
+                      : "-",
+                  time: "",
+                  type: "assigned",
+                },
+                {
+                  title: "In Progress",
+                  date:
+                    complaint.status === "In Progress" ||
+                    complaint.status === "Resolved"
+                      ? "Current status"
+                      : "-",
+                  time: "",
+                  type: "progress",
+                },
+                {
+                  title: "Resolved",
+                  date:
+                    complaint.status === "Resolved"
+                      ? "Resolved"
+                      : "-",
+                  time: "",
+                  type: "resolved",
+                },
+              ],
+            };
+          })
+        );
+
+        setComplaints(formattedComplaints);
+
+        if (formattedComplaints.length > 0) {
+          setSelectedComplaintId(
+            formattedComplaints[0].id
+          );
+        }
+      } catch (err) {
+        console.error(
+          "Admin complaints error:",
+          err
+        );
+
+        setError(
+          err.message ||
+            "Unable to load complaints."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadComplaints();
+  }, []);
+
+  /* ======================================================
+     FILTERED COMPLAINTS
+  ====================================================== */
 
   const filteredComplaints = useMemo(() => {
     return complaints.filter((complaint) => {
+      const searchText =
+        search.toLowerCase().trim();
+
       const matchesSearch =
-        complaint.title.toLowerCase().includes(search.toLowerCase()) ||
-        complaint.reportedBy.toLowerCase().includes(search.toLowerCase()) ||
-        complaint.category.toLowerCase().includes(search.toLowerCase());
+        complaint.title
+          .toLowerCase()
+          .includes(searchText) ||
+        complaint.reportedBy
+          .toLowerCase()
+          .includes(searchText) ||
+        complaint.category
+          .toLowerCase()
+          .includes(searchText) ||
+        complaint.id
+          .toLowerCase()
+          .includes(searchText);
+
+      const actualStatus =
+        statusOverrides[complaint.id] ??
+        complaint.status;
 
       const matchesFilter =
         activeFilter === "All" ||
-        complaint.status === activeFilter;
+        actualStatus === activeFilter;
 
       return matchesSearch && matchesFilter;
     });
-  }, [search, activeFilter]);
+  }, [
+    complaints,
+    search,
+    activeFilter,
+    statusOverrides,
+  ]);
 
-
-  // ----------------------------------------------------
-  // SELECTED COMPLAINT
-  // ----------------------------------------------------
+  /* ======================================================
+     SELECTED COMPLAINT
+  ====================================================== */
 
   const baseSelectedComplaint =
-    complaints.find((complaint) => complaint.id === id) ||
-    complaints[0];
+    complaints.find(
+      (complaint) =>
+        complaint.id === selectedComplaintId
+    ) || complaints[0];
 
-  const selectedComplaint = {
-    ...baseSelectedComplaint,
-    status:
-      statusOverrides[baseSelectedComplaint.id] ??
-      baseSelectedComplaint.status,
-  };
+  const selectedComplaint =
+    baseSelectedComplaint
+      ? {
+          ...baseSelectedComplaint,
+          status:
+            statusOverrides[
+              baseSelectedComplaint.id
+            ] ??
+            baseSelectedComplaint.status,
+        }
+      : null;
 
-
-  // ----------------------------------------------------
-  // NAVIGATION
-  // ----------------------------------------------------
+  /* ======================================================
+     ACTIONS
+  ====================================================== */
 
   const openComplaint = (complaintId) => {
-    navigate(`/admin/complaints/${complaintId}`);
+    setSelectedComplaintId(complaintId);
+    setShowStatusMenu(false);
   };
 
-  const goBackToComplaints = () => {
-    navigate("/admin/complaints");
+  const goBackToDashboard = () => {
+    navigate("/admin/dashboard");
   };
 
   const goToMap = () => {
     navigate("/admin/map");
   };
 
+  const changeStatus = async (newStatus) => {
+    if (!selectedComplaint) return;
 
-  // ----------------------------------------------------
-  // EDIT STATUS
-  // ----------------------------------------------------
-
-  const changeStatus = (newStatus) => {
     setShowStatusMenu(false);
 
-    // Frontend-only for now.
-    // Later this will call the Django/API endpoint.
+    const complaintId =
+      selectedComplaint.id;
+
+    const previousStatus =
+      selectedComplaint.status;
+
+    /* Update UI immediately */
     setStatusOverrides((previous) => ({
       ...previous,
-      [selectedComplaint.id]: newStatus,
+      [complaintId]: newStatus,
     }));
+
+    /* Update database */
+    const {
+      error: updateError,
+    } = await supabase
+      .from("complaints")
+      .update({
+        status: newStatus,
+      })
+      .eq(
+        "id",
+        selectedComplaint.uuid
+      );
+
+    /* Revert if database update fails */
+    if (updateError) {
+      console.error(
+        "Status update failed:",
+        updateError
+      );
+
+      setStatusOverrides((previous) => ({
+        ...previous,
+        [complaintId]: previousStatus,
+      }));
+
+      return;
+    }
+
+    /* Update local complaint data */
+    setComplaints((previous) =>
+      previous.map((complaint) =>
+        complaint.id === complaintId
+          ? {
+              ...complaint,
+              status: newStatus,
+            }
+          : complaint
+      )
+    );
   };
 
+  /* ======================================================
+     UPDATE PROGRESS
+     Uses the existing changeStatus function.
+  ====================================================== */
+
+  const updateProgress = (newStatus) => {
+    changeStatus(newStatus);
+  };
+
+  /* ======================================================
+     RENDER
+  ====================================================== */
 
   return (
     <AdminLayout>
-
       <div className="complaints-page">
 
-        {/* =================================================
-            PAGE HEADER
-        ================================================= */}
-
-        <div className="complaints-header">
-
-          <div>
-
-            <button
-              className="back-button"
-              onClick={goBackToComplaints}
-            >
-              <ArrowLeft size={18} />
-            </button>
-
-            <div className="header-title">
-
-              <h1>All Complaints</h1>
-
-              <p>
-                Manage and track citizen complaints
-              </p>
-
-            </div>
-
+        {/* LOADING */}
+        {loading && (
+          <div
+            style={{
+              padding: "40px",
+              textAlign: "center",
+            }}
+          >
+            Loading complaints...
           </div>
+        )}
 
-        </div>
+        {/* ERROR */}
+        {!loading && error && (
+          <div
+            style={{
+              padding: "40px",
+              textAlign: "center",
+            }}
+          >
+            <strong>
+              Unable to load complaints.
+            </strong>
 
+            <p>{error}</p>
+          </div>
+        )}
 
-        {/* =================================================
-            TWO COLUMN CONTENT
-        ================================================= */}
+        {/* EMPTY */}
+        {!loading &&
+          !error &&
+          complaints.length === 0 && (
+            <div
+              style={{
+                padding: "40px",
+                textAlign: "center",
+              }}
+            >
+              No complaints found.
+            </div>
+          )}
 
-        <div className="complaints-layout">
+        {/* MAIN CONTENT */}
+        {!loading &&
+          !error &&
+          selectedComplaint && (
+            <>
+              {/* =================================================
+                  PAGE HEADER
+              ================================================= */}
 
+              <div className="complaints-header">
+                <div>
+                  <button
+                    className="back-button"
+                    onClick={
+                      goBackToDashboard
+                    }
+                    aria-label="Back to dashboard"
+                  >
+                    <ArrowLeft size={18} />
+                  </button>
 
-          {/* =================================================
-              LEFT — COMPLAINT LIST
-          ================================================= */}
-
-          <section className="complaints-list-panel">
-
-            {/* SEARCH */}
-
-            <div className="complaints-search-row">
-
-              <div className="search-box">
-
-                <Search size={18} />
-
-                <input
-                  type="text"
-                  placeholder="Search complaints..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-
+                  <div className="header-title">
+                    <h1>All Complaints</h1>
+                    <p>
+                      Manage and track citizen
+                      complaints
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <button className="filter-button">
-                <SlidersHorizontal size={17} />
-                Filter
-              </button>
+              {/* =================================================
+                  MAIN TWO-COLUMN LAYOUT
+              ================================================= */}
 
-            </div>
+              <div className="complaints-layout">
 
+                {/* =================================================
+                    LEFT PANEL
+                ================================================= */}
 
-            {/* FILTER TABS */}
+                <section className="complaints-list-panel">
 
-            <div className="complaint-tabs">
+                  {/* SEARCH */}
 
-              <button
-                className={activeFilter === "All" ? "active" : ""}
-                onClick={() => setActiveFilter("All")}
-              >
-                All <span>(124)</span>
-              </button>
+                  <div className="complaints-search-row">
+                    <div className="search-box">
+                      <Search size={18} />
 
-              <button
-                className={
-                  activeFilter === "In Progress"
-                    ? "active"
-                    : ""
-                }
-                onClick={() =>
-                  setActiveFilter("In Progress")
-                }
-              >
-                In Progress <span>(38)</span>
-              </button>
+                      <input
+                        type="text"
+                        placeholder="Search complaints..."
+                        value={search}
+                        onChange={(e) =>
+                          setSearch(
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
 
-              <button
-                className={
-                  activeFilter === "Pending"
-                    ? "active"
-                    : ""
-                }
-                onClick={() => setActiveFilter("Pending")}
-              >
-                Pending <span>(27)</span>
-              </button>
+                    <button
+                      className="filter-button"
+                      type="button"
+                    >
+                      <SlidersHorizontal
+                        size={17}
+                      />
+                      Filter
+                    </button>
+                  </div>
 
-              <button
-                className={
-                  activeFilter === "Resolved"
-                    ? "active"
-                    : ""
-                }
-                onClick={() => setActiveFilter("Resolved")}
-              >
-                Resolved <span>(59)</span>
-              </button>
+                  {/* TABS */}
 
-            </div>
+                  <div className="complaint-tabs">
 
+                    <button
+                      className={
+                        activeFilter === "All"
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        setActiveFilter("All")
+                      }
+                    >
+                      All{" "}
+                      <span>
+                        ({complaints.length})
+                      </span>
+                    </button>
 
-            {/* COMPLAINT CARDS */}
+                    <button
+                      className={
+                        activeFilter ===
+                        "In Progress"
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        setActiveFilter(
+                          "In Progress"
+                        )
+                      }
+                    >
+                      In Progress{" "}
+                      <span>
+                        (
+                        {
+                          complaints.filter(
+                            (c) =>
+                              (
+                                statusOverrides[
+                                  c.id
+                                ] ??
+                                c.status
+                              ) ===
+                              "In Progress"
+                          ).length
+                        }
+                        )
+                      </span>
+                    </button>
 
-            <div className="complaint-cards">
+                    <button
+                      className={
+                        activeFilter === "Pending"
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        setActiveFilter("Pending")
+                      }
+                    >
+                      Pending{" "}
+                      <span>
+                        (
+                        {
+                          complaints.filter(
+                            (c) =>
+                              (
+                                statusOverrides[
+                                  c.id
+                                ] ??
+                                c.status
+                              ) ===
+                              "Pending"
+                          ).length
+                        }
+                        )
+                      </span>
+                    </button>
 
-              {filteredComplaints.map((complaint) => (
+                    <button
+                      className={
+                        activeFilter ===
+                        "Resolved"
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        setActiveFilter("Resolved")
+                      }
+                    >
+                      Resolved{" "}
+                      <span>
+                        (
+                        {
+                          complaints.filter(
+                            (c) =>
+                              (
+                                statusOverrides[
+                                  c.id
+                                ] ??
+                                c.status
+                              ) ===
+                              "Resolved"
+                          ).length
+                        }
+                        )
+                      </span>
+                    </button>
 
-                <button
-                  key={complaint.id}
-                  className={`complaint-card ${
-                    complaint.id === selectedComplaint.id
-                      ? "selected"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    openComplaint(complaint.id)
-                  }
-                >
+                  </div>
 
-                  <img
-                    src={complaint.image}
-                    alt={complaint.title}
-                    className="complaint-thumbnail"
-                  />
+                  {/* COMPLAINT LIST */}
 
-                  <div className="complaint-card-content">
+                  <div className="complaint-cards">
 
-                    <div className="complaint-title-row">
+                    {filteredComplaints.length ===
+                    0 ? (
+                      <div
+                        style={{
+                          padding: "30px",
+                          textAlign: "center",
+                        }}
+                      >
+                        No matching complaints.
+                      </div>
+                    ) : (
+                      filteredComplaints.map(
+                        (complaint) => (
+                          <button
+                            key={complaint.id}
+                            type="button"
+                            className={`complaint-card ${
+                              complaint.id ===
+                              selectedComplaint.id
+                                ? "selected"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              openComplaint(
+                                complaint.id
+                              )
+                            }
+                          >
 
-                      <h3>{complaint.title}</h3>
+                            {/* ONE THUMBNAIL IN LIST */}
 
-                      <ChevronRight
-                        size={21}
-                        className="complaint-arrow"
+                            <img
+                              src={complaint.image}
+                              alt={complaint.title}
+                              className="complaint-thumbnail"
+                            />
+
+                            <div className="complaint-card-content">
+
+                              <div className="complaint-title-row">
+
+                                <h3>
+                                  {complaint.title}
+                                </h3>
+
+                                <ChevronRight
+                                  size={21}
+                                  className="complaint-arrow"
+                                />
+
+                              </div>
+
+                              <p className="reported-by">
+                                Reported by:{" "}
+                                <strong>
+                                  {
+                                    complaint.reportedBy
+                                  }
+                                </strong>
+                              </p>
+
+                              <div className="complaint-meta">
+
+                                <span>
+                                  <CalendarDays
+                                    size={14}
+                                  />
+                                  {complaint.date}
+                                </span>
+
+                                <span>
+                                  • {complaint.time}
+                                </span>
+
+                              </div>
+
+                            </div>
+
+                            <span
+                              className={`status-badge ${getStatusClass(
+                                statusOverrides[
+                                  complaint.id
+                                ] ??
+                                  complaint.status
+                              )}`}
+                            >
+                              {
+                                statusOverrides[
+                                  complaint.id
+                                ] ??
+                                  complaint.status
+                              }
+                            </span>
+
+                          </button>
+                        )
+                      )
+                    )}
+
+                  </div>
+
+                </section>
+
+                {/* =================================================
+                    RIGHT DETAILS PANEL
+                ================================================= */}
+
+                <section className="complaint-details-panel">
+
+                  {/* =================================================
+                      COMPLAINT SUMMARY
+                  ================================================= */}
+
+                  <div className="complaint-summary">
+
+                    <img
+                      src={selectedComplaint.image}
+                      alt={selectedComplaint.title}
+                    />
+
+                    <div className="summary-info">
+
+                      <div className="summary-title-row">
+
+                        <h2>
+                          {selectedComplaint.title}
+                        </h2>
+
+                        <span
+                          className={`status-badge ${getStatusClass(
+                            selectedComplaint.status
+                          )}`}
+                        >
+                          {selectedComplaint.status}
+                        </span>
+
+                      </div>
+
+                      <p>
+                        Reported on:{" "}
+                        <strong>
+                          {selectedComplaint.date}
+                        </strong>{" "}
+                        • {selectedComplaint.time}
+                      </p>
+
+                      <p>
+                        Reported by:{" "}
+                        <strong>
+                          {selectedComplaint.reportedBy}
+                        </strong>
+                      </p>
+
+                      <p>
+                        Category:{" "}
+                        <strong>
+                          {selectedComplaint.category}
+                        </strong>
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  {/* LOCATION */}
+
+                  <div className="detail-section">
+
+                    <div className="section-heading">
+                      <MapPin size={18} />
+                      <h3>Location</h3>
+                    </div>
+
+                    <div className="location-row">
+
+                      <span>
+                        <MapPin size={17} />
+
+                        {
+                          selectedComplaint.location
+                        }
+                      </span>
+
+                      <button
+                        onClick={goToMap}
+                        type="button"
+                      >
+                        <Map size={15} />
+                        View on Map
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                  {/* DESCRIPTION */}
+
+                  <div className="detail-section">
+
+                    <div className="section-heading">
+                      <h3>Description</h3>
+                    </div>
+
+                    <p className="description-text">
+                      {
+                        selectedComplaint.description
+                      }
+                    </p>
+
+                  </div>
+
+                  {/* PHOTOS */}
+
+                  <div className="detail-section photos-section">
+
+                    <div className="section-heading">
+                      <h3>Photos</h3>
+                      <span>1 photo</span>
+                    </div>
+
+                    <div className="photo-grid single-photo">
+
+                      <img
+                        src={selectedComplaint.image}
+                        alt={`${selectedComplaint.title} photo`}
                       />
 
                     </div>
 
-                    <p className="reported-by">
-                      Reported by:{" "}
+                  </div>
+
+                  {/* AUTOMATIC ALLOTMENT */}
+
+                  <div className="assignment-card">
+
+                    <div className="assignment-icon">
+                      <Users size={19} />
+                    </div>
+
+                    <div>
+
+                      <span>
+                        Assigned Department
+                      </span>
+
                       <strong>
-                        {complaint.reportedBy}
+                        {
+                          selectedComplaint.department
+                        }
                       </strong>
-                    </p>
 
-                    <div className="complaint-meta">
-
-                      <span>
-                        <CalendarDays size={14} />
-                        {complaint.date}
-                      </span>
-
-                      <span>
-                        • {complaint.time}
-                      </span>
+                      {selectedComplaint.automaticallyAssigned && (
+                        <small>
+                          Automatically assigned
+                          by AI
+                        </small>
+                      )}
 
                     </div>
 
                   </div>
 
-                  <span
-                    className={`status-badge ${getStatusClass(
-                      complaint.status
-                    )}`}
-                  >
-                    {complaint.status}
-                  </span>
+                  {/* =================================================
+                      UPDATE PROGRESS
+                  ================================================= */}
 
-                </button>
+                  <div className="update-progress-card">
 
-              ))}
+                    <div className="update-progress-header">
 
-            </div>
+                      <div className="update-progress-title">
 
-
-          </section>
-
-
-          {/* =================================================
-              RIGHT — DETAILS
-          ================================================= */}
-
-          <section className="complaint-details-panel">
-
-            {/* DETAILS HEADER */}
-
-            <div className="details-header">
-
-              <div className="details-heading">
-
-                <button
-                  className="details-back"
-                  onClick={goBackToComplaints}
-                >
-                  <ArrowLeft size={20} />
-                </button>
-
-                <h2>Complaint Details</h2>
-
-              </div>
-
-
-              <div className="status-wrapper">
-
-                <button
-                  className="edit-status-button"
-                  onClick={() =>
-                    setShowStatusMenu(!showStatusMenu)
-                  }
-                >
-                  <Edit3 size={15} />
-                  Edit Status
-                </button>
-
-
-                {showStatusMenu && (
-
-                  <div className="status-menu">
-
-                    <button
-                      onClick={() =>
-                        changeStatus("Pending")
-                      }
-                    >
-                      Pending
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        changeStatus("In Progress")
-                      }
-                    >
-                      In Progress
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        changeStatus("Resolved")
-                      }
-                    >
-                      Resolved
-                    </button>
-
-                  </div>
-
-                )}
-
-              </div>
-
-            </div>
-
-
-            {/* COMPLAINT SUMMARY */}
-
-            <div className="complaint-summary">
-
-              <img
-                src={selectedComplaint.image}
-                alt={selectedComplaint.title}
-              />
-
-              <div className="summary-info">
-
-                <div className="summary-title-row">
-
-                  <h2>
-                    {selectedComplaint.title}
-                  </h2>
-
-                  <span
-                    className={`status-badge ${getStatusClass(
-                      selectedComplaint.status
-                    )}`}
-                  >
-                    {selectedComplaint.status}
-                  </span>
-
-                </div>
-
-                <p>
-                  Reported on:{" "}
-                  <strong>
-                    {selectedComplaint.date}
-                  </strong>{" "}
-                  • {selectedComplaint.time}
-                </p>
-
-                <p>
-                  Reported by:{" "}
-                  <strong>
-                    {selectedComplaint.reportedBy}
-                  </strong>
-                </p>
-
-                <p>
-                  Category:{" "}
-                  <strong>
-                    {selectedComplaint.category}
-                  </strong>
-                </p>
-
-              </div>
-
-            </div>
-
-
-            {/* LOCATION */}
-
-            <div className="detail-section">
-
-              <div className="section-heading">
-                <MapPin size={18} />
-                <h3>Location</h3>
-              </div>
-
-              <div className="location-row">
-
-                <span>
-                  <MapPin size={17} />
-                  {selectedComplaint.location}
-                </span>
-
-                <button onClick={goToMap}>
-                  <Map size={15} />
-                  View on Map
-                </button>
-
-              </div>
-
-            </div>
-
-
-            {/* DESCRIPTION */}
-
-            <div className="detail-section">
-
-              <div className="section-heading">
-                <h3>Description</h3>
-              </div>
-
-              <p className="description-text">
-                {selectedComplaint.description}
-              </p>
-
-            </div>
-
-
-            {/* PHOTOS */}
-
-            <div className="detail-section">
-
-              <div className="section-heading">
-
-                <h3>Photos</h3>
-
-                <span>
-                  {selectedComplaint.photos.length} photos
-                </span>
-
-              </div>
-
-              <div className="photo-grid">
-
-                {selectedComplaint.photos.map(
-                  (photo, index) => (
-
-                    <img
-                      key={index}
-                      src={photo}
-                      alt={`Complaint photo ${index + 1}`}
-                    />
-
-                  )
-                )}
-
-              </div>
-
-            </div>
-
-
-            {/* ASSIGNMENT */}
-
-            <div className="assignment-card">
-
-              <div className="assignment-icon">
-                <Users size={19} />
-              </div>
-
-              <div>
-
-                <span>Assigned Department</span>
-
-                <strong>
-                  {selectedComplaint.department}
-                </strong>
-
-              </div>
-
-            </div>
-
-
-            {/* AI ANALYSIS */}
-
-            <div className="ai-analysis-card">
-              <div className="ai-analysis-header">
-                <div className="ai-analysis-title">
-                  <div className="ai-icon">
-                    <Sparkles size={16} />
-                  </div>
-                  <div>
-                    <h3>AI Analysis</h3>
-                    <span>Automated complaint assessment</span>
-                  </div>
-                </div>
-
-                <span className="ai-confidence">
-                  {selectedComplaint.aiAnalysis.confidence} confidence
-                </span>
-              </div>
-
-              <p className="ai-summary">
-                {selectedComplaint.aiAnalysis.summary}
-              </p>
-
-              <div className="ai-insights">
-                <div className="ai-insight">
-                  <Target size={15} />
-                  <div>
-                    <span>Category</span>
-                    <strong>{selectedComplaint.aiAnalysis.suggestedCategory}</strong>
-                  </div>
-                </div>
-
-                <div className="ai-insight">
-                  <AlertTriangle size={15} />
-                  <div>
-                    <span>Priority</span>
-                    <strong className={`ai-priority ai-${selectedComplaint.aiAnalysis.priority.toLowerCase()}`}>
-                      {selectedComplaint.aiAnalysis.priority}
-                    </strong>
-                  </div>
-                </div>
-
-                <div className="ai-insight">
-                  <ShieldCheck size={15} />
-                  <div>
-                    <span>Duplicate Risk</span>
-                    <strong>{selectedComplaint.aiAnalysis.duplicateRisk}</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div className="ai-recommendation">
-                <Sparkles size={14} />
-                <span>
-                  Recommended department:{" "}
-                  <strong>{selectedComplaint.aiAnalysis.department}</strong>
-                </span>
-              </div>
-            </div>
-
-
-            {/* STATUS TIMELINE */}
-
-            <div className="detail-section timeline-section">
-
-              <div className="section-heading">
-                <Clock3 size={18} />
-                <h3>Status Timeline</h3>
-              </div>
-
-
-              <div className="timeline">
-
-                {selectedComplaint.timeline.map(
-                  (item, index) => {
-
-                    const completed =
-                      item.type === "reported" ||
-                      item.type === "assigned" ||
-                      (
-                        item.type === "progress" &&
-                        selectedComplaint.status !== "Pending"
-                      ) ||
-                      (
-                        item.type === "resolved" &&
-                        selectedComplaint.status === "Resolved"
-                      );
-
-                    return (
-
-                      <div
-                        className="timeline-item"
-                        key={index}
-                      >
-
-                        <div
-                          className={`timeline-dot ${
-                            completed
-                              ? "completed"
-                              : ""
-                          }`}
-                        >
-                          {completed ? (
-                            <CheckCircle2 size={16} />
-                          ) : (
-                            <Circle size={16} />
-                          )}
+                        <div className="update-progress-icon">
+                          <Edit3 size={17} />
                         </div>
 
+                        <div>
 
-                        {index <
-                          selectedComplaint.timeline.length -
-                            1 && (
-                          <div className="timeline-line"></div>
-                        )}
+                          <h3>
+                            Update Progress
+                          </h3>
 
-
-                        <div className="timeline-content">
-
-                          <strong>
-                            {item.title}
-                          </strong>
-
-                          {item.date !== "-" && (
-                            <span>
-                              {item.date}
-                              {item.time &&
-                                ` • ${item.time}`}
-                            </span>
-                          )}
+                          <span>
+                            Update the complaint status
+                          </span>
 
                         </div>
 
                       </div>
 
-                    );
-                  }
-                )}
+                      <span
+                        className={`status-badge ${getStatusClass(
+                          selectedComplaint.status
+                        )}`}
+                      >
+                        {selectedComplaint.status}
+                      </span>
+
+                    </div>
+
+                    <div className="update-progress-actions">
+
+                      {/* PENDING */}
+
+                      <button
+                        type="button"
+                        className={`progress-option ${
+                          selectedComplaint.status ===
+                          "Pending"
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          updateProgress(
+                            "Pending"
+                          )
+                        }
+                      >
+                        <span className="progress-dot pending-dot"></span>
+
+                        Pending
+                      </button>
+
+
+                      {/* IN PROGRESS */}
+
+                      <button
+                        type="button"
+                        className={`progress-option ${
+                          selectedComplaint.status ===
+                          "In Progress"
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          updateProgress(
+                            "In Progress"
+                          )
+                        }
+                      >
+                        <span className="progress-dot"></span>
+
+                        In Progress
+                      </button>
+
+
+                      {/* RESOLVED */}
+
+                      <button
+                        type="button"
+                        className={`progress-option ${
+                          selectedComplaint.status ===
+                          "Resolved"
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          updateProgress(
+                            "Resolved"
+                          )
+                        }
+                      >
+                        <span className="progress-dot resolved-dot"></span>
+
+                        Resolved
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                  {/* =================================================
+                      AI ANALYSIS
+                  ================================================= */}
+
+                  <div className="ai-analysis-card">
+
+                    <div className="ai-analysis-header">
+
+                      <div className="ai-analysis-title">
+
+                        <div className="ai-icon">
+                          <Sparkles size={16} />
+                        </div>
+
+                        <div>
+
+                          <h3>
+                            AI Analysis
+                          </h3>
+
+                          <span>
+                            Automated complaint
+                            assessment
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                      <span className="ai-confidence">
+                        {
+                          selectedComplaint
+                            .aiAnalysis
+                            .confidence
+                        }{" "}
+                        confidence
+                      </span>
+
+                    </div>
+
+                    <p className="ai-summary">
+                      {
+                        selectedComplaint
+                          .aiAnalysis
+                          .summary
+                      }
+                    </p>
+
+                    <div className="ai-insights">
+
+                      {/* CATEGORY */}
+
+                      <div className="ai-insight">
+
+                        <Target size={15} />
+
+                        <div>
+
+                          <span>
+                            Category
+                          </span>
+
+                          <strong>
+                            {
+                              selectedComplaint
+                                .aiAnalysis
+                                .suggestedCategory
+                            }
+                          </strong>
+
+                        </div>
+
+                      </div>
+
+
+                      {/* PRIORITY */}
+
+                      <div className="ai-insight">
+
+                        <AlertTriangle
+                          size={15}
+                        />
+
+                        <div>
+
+                          <span>
+                            Priority
+                          </span>
+
+                          <strong
+                            className={`ai-priority ai-${String(
+                              selectedComplaint
+                                .aiAnalysis
+                                .priority
+                            ).toLowerCase()}`}
+                          >
+                            {
+                              selectedComplaint
+                                .aiAnalysis
+                                .priority
+                            }
+                          </strong>
+
+                        </div>
+
+                      </div>
+
+
+                      {/* DUPLICATE RISK */}
+
+                      <div className="ai-insight">
+
+                        <ShieldCheck size={15} />
+
+                        <div>
+
+                          <span>
+                            Duplicate Risk
+                          </span>
+
+                          <strong>
+                            {
+                              selectedComplaint
+                                .aiAnalysis
+                                .duplicateRisk
+                            }
+                          </strong>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                    {/* RECOMMENDED DEPARTMENT */}
+
+                    <div className="ai-recommendation">
+
+                      <Sparkles size={14} />
+
+                      <span>
+                        Recommended department:{" "}
+                        <strong>
+                          {
+                            selectedComplaint
+                              .aiAnalysis
+                              .department
+                          }
+                        </strong>
+                      </span>
+
+                    </div>
+
+                    {/* PRIORITY REASON */}
+
+                    {selectedComplaint
+                      .aiAnalysis
+                      .priorityReason !==
+                      "Not available" && (
+
+                      <div className="ai-recommendation">
+
+                        <AlertTriangle
+                          size={14}
+                        />
+
+                        <span>
+                          Priority reason:{" "}
+                          <strong>
+                            {
+                              selectedComplaint
+                                .aiAnalysis
+                                .priorityReason
+                            }
+                          </strong>
+                        </span>
+
+                      </div>
+
+                    )}
+
+                  </div>
+
+                  {/* STATUS TIMELINE */}
+
+                  <div className="detail-section timeline-section">
+
+                    <div className="section-heading">
+                      <Clock3 size={18} />
+                      <h3>Status Timeline</h3>
+                    </div>
+
+                    <div className="timeline">
+
+                      {selectedComplaint.timeline.map(
+                        (item, index) => {
+
+                          const completed =
+                            item.type ===
+                              "reported" ||
+
+                            (
+                              item.type ===
+                                "assigned" &&
+                              selectedComplaint
+                                .automaticallyAssigned
+                            ) ||
+
+                            (
+                              item.type ===
+                                "progress" &&
+                              selectedComplaint
+                                .status !==
+                                "Pending"
+                            ) ||
+
+                            (
+                              item.type ===
+                                "resolved" &&
+                              selectedComplaint
+                                .status ===
+                                "Resolved"
+                            );
+
+                          return (
+                            <div
+                              className="timeline-item"
+                              key={index}
+                            >
+
+                              <div
+                                className={`timeline-dot ${
+                                  completed
+                                    ? "completed"
+                                    : ""
+                                }`}
+                              >
+
+                                {completed ? (
+                                  <CheckCircle2
+                                    size={16}
+                                  />
+                                ) : (
+                                  <Circle
+                                    size={16}
+                                  />
+                                )}
+
+                              </div>
+
+                              {index <
+                                selectedComplaint
+                                  .timeline
+                                  .length -
+                                  1 && (
+
+                                <div className="timeline-line" />
+
+                              )}
+
+                              <div className="timeline-content">
+
+                                <strong>
+                                  {item.title}
+                                </strong>
+
+                                {item.date !== "-" && (
+                                  <span>
+                                    {item.date}
+
+                                    {item.time &&
+                                      ` • ${item.time}`}
+                                  </span>
+                                )}
+
+                              </div>
+
+                            </div>
+                          );
+                        }
+                      )}
+
+                    </div>
+
+                  </div>
+
+                </section>
 
               </div>
-
-            </div>
-
-          </section>
-
-        </div>
+            </>
+          )}
 
       </div>
-
     </AdminLayout>
   );
 }

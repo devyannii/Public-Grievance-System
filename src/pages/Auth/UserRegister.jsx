@@ -84,6 +84,12 @@ function UserRegister() {
           password: password,
 
           options: {
+            // IMPORTANT:
+            // After clicking the confirmation email,
+            // Supabase will redirect the user back to
+            // this page.
+            emailRedirectTo: `${window.location.origin}/user/login`,
+
             data: {
               full_name: fullName.trim(),
               preferred_language: "English",
@@ -98,7 +104,7 @@ function UserRegister() {
       console.log("Supabase registration successful:", data);
 
       // --------------------------------------
-      // Email confirmation handling
+      // Email confirmation required
       // --------------------------------------
 
       if (data.user && !data.session) {

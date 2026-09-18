@@ -16,6 +16,8 @@ import {
   Leaf,
 } from "lucide-react";
 
+import landscapeImage from "../../assets/images/admin-landscape.png.png";
+
 import "../../styles/AdminSidebar.css";
 
 
@@ -161,7 +163,12 @@ function AdminSidebar() {
 
         {/* Uses YOUR existing image */}
 
-        <div className="sidebar-landscape"></div>
+        <div
+          className="sidebar-landscape"
+          style={{
+            backgroundImage: `url(${landscapeImage})`,
+          }}
+        ></div>
 
       </div>
 

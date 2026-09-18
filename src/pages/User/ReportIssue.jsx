@@ -49,10 +49,52 @@ function generateComplaintCode() {
   return `UGS-${randomNumber}`;
 }
 
+async function getReadableLocation(latitude, longitude) {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
+        latitude
+      )}&lon=${encodeURIComponent(longitude)}&zoom=18&addressdetails=1`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Reverse geocoding failed");
+    }
+
+    const data = await response.json();
+
+    const address = data.address || {};
+
+    // Prefer a short, human-readable address.
+    const parts = [
+      address.road || address.pedestrian || address.neighbourhood,
+      address.suburb || address.city_district,
+      address.city || address.town || address.village,
+      address.state,
+    ].filter(Boolean);
+
+    if (parts.length > 0) {
+      return parts.join(", ");
+    }
+
+    return data.display_name || "";
+  } catch (error) {
+    console.warn("Could not get readable location:", error);
+    return "";
+  }
+}
+
+
 function ReportIssue() {
   const navigate = useNavigate();
 
-  const [selectedIssue, setSelectedIssue] = useState("Pothole");
+  const [selectedIssue, setSelectedIssue] = useState("");
+  const [letAISuggest, setLetAISuggest] = useState(true);
 
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
@@ -85,8 +127,23 @@ function ReportIssue() {
         setLatitude(lat);
         setLongitude(lng);
 
-        // Keep the coordinates immediately, then try to get a readable address.
-        setLocationText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+        // Keep coordinates as the fallback, then convert them
+        // into a readable street/city location.
+        setLocationText(
+          `${lat.toFixed(6)}, ${lng.toFixed(6)}`
+        );
+
+        const readableLocation = await getReadableLocation(
+          lat,
+          lng
+        );
+
+        if (readableLocation) {
+          setLocationText(
+            `${readableLocation} (${lat.toFixed(6)}, ${lng.toFixed(6)})`
+          );
+        }
+
         setIsLocationEditing(false);
         setIsDetectingLocation(false);
       },
@@ -133,8 +190,8 @@ function ReportIssue() {
 
     setSubmitError("");
 
-    if (!description.trim()) {
-      setSubmitError("Please enter a description.");
+    if (!letAISuggest && !description.trim()) {
+      setSubmitError("Please enter a description or turn on AI assistance.");
       return;
     }
 
@@ -176,8 +233,12 @@ function ReportIssue() {
         .insert({
           complaint_code: complaintCode,
           user_id: user.id,
-          title: selectedIssue,
+          title:
+            letAISuggest
+              ? "Civic Issue"
+              : selectedIssue || "Other",
           description: description.trim(),
+          category_id: null,
           location_text:
             locationText.trim() || "Location not provided",
           latitude,
@@ -229,7 +290,63 @@ function ReportIssue() {
       }
 
       // ---------------------------------------
-      // 6. Success → open complaint
+      // 6. Start AI analysis in the background
+      // ---------------------------------------
+      // Do NOT wait for Gemini here.
+      // The complaint and image are already safely saved.
+      // This makes submission feel immediate while the AI
+      // continues processing in the background.
+      try {
+        const apiBaseUrl =
+          import.meta.env.VITE_API_URL ||
+          "http://127.0.0.1:8000";
+
+        fetch(
+          `${apiBaseUrl}/api/ai/analyze/${complaintCode}`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+            },
+            // Allows the request to continue while the page
+            // navigates in supported browsers.
+            keepalive: true,
+          }
+        )
+          .then(async (response) => {
+            if (!response.ok) {
+              const aiErrorText = await response.text();
+
+              console.error(
+                "AI analysis failed:",
+                aiErrorText
+              );
+
+              return;
+            }
+
+            const aiResult = await response.json();
+
+            console.log(
+              "AI analysis completed:",
+              aiResult
+            );
+          })
+          .catch((aiError) => {
+            console.error(
+              "Could not connect to AI service:",
+              aiError
+            );
+          });
+      } catch (aiError) {
+        console.error(
+          "Could not start AI analysis:",
+          aiError
+        );
+      }
+
+      // ---------------------------------------
+      // 7. Open complaint immediately
       // ---------------------------------------
       navigate(`/user/issue/${complaint.id}`);
     } catch (error) {
@@ -264,29 +381,85 @@ function ReportIssue() {
       <main className="report-issue-content">
         <form onSubmit={handleSubmit}>
 
-          {/* ISSUE TYPE */}
+          {/* ISSUE TYPE / AI ASSIST */}
           <section className="report-form-section">
             <label className="report-section-label">Issue Type</label>
 
-            <div className="issue-type-list">
-              {issueTypes.map((issue) => {
-                const Icon = issue.icon;
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "12px",
+                padding: "12px 14px",
+                marginBottom: "12px",
+                borderRadius: "12px",
+                border: "1px solid #dce8df",
+                background: letAISuggest ? "#f1f8f3" : "#fff",
+                cursor: "pointer",
+              }}
+            >
+              <span>
+                <strong
+                  style={{
+                    display: "block",
+                    fontSize: "13px",
+                    color: "#294336",
+                  }}
+                >
+                  ✨ Let AI handle this
+                </strong>
+                <span
+                  style={{
+                    display: "block",
+                    marginTop: "3px",
+                    fontSize: "11px",
+                    color: "#718078",
+                  }}
+                >
+                  AI can identify the category and write the description from
+                  your photo.
+                </span>
+              </span>
 
-                return (
-                  <button
-                    type="button"
-                    key={issue.name}
-                    className={`issue-type-card ${
-                      selectedIssue === issue.name ? "selected" : ""
-                    }`}
-                    onClick={() => setSelectedIssue(issue.name)}
-                  >
-                    <Icon size={19} />
-                    <span>{issue.name}</span>
-                  </button>
-                );
-              })}
-            </div>
+              <input
+                type="checkbox"
+                checked={letAISuggest}
+                onChange={(event) => {
+                  const enabled = event.target.checked;
+                  setLetAISuggest(enabled);
+
+                  if (enabled) {
+                    setSelectedIssue("");
+                  }
+                }}
+              />
+            </label>
+
+            {!letAISuggest && (
+              <div className="issue-type-list">
+                {issueTypes.map((issue) => {
+                  const Icon = issue.icon;
+
+                  return (
+                    <button
+                      type="button"
+                      key={issue.name}
+                      className={`issue-type-card ${
+                        selectedIssue === issue.name ? "selected" : ""
+                      }`}
+                      onClick={() => {
+                        setSelectedIssue(issue.name);
+                        setLetAISuggest(false);
+                      }}
+                    >
+                      <Icon size={19} />
+                      <span>{issue.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </section>
 
           {/* LOCATION */}
@@ -343,6 +516,11 @@ function ReportIssue() {
           <section className="report-form-section">
             <label className="report-section-label">
               Description
+              {!letAISuggest && (
+                <span style={{ fontWeight: 400, fontSize: "11px", color: "#8a968f" }}>
+                  {" "}Required
+                </span>
+              )}
             </label>
 
             <div className="description-wrapper">
@@ -352,13 +530,30 @@ function ReportIssue() {
                   setDescription(event.target.value.slice(0, 500))
                 }
                 maxLength={500}
-                placeholder="Describe the issue..."
+                placeholder={
+                  letAISuggest
+                    ? "Optional — AI can describe the issue from your photo..."
+                    : "Describe the issue..."
+                }
               />
 
               <span className="character-count">
                 {description.length}/500
               </span>
             </div>
+
+            {letAISuggest && (
+              <p
+                style={{
+                  margin: "7px 0 0",
+                  fontSize: "11px",
+                  color: "#718078",
+                }}
+              >
+                Leave this blank and AI will generate a concise description
+                after analyzing your photo.
+              </p>
+            )}
           </section>
 
           {/* PHOTO */}
@@ -380,7 +575,10 @@ function ReportIssue() {
               <button
                 type="button"
                 className="add-photo-button"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() =>
+                  document.getElementById("camera-input")?.click()
+                }
+                aria-label="Take a photo"
               >
                 <Plus size={24} />
               </button>
@@ -389,6 +587,16 @@ function ReportIssue() {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
+                capture="environment"
+                onChange={handleImageUpload}
+                hidden
+              />
+
+              <input
+                id="camera-input"
+                type="file"
+                accept="image/*"
+                capture="environment"
                 onChange={handleImageUpload}
                 hidden
               />

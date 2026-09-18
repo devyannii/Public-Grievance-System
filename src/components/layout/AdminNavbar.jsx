@@ -1,64 +1,31 @@
-import {
-  Menu,
-  Bell,
-  ChevronDown,
-} from "lucide-react";
+import React from "react";
+import AdminSidebar from "./AdminSidebar";
+import AdminNavbar from "./AdminNavbar";
 
-import "../../styles/AdminNavbar.css";
+import "../../styles/AdminLayout.css";
 
-function AdminNavbar() {
+function AdminLayout({ children }) {
   return (
-    <header className="admin-navbar">
+    <div className="admin-layout">
 
-      {/* Left */}
-      <button className="navbar-menu-button" type="button">
-        <Menu size={22} />
-      </button>
+      {/* SIDEBAR */}
+      <AdminSidebar />
 
+      {/* RIGHT SIDE */}
+      <div className="admin-main">
 
-      {/* Right */}
-      <div className="navbar-right">
+        {/* TOP NAVBAR */}
+        <AdminNavbar />
 
-        {/* Notifications */}
-        <button
-          className="navbar-notification"
-          type="button"
-          aria-label="Notifications"
-        >
-          <Bell size={21} />
-
-          <span className="notification-count">
-            3
-          </span>
-        </button>
-
-
-        {/* Admin Profile */}
-        <button
-          className="navbar-profile"
-          type="button"
-        >
-
-          <div className="navbar-avatar">
-            <span>AU</span>
-          </div>
-
-          <div className="navbar-user-info">
-            <strong>Admin User</strong>
-            <span>Super Administrator</span>
-          </div>
-
-          <ChevronDown
-            className="navbar-chevron"
-            size={17}
-          />
-
-        </button>
+        {/* PAGE CONTENT */}
+        <main className="admin-content">
+          {children}
+        </main>
 
       </div>
 
-    </header>
+    </div>
   );
 }
 
-export default AdminNavbar;
+export default AdminLayout;

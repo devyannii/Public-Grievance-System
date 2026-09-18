@@ -39,9 +39,10 @@ function App() {
             USER
         ========================= */}
 
+        {/* ROOT → LOGIN */}
         <Route
           path="/"
-          element={<UserLanding />}
+          element={<UserLogin />}
         />
 
         <Route
@@ -109,28 +110,23 @@ function App() {
             ADMIN COMPLAINTS
         ========================= */}
 
-        {/* All complaints */}
+        {/* ONE COMPLAINTS PAGE */}
         <Route
           path="/admin/complaints"
           element={<AdminComplaints />}
         />
 
-        {/* Individual complaint */}
-        <Route
-          path="/admin/complaints/:id"
-          element={<AdminComplaints />}
-        />
 
-      
         {/* =========================
-         ADMIN CATEGORIES
+            ADMIN CATEGORIES
         ========================= */}
 
         <Route
           path="/admin/categories"
           element={<AdminCategories />}
         />
-      
+
+
         {/* =========================
             ADMIN MAP
         ========================= */}
