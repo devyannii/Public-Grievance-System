@@ -62,7 +62,7 @@
 .categories-header-left p {
   margin: 5px 0 0;
   color: #748179;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 
@@ -81,7 +81,7 @@
   background: #00a982;
   color: #ffffff;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 5px 12px rgba(0, 169, 130, 0.14);
@@ -109,7 +109,7 @@
   border-radius: 9px;
   background: #fff3f3;
   color: #c13d3d;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 
@@ -170,7 +170,7 @@
   background: transparent;
   color: #27352f;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .categories-search input::placeholder {
@@ -188,7 +188,7 @@
   background: #ffffff;
   color: #52625a;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: 0.18s ease;
@@ -230,7 +230,7 @@
   background: #f8faf9;
   border-bottom: 1px solid #e8eeeb;
   color: #718078;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 650;
   text-transform: uppercase;
   letter-spacing: 0.025em;
@@ -270,7 +270,7 @@
   min-width: 0;
   overflow: hidden;
   color: #24362d;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -307,7 +307,7 @@
   border-radius: 9px;
   background: #e9f8f2;
   color: #00a982;
-  font-size: 17px;
+  font-size: 18px;
   border: 1px solid #dceee5;
 }
 
@@ -321,7 +321,7 @@
   padding-right: 15px;
   overflow: hidden;
   color: #718078;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -334,7 +334,7 @@
 
 .category-count {
   color: #46574f;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -352,7 +352,7 @@
   padding: 0 9px;
   box-sizing: border-box;
   border-radius: 20px;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 650;
 }
 
@@ -439,7 +439,7 @@
 
 .categories-empty strong {
   color: #34453d;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -552,14 +552,14 @@
 .category-modal-header h2 {
   margin: 0;
   color: #19372a;
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 700;
 }
 
 .category-modal-header p {
   margin: 5px 0 0;
   color: #7b8781;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
 }
 
@@ -613,7 +613,7 @@
   display: block;
   margin-bottom: 15px;
   color: #35463e;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -676,7 +676,7 @@
   padding: 0 15px;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.18s ease;
@@ -719,7 +719,7 @@
   }
 
   .categories-header-left h1 {
-    font-size: 23px;
+    font-size: 26px;
   }
 
   .categories-table-header,
@@ -793,11 +793,11 @@
   }
 
   .categories-header-left h1 {
-    font-size: 21px;
+    font-size: 26px;
   }
 
   .categories-header-left p {
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .category-modal-overlay {

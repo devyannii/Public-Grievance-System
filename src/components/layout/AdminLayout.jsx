@@ -17,7 +17,10 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import { supabase } from "../../lib/supabaseClient";
 import "../../styles/AdminLayout.css";
@@ -132,12 +135,10 @@ function AdminLayout({ children }) {
           user.email?.split("@")[0] ||
           "Admin User";
 
-
         const finalName =
           nameFromProfile ||
           nameFromMetadata ||
           fallbackName;
-
 
         if (mounted) {
           setAdminName(finalName);
@@ -212,18 +213,14 @@ function AdminLayout({ children }) {
 
       setLoggingOut(true);
 
-
       const { error } =
         await supabase.auth.signOut();
-
 
       if (error) {
         throw error;
       }
 
-
       setProfileOpen(false);
-
 
       navigate("/admin/login", {
         replace: true,
@@ -252,11 +249,13 @@ function AdminLayout({ children }) {
   const initials =
     getInitials(adminName);
 
+
   /* =======================================================
      ACTIVE SIDEBAR ITEM
   ======================================================= */
 
   const isActive = (path) => {
+
     if (path === "/admin/dashboard") {
       return location.pathname === path;
     }
@@ -279,7 +278,9 @@ function AdminLayout({ children }) {
       <aside className="admin-sidebar">
 
 
-        {/* BRAND */}
+        {/* =================================================
+            BRAND
+        ================================================= */}
 
         <div className="admin-sidebar-brand">
 
@@ -312,17 +313,25 @@ function AdminLayout({ children }) {
         <nav className="admin-sidebar-nav">
 
 
+          {/* DASHBOARD */}
+
           <button
             type="button"
             className={`admin-nav-item ${
-              isActive("/admin/dashboard") ? "active" : ""
+              isActive("/admin/dashboard")
+                ? "active"
+                : ""
             }`}
             onClick={() =>
               navigate("/admin/dashboard")
             }
           >
+
             <span className="admin-nav-icon">
-              <LayoutDashboard size={18} strokeWidth={1.8} />
+              <LayoutDashboard
+                size={18}
+                strokeWidth={1.8}
+              />
             </span>
 
             <span>
@@ -332,20 +341,29 @@ function AdminLayout({ children }) {
             <span className="admin-nav-arrow">
               ›
             </span>
+
           </button>
 
+
+          {/* COMPLAINTS */}
 
           <button
             type="button"
             className={`admin-nav-item ${
-              isActive("/admin/complaints") ? "active" : ""
+              isActive("/admin/complaints")
+                ? "active"
+                : ""
             }`}
             onClick={() =>
               navigate("/admin/complaints")
             }
           >
+
             <span className="admin-nav-icon">
-              <ClipboardList size={18} strokeWidth={1.8} />
+              <ClipboardList
+                size={18}
+                strokeWidth={1.8}
+              />
             </span>
 
             <span>
@@ -355,20 +373,29 @@ function AdminLayout({ children }) {
             <span className="admin-nav-arrow">
               ›
             </span>
+
           </button>
 
+
+          {/* CATEGORIES */}
 
           <button
             type="button"
             className={`admin-nav-item ${
-              isActive("/admin/categories") ? "active" : ""
+              isActive("/admin/categories")
+                ? "active"
+                : ""
             }`}
             onClick={() =>
               navigate("/admin/categories")
             }
           >
+
             <span className="admin-nav-icon">
-              <Grid2x2 size={18} strokeWidth={1.8} />
+              <Grid2x2
+                size={18}
+                strokeWidth={1.8}
+              />
             </span>
 
             <span>
@@ -378,21 +405,29 @@ function AdminLayout({ children }) {
             <span className="admin-nav-arrow">
               ›
             </span>
+
           </button>
 
+
+          {/* RESIDENTS */}
 
           <button
             type="button"
             className={`admin-nav-item ${
-              isActive("/admin/residents") ? "active" : ""
+              isActive("/admin/residents")
+                ? "active"
+                : ""
             }`}
-          
             onClick={() =>
               navigate("/admin/residents")
             }
           >
+
             <span className="admin-nav-icon">
-              <UsersRound size={18} strokeWidth={1.8} />
+              <UsersRound
+                size={18}
+                strokeWidth={1.8}
+              />
             </span>
 
             <span>
@@ -402,21 +437,31 @@ function AdminLayout({ children }) {
             <span className="admin-nav-arrow">
               ›
             </span>
+
           </button>
 
+
+          {/* =================================================
+              DEPARTMENTS
+          ================================================= */}
 
           <button
             type="button"
             className={`admin-nav-item ${
-              isActive("/admin/departments") ? "active" : ""
+              isActive("/admin/departments")
+                ? "active"
+                : ""
             }`}
-          
             onClick={() =>
               navigate("/admin/departments")
             }
           >
+
             <span className="admin-nav-icon">
-              <Building2 size={18} strokeWidth={1.8} />
+              <Building2
+                size={18}
+                strokeWidth={1.8}
+              />
             </span>
 
             <span>
@@ -426,21 +471,29 @@ function AdminLayout({ children }) {
             <span className="admin-nav-arrow">
               ›
             </span>
+
           </button>
 
+
+          {/* REPORTS */}
 
           <button
             type="button"
             className={`admin-nav-item ${
-              isActive("/admin/reports") ? "active" : ""
+              isActive("/admin/reports")
+                ? "active"
+                : ""
             }`}
-          
             onClick={() =>
               navigate("/admin/reports")
             }
           >
+
             <span className="admin-nav-icon">
-              <BarChart3 size={18} strokeWidth={1.8} />
+              <BarChart3
+                size={18}
+                strokeWidth={1.8}
+              />
             </span>
 
             <span>
@@ -450,20 +503,29 @@ function AdminLayout({ children }) {
             <span className="admin-nav-arrow">
               ›
             </span>
+
           </button>
 
+
+          {/* MAP VIEW */}
 
           <button
             type="button"
             className={`admin-nav-item ${
-              isActive("/admin/map") ? "active" : ""
+              isActive("/admin/map")
+                ? "active"
+                : ""
             }`}
             onClick={() =>
               navigate("/admin/map")
             }
           >
+
             <span className="admin-nav-icon">
-              <Map size={18} strokeWidth={1.8} />
+              <Map
+                size={18}
+                strokeWidth={1.8}
+              />
             </span>
 
             <span>
@@ -473,21 +535,29 @@ function AdminLayout({ children }) {
             <span className="admin-nav-arrow">
               ›
             </span>
+
           </button>
 
+
+          {/* SETTINGS */}
 
           <button
             type="button"
             className={`admin-nav-item ${
-              isActive("/admin/settings") ? "active" : ""
+              isActive("/admin/settings")
+                ? "active"
+                : ""
             }`}
-          
             onClick={() =>
               navigate("/admin/settings")
             }
           >
+
             <span className="admin-nav-icon">
-              <Settings size={18} strokeWidth={1.8} />
+              <Settings
+                size={18}
+                strokeWidth={1.8}
+              />
             </span>
 
             <span>
@@ -497,6 +567,7 @@ function AdminLayout({ children }) {
             <span className="admin-nav-arrow">
               ›
             </span>
+
           </button>
 
 
@@ -527,9 +598,7 @@ function AdminLayout({ children }) {
         <header className="admin-navbar">
 
 
-          {/* LEFT SIDE IS INTENTIONALLY EMPTY
-              Hamburger removed
-          */}
+          {/* LEFT SIDE */}
 
           <div className="admin-navbar-left">
           </div>
@@ -549,7 +618,6 @@ function AdminLayout({ children }) {
               ref={profileRef}
             >
 
-
               <button
                 type="button"
                 className="admin-profile-button"
@@ -561,7 +629,6 @@ function AdminLayout({ children }) {
                 aria-expanded={profileOpen}
                 aria-haspopup="true"
               >
-
 
                 {/* AVATAR */}
 
@@ -612,14 +679,11 @@ function AdminLayout({ children }) {
                   role="menu"
                 >
 
-
                   <div className="admin-dropdown-user">
-
 
                     <div className="admin-dropdown-avatar">
                       {initials}
                     </div>
-
 
                     <div>
 
@@ -633,7 +697,6 @@ function AdminLayout({ children }) {
                       </span>
 
                     </div>
-
 
                   </div>
 

@@ -17,6 +17,8 @@ import {
   AlertTriangle,
   Target,
   ShieldCheck,
+  Trash2,
+  X,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -41,11 +43,47 @@ function AdminComplaints() {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [showStatusMenu, setShowStatusMenu] = useState(false);
-  const [statusOverrides, setStatusOverrides] = useState({});
-  const [complaints, setComplaints] = useState([]);
-  const [selectedComplaintId, setSelectedComplaintId] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+
+  const [statusOverrides, setStatusOverrides] =
+    useState({});
+
+  const [complaints, setComplaints] =
+    useState([]);
+
+  const [departments, setDepartments] =
+    useState([]);
+
+  const [selectedComplaintId, setSelectedComplaintId] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  /* ======================================================
+     DEPARTMENT MODAL
+  ====================================================== */
+
+  const [showDepartmentModal, setShowDepartmentModal] =
+    useState(false);
+
+  const [selectedDepartmentId, setSelectedDepartmentId] =
+    useState("");
+
+  const [assignmentReason, setAssignmentReason] =
+    useState("");
+
+  const [savingDepartment, setSavingDepartment] =
+    useState(false);
+
+  /* ======================================================
+     DELETE
+  ====================================================== */
+
+  const [deletingComplaint, setDeletingComplaint] =
+    useState(false);
 
   /* ======================================================
      LOAD COMPLAINTS
@@ -72,6 +110,9 @@ function AdminComplaints() {
             location_text,
             created_at,
             department_id,
+            assignment_source,
+            automatically_assigned,
+            deleted_at,
 
             ai_detected_category,
             ai_confidence,
@@ -80,7 +121,6 @@ function AdminComplaints() {
             duplicate_detected,
             duplicate_score,
             ai_recommended_department,
-            automatically_assigned,
             ai_summary,
 
             profiles(full_name),
@@ -109,7 +149,10 @@ function AdminComplaints() {
               created_at
             )
           `)
-          .order("created_at", { ascending: false });
+          .is("deleted_at", null)
+          .order("created_at", {
+            ascending: false,
+          });
 
         if (complaintsError) {
           console.error(
@@ -123,292 +166,369 @@ function AdminComplaints() {
           );
         }
 
-        const formattedComplaints = await Promise.all(
-          (data || []).map(async (complaint) => {
-            /* ------------------------------------------------
-               FIRST IMAGE
-            ------------------------------------------------ */
+        const formattedComplaints =
+          await Promise.all(
+            (data || []).map(
+              async (complaint) => {
+                /* ------------------------------------------------
+                   FIRST IMAGE
+                ------------------------------------------------ */
 
-            const firstImage =
-              complaint.complaint_images?.[0];
+                const firstImage =
+                  complaint.complaint_images?.[0];
 
-            let imageUrl = fallbackImage;
+                let imageUrl =
+                  fallbackImage;
 
-            if (firstImage?.storage_path) {
-              const {
-                data: signedImage,
-                error: imageError,
-              } = await supabase.storage
-                .from("complaint-images")
-                .createSignedUrl(
-                  firstImage.storage_path,
-                  3600
-                );
+                if (
+                  firstImage?.storage_path
+                ) {
+                  const {
+                    data: signedImage,
+                    error: imageError,
+                  } = await supabase.storage
+                    .from(
+                      "complaint-images"
+                    )
+                    .createSignedUrl(
+                      firstImage.storage_path,
+                      3600
+                    );
 
-              if (
-                !imageError &&
-                signedImage?.signedUrl
-              ) {
-                imageUrl = signedImage.signedUrl;
-              }
-            }
-
-            /* ------------------------------------------------
-               DEPARTMENT
-            ------------------------------------------------ */
-
-            let department = "Not assigned";
-
-            if (complaint.department_id) {
-              const {
-                data: departmentData,
-                error: departmentError,
-              } = await supabase
-                .from("departments")
-                .select("name")
-                .eq("id", complaint.department_id)
-                .maybeSingle();
-
-              if (
-                !departmentError &&
-                departmentData?.name
-              ) {
-                department = departmentData.name;
-              }
-            }
-
-            /* ------------------------------------------------
-               LATEST AI ANALYSIS
-            ------------------------------------------------ */
-
-            let latestAI = null;
-
-            if (
-              complaint.ai_analysis &&
-              complaint.ai_analysis.length > 0
-            ) {
-              latestAI = [...complaint.ai_analysis].sort(
-                (a, b) =>
-                  new Date(b.created_at) -
-                  new Date(a.created_at)
-              )[0];
-            }
-
-            const ai = latestAI || {
-              detected_category:
-                complaint.ai_detected_category,
-
-              image_confidence:
-                complaint.ai_confidence,
-
-              predicted_priority:
-                complaint.ai_priority ||
-                complaint.priority,
-
-              priority_reason:
-                complaint.ai_priority_reason,
-
-              duplicate_risk:
-                complaint.duplicate_detected
-                  ? "High"
-                  : "Low",
-
-              duplicate_count: 0,
-
-              duplicate_score:
-                complaint.duplicate_score || 0,
-
-              summary:
-                complaint.ai_summary,
-
-              recommended_department:
-                complaint.ai_recommended_department,
-            };
-
-            /* ------------------------------------------------
-               DATE + TIME
-            ------------------------------------------------ */
-
-            const createdAt = new Date(
-              complaint.created_at
-            );
-
-            const formattedDate =
-              createdAt.toLocaleDateString(
-                "en-IN",
-                {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
+                  if (
+                    !imageError &&
+                    signedImage?.signedUrl
+                  ) {
+                    imageUrl =
+                      signedImage.signedUrl;
+                  }
                 }
-              );
 
-            const formattedTime =
-              createdAt.toLocaleTimeString(
-                "en-IN",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
+                /* ------------------------------------------------
+                   DEPARTMENT
+                ------------------------------------------------ */
+
+                let department =
+                  "Not assigned";
+
+                if (
+                  complaint.department_id
+                ) {
+                  const {
+                    data: departmentData,
+                    error:
+                      departmentError,
+                  } = await supabase
+                    .from("departments")
+                    .select("name")
+                    .eq(
+                      "id",
+                      complaint.department_id
+                    )
+                    .maybeSingle();
+
+                  if (
+                    !departmentError &&
+                    departmentData?.name
+                  ) {
+                    department =
+                      departmentData.name;
+                  }
                 }
-              );
 
-            /* ------------------------------------------------
-               AI CONFIDENCE
-            ------------------------------------------------ */
+                /* ------------------------------------------------
+                   LATEST AI ANALYSIS
+                ------------------------------------------------ */
 
-            let confidence = "Not available";
+                let latestAI = null;
 
-            if (
-              ai.image_confidence !== null &&
-              ai.image_confidence !== undefined
-            ) {
-              confidence = `${Math.round(
-                Number(ai.image_confidence) * 100
-              )}%`;
-            }
+                if (
+                  complaint.ai_analysis &&
+                  complaint.ai_analysis
+                    .length > 0
+                ) {
+                  latestAI = [
+                    ...complaint.ai_analysis,
+                  ].sort(
+                    (a, b) =>
+                      new Date(
+                        b.created_at
+                      ) -
+                      new Date(
+                        a.created_at
+                      )
+                  )[0];
+                }
 
-            /* ------------------------------------------------
-               RETURN FORMATTED COMPLAINT
-            ------------------------------------------------ */
+                const ai =
+                  latestAI || {
+                    detected_category:
+                      complaint.ai_detected_category,
 
-            return {
-              id:
-                complaint.complaint_code ||
-                complaint.id,
+                    image_confidence:
+                      complaint.ai_confidence,
 
-              uuid: complaint.id,
+                    predicted_priority:
+                      complaint.ai_priority ||
+                      complaint.priority,
 
-              title:
-                complaint.title ||
-                "Untitled Complaint",
+                    priority_reason:
+                      complaint.ai_priority_reason,
 
-              reportedBy:
-                complaint.profiles?.full_name ||
-                "Citizen",
+                    duplicate_risk:
+                      complaint.duplicate_detected
+                        ? "High"
+                        : "Low",
 
-              category:
-                complaint.categories?.name ||
-                complaint.ai_detected_category ||
-                "Other",
+                    duplicate_count: 0,
 
-              location:
-                complaint.location_text ||
-                "Location not provided",
+                    duplicate_score:
+                      complaint.duplicate_score ||
+                      0,
 
-              date: formattedDate,
-              time: formattedTime,
+                    summary:
+                      complaint.ai_summary,
 
-              status:
-                complaint.status ||
-                "Pending",
+                    recommended_department:
+                      complaint.ai_recommended_department,
+                  };
 
-              department,
+                /* ------------------------------------------------
+                   DATE + TIME
+                ------------------------------------------------ */
 
-              description:
-                complaint.description || "",
+                const createdAt =
+                  new Date(
+                    complaint.created_at
+                  );
 
-              image: imageUrl,
+                const formattedDate =
+                  createdAt.toLocaleDateString(
+                    "en-IN",
+                    {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    }
+                  );
 
-              automaticallyAssigned:
-                Boolean(
-                  complaint.automatically_assigned
-                ),
+                const formattedTime =
+                  createdAt.toLocaleTimeString(
+                    "en-IN",
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }
+                  );
 
-              aiAnalysis: {
-                summary:
-                  ai.summary ||
-                  "AI analysis not available yet.",
+                /* ------------------------------------------------
+                   AI CONFIDENCE
+                ------------------------------------------------ */
 
-                suggestedCategory:
-                  ai.detected_category ||
-                  complaint.categories?.name ||
-                  "Not available",
+                let confidence =
+                  "Not available";
 
-                priority:
-                  ai.predicted_priority ||
-                  complaint.priority ||
-                  "Medium",
+                if (
+                  ai.image_confidence !==
+                    null &&
+                  ai.image_confidence !==
+                    undefined
+                ) {
+                  confidence = `${Math.round(
+                    Number(
+                      ai.image_confidence
+                    ) * 100
+                  )}%`;
+                }
 
-                confidence,
+                /* ------------------------------------------------
+                   ASSIGNMENT SOURCE
+                ------------------------------------------------ */
 
-                department:
-                  ai.recommended_department ||
-                  department ||
-                  "Not assigned",
+                const assignmentSource =
+                  complaint.assignment_source ||
+                  (complaint.automatically_assigned
+                    ? "ai"
+                    : complaint.department_id
+                      ? "admin"
+                      : null);
 
-                duplicateRisk:
-                  ai.duplicate_risk ||
-                  "Low",
+                /* ------------------------------------------------
+                   RETURN FORMATTED COMPLAINT
+                ------------------------------------------------ */
 
-                duplicateCount:
-                  ai.duplicate_count ?? 0,
+                return {
+                  id:
+                    complaint.complaint_code ||
+                    complaint.id,
 
-                duplicateScore:
-                  ai.duplicate_score
-                    ? `${Math.round(
-                        Number(ai.duplicate_score) * 100
-                      )}%`
-                    : "0%",
+                  uuid:
+                    complaint.id,
 
-                priorityReason:
-                  ai.priority_reason ||
-                  "Not available",
+                  title:
+                    complaint.title ||
+                    "Untitled Complaint",
 
-                modelName:
-                  ai.model_name ||
-                  "AI Analysis",
+                  reportedBy:
+                    complaint.profiles
+                      ?.full_name ||
+                    "Citizen",
 
-                processingStatus:
-                  ai.processing_status ||
-                  "completed",
-              },
+                  category:
+                    complaint.categories
+                      ?.name ||
+                    complaint.ai_detected_category ||
+                    "Other",
 
-              timeline: [
-                {
-                  title: "Reported",
+                  location:
+                    complaint.location_text ||
+                    "Location not provided",
+
                   date: formattedDate,
+
                   time: formattedTime,
-                  type: "reported",
-                },
-                {
-                  title: "Assigned",
-                  date:
-                    complaint.automatically_assigned
-                      ? "Automatically assigned"
-                      : "-",
-                  time: "",
-                  type: "assigned",
-                },
-                {
-                  title: "In Progress",
-                  date:
-                    complaint.status === "In Progress" ||
-                    complaint.status === "Resolved"
-                      ? "Current status"
-                      : "-",
-                  time: "",
-                  type: "progress",
-                },
-                {
-                  title: "Resolved",
-                  date:
-                    complaint.status === "Resolved"
-                      ? "Resolved"
-                      : "-",
-                  time: "",
-                  type: "resolved",
-                },
-              ],
-            };
-          })
+
+                  status:
+                    complaint.status ||
+                    "Pending",
+
+                  department,
+
+                  description:
+                    complaint.description ||
+                    "",
+
+                  image: imageUrl,
+
+                  automaticallyAssigned:
+                    Boolean(
+                      complaint.automatically_assigned
+                    ),
+
+                  assignmentSource,
+
+                  aiAnalysis: {
+                    summary:
+                      ai.summary ||
+                      "AI analysis not available yet.",
+
+                    suggestedCategory:
+                      ai.detected_category ||
+                      complaint.categories
+                        ?.name ||
+                      "Not available",
+
+                    priority:
+                      ai.predicted_priority ||
+                      complaint.priority ||
+                      "Medium",
+
+                    confidence,
+
+                    /*
+                     * IMPORTANT:
+                     * Use the department name
+                     * fetched from Supabase,
+                     * NOT the UUID stored in
+                     * ai_recommended_department.
+                     */
+                    department:
+                      department ||
+                      "Not assigned",
+
+                    duplicateRisk:
+                      ai.duplicate_risk ||
+                      "Low",
+
+                    duplicateCount:
+                      ai.duplicate_count ??
+                      0,
+
+                    duplicateScore:
+                      ai.duplicate_score
+                        ? `${Math.round(
+                            Number(
+                              ai.duplicate_score
+                            ) * 100
+                          )}%`
+                        : "0%",
+
+                    priorityReason:
+                      ai.priority_reason ||
+                      "Not available",
+
+                    modelName:
+                      ai.model_name ||
+                      "AI Analysis",
+
+                    processingStatus:
+                      ai.processing_status ||
+                      "completed",
+                  },
+
+                  timeline: [
+                    {
+                      title: "Reported",
+                      date: formattedDate,
+                      time: formattedTime,
+                      type: "reported",
+                    },
+
+                    {
+                      title: "Assigned",
+                      date:
+                        complaint.department_id
+                          ? complaint
+                              .automatically_assigned
+                            ? "Automatically assigned"
+                            : "Manually assigned"
+                          : "-",
+                      time: "",
+                      type: "assigned",
+                    },
+
+                    {
+                      title: "In Progress",
+                      date:
+                        complaint.status ===
+                          "In Progress" ||
+                        complaint.status ===
+                          "Resolved"
+                          ? "Current status"
+                          : "-",
+                      time: "",
+                      type: "progress",
+                    },
+
+                    {
+                      title: "Resolved",
+                      date:
+                        complaint.status ===
+                        "Resolved"
+                          ? "Resolved"
+                          : "-",
+                      time: "",
+                      type: "resolved",
+                    },
+                  ],
+                };
+              }
+            )
+          );
+
+        setComplaints(
+          formattedComplaints
         );
 
-        setComplaints(formattedComplaints);
-
-        if (formattedComplaints.length > 0) {
+        if (
+          formattedComplaints.length >
+          0
+        ) {
           setSelectedComplaintId(
             formattedComplaints[0].id
           );
+        } else {
+          setSelectedComplaintId(null);
         }
       } catch (err) {
         console.error(
@@ -425,48 +545,97 @@ function AdminComplaints() {
       }
     };
 
+    /* ======================================================
+       LOAD DEPARTMENTS
+    ====================================================== */
+
+    const loadDepartments = async () => {
+      const {
+        data,
+        error: departmentsError,
+      } = await supabase
+        .from("departments")
+        .select("id, name")
+        .order("name", {
+          ascending: true,
+        });
+
+      if (departmentsError) {
+        console.error(
+          "Error loading departments:",
+          departmentsError
+        );
+
+        return;
+      }
+
+      setDepartments(
+        data || []
+      );
+    };
+
     loadComplaints();
+    loadDepartments();
   }, []);
 
   /* ======================================================
      FILTERED COMPLAINTS
   ====================================================== */
 
-  const filteredComplaints = useMemo(() => {
-    return complaints.filter((complaint) => {
-      const searchText =
-        search.toLowerCase().trim();
+  const filteredComplaints =
+    useMemo(() => {
+      return complaints.filter(
+        (complaint) => {
+          const searchText =
+            search
+              .toLowerCase()
+              .trim();
 
-      const matchesSearch =
-        complaint.title
-          .toLowerCase()
-          .includes(searchText) ||
-        complaint.reportedBy
-          .toLowerCase()
-          .includes(searchText) ||
-        complaint.category
-          .toLowerCase()
-          .includes(searchText) ||
-        complaint.id
-          .toLowerCase()
-          .includes(searchText);
+          const matchesSearch =
+            complaint.title
+              .toLowerCase()
+              .includes(
+                searchText
+              ) ||
+            complaint.reportedBy
+              .toLowerCase()
+              .includes(
+                searchText
+              ) ||
+            complaint.category
+              .toLowerCase()
+              .includes(
+                searchText
+              ) ||
+            complaint.id
+              .toLowerCase()
+              .includes(
+                searchText
+              );
 
-      const actualStatus =
-        statusOverrides[complaint.id] ??
-        complaint.status;
+          const actualStatus =
+            statusOverrides[
+              complaint.id
+            ] ??
+            complaint.status;
 
-      const matchesFilter =
-        activeFilter === "All" ||
-        actualStatus === activeFilter;
+          const matchesFilter =
+            activeFilter === "All" ||
+            actualStatus ===
+              activeFilter;
 
-      return matchesSearch && matchesFilter;
-    });
-  }, [
-    complaints,
-    search,
-    activeFilter,
-    statusOverrides,
-  ]);
+          return (
+            matchesSearch &&
+            matchesFilter
+          );
+        }
+      );
+    }, [
+      complaints,
+      search,
+      activeFilter,
+      statusOverrides,
+    ]);
 
   /* ======================================================
      SELECTED COMPLAINT
@@ -475,13 +644,15 @@ function AdminComplaints() {
   const baseSelectedComplaint =
     complaints.find(
       (complaint) =>
-        complaint.id === selectedComplaintId
+        complaint.id ===
+        selectedComplaintId
     ) || complaints[0];
 
   const selectedComplaint =
     baseSelectedComplaint
       ? {
           ...baseSelectedComplaint,
+
           status:
             statusOverrides[
               baseSelectedComplaint.id
@@ -494,21 +665,36 @@ function AdminComplaints() {
      ACTIONS
   ====================================================== */
 
-  const openComplaint = (complaintId) => {
-    setSelectedComplaintId(complaintId);
+  const openComplaint = (
+    complaintId
+  ) => {
+    setSelectedComplaintId(
+      complaintId
+    );
+
     setShowStatusMenu(false);
   };
 
-  const goBackToDashboard = () => {
-    navigate("/admin/dashboard");
-  };
+  const goBackToDashboard =
+    () => {
+      navigate(
+        "/admin/dashboard"
+      );
+    };
 
   const goToMap = () => {
     navigate("/admin/map");
   };
 
-  const changeStatus = async (newStatus) => {
-    if (!selectedComplaint) return;
+  /* ======================================================
+     CHANGE STATUS
+  ====================================================== */
+
+  const changeStatus = async (
+    newStatus
+  ) => {
+    if (!selectedComplaint)
+      return;
 
     setShowStatusMenu(false);
 
@@ -519,12 +705,18 @@ function AdminComplaints() {
       selectedComplaint.status;
 
     /* Update UI immediately */
-    setStatusOverrides((previous) => ({
-      ...previous,
-      [complaintId]: newStatus,
-    }));
+
+    setStatusOverrides(
+      (previous) => ({
+        ...previous,
+
+        [complaintId]:
+          newStatus,
+      })
+    );
 
     /* Update database */
+
     const {
       error: updateError,
     } = await supabase
@@ -538,41 +730,315 @@ function AdminComplaints() {
       );
 
     /* Revert if database update fails */
+
     if (updateError) {
       console.error(
         "Status update failed:",
         updateError
       );
 
-      setStatusOverrides((previous) => ({
-        ...previous,
-        [complaintId]: previousStatus,
-      }));
+      setStatusOverrides(
+        (previous) => ({
+          ...previous,
+
+          [complaintId]:
+            previousStatus,
+        })
+      );
 
       return;
     }
 
     /* Update local complaint data */
-    setComplaints((previous) =>
-      previous.map((complaint) =>
-        complaint.id === complaintId
-          ? {
-              ...complaint,
-              status: newStatus,
-            }
-          : complaint
-      )
+
+    setComplaints(
+      (previous) =>
+        previous.map(
+          (complaint) =>
+            complaint.id ===
+            complaintId
+              ? {
+                  ...complaint,
+                  status:
+                    newStatus,
+                }
+              : complaint
+        )
     );
   };
 
   /* ======================================================
      UPDATE PROGRESS
-     Uses the existing changeStatus function.
   ====================================================== */
 
-  const updateProgress = (newStatus) => {
-    changeStatus(newStatus);
+  const updateProgress = (
+    newStatus
+  ) => {
+    changeStatus(
+      newStatus
+    );
   };
+
+  /* ======================================================
+     OPEN DEPARTMENT MODAL
+  ====================================================== */
+
+  const openDepartmentModal =
+    () => {
+      if (!selectedComplaint)
+        return;
+
+      const currentDepartment =
+        departments.find(
+          (department) =>
+            department.name ===
+            selectedComplaint.department
+        );
+
+      setSelectedDepartmentId(
+        currentDepartment?.id ||
+          ""
+      );
+
+      setAssignmentReason("");
+
+      setShowDepartmentModal(
+        true
+      );
+    };
+
+  /* ======================================================
+     SAVE DEPARTMENT ASSIGNMENT
+  ====================================================== */
+
+  const saveDepartmentAssignment =
+    async () => {
+      if (
+        !selectedComplaint ||
+        !selectedDepartmentId
+      ) {
+        return;
+      }
+
+      setSavingDepartment(true);
+
+      try {
+        const selectedDepartment =
+          departments.find(
+            (department) =>
+              department.id ===
+              selectedDepartmentId
+          );
+
+        if (
+          !selectedDepartment
+        ) {
+          throw new Error(
+            "Selected department was not found."
+          );
+        }
+
+        const {
+          data: {
+            user,
+          },
+        } =
+          await supabase.auth.getUser();
+
+        if (!user) {
+          throw new Error(
+            "You must be logged in as an admin."
+          );
+        }
+
+        const {
+          error:
+            updateError,
+        } = await supabase
+          .from("complaints")
+          .update({
+            department_id:
+              selectedDepartmentId,
+
+            automatically_assigned:
+              false,
+
+            assignment_source:
+              "admin",
+
+            manually_assigned_at:
+              new Date().toISOString(),
+
+            assignment_reason:
+              assignmentReason.trim() ||
+              null,
+          })
+          .eq(
+            "id",
+            selectedComplaint.uuid
+          );
+
+        if (updateError) {
+          throw updateError;
+        }
+
+        /* -----------------------------------------------
+           Update local UI
+        ----------------------------------------------- */
+
+        setComplaints(
+          (previous) =>
+            previous.map(
+              (complaint) =>
+                complaint.uuid ===
+                selectedComplaint.uuid
+                  ? {
+                      ...complaint,
+
+                      department:
+                        selectedDepartment.name,
+
+                      automaticallyAssigned:
+                        false,
+
+                      assignmentSource:
+                        "admin",
+
+                      aiAnalysis: {
+                        ...complaint.aiAnalysis,
+
+                        department:
+                          selectedDepartment.name,
+                      },
+
+                      timeline:
+                        complaint.timeline.map(
+                          (item) =>
+                            item.type ===
+                            "assigned"
+                              ? {
+                                  ...item,
+                                  date:
+                                    "Manually assigned",
+                                }
+                              : item
+                        ),
+                    }
+                  : complaint
+            )
+        );
+
+        setShowDepartmentModal(
+          false
+        );
+
+        setAssignmentReason("");
+      } catch (error) {
+        console.error(
+          "Department assignment failed:",
+          error
+        );
+
+        alert(
+          error.message ||
+            "Unable to change department."
+        );
+      } finally {
+        setSavingDepartment(
+          false
+        );
+      }
+    };
+
+  /* ======================================================
+     DELETE COMPLAINT
+  ====================================================== */
+
+  const deleteComplaint =
+    async () => {
+      if (!selectedComplaint)
+        return;
+
+      const confirmed =
+        window.confirm(
+          "Are you sure you want to delete this complaint?\n\n" +
+            "The complaint will be removed from the active complaints list."
+        );
+
+      if (!confirmed)
+        return;
+
+      setDeletingComplaint(
+        true
+      );
+
+      try {
+        const {
+          data: {
+            user,
+          },
+        } =
+          await supabase.auth.getUser();
+
+        if (!user) {
+          throw new Error(
+            "You must be logged in as an admin."
+          );
+        }
+
+        const {
+          error:
+            deleteError,
+        } = await supabase
+          .from("complaints")
+          .update({
+            deleted_at:
+              new Date().toISOString(),
+
+            deleted_by:
+              user.id,
+          })
+          .eq(
+            "id",
+            selectedComplaint.uuid
+          );
+
+        if (deleteError) {
+          throw deleteError;
+        }
+
+        /* -----------------------------------------------
+           Remove from current UI
+        ----------------------------------------------- */
+
+        setComplaints(
+          (previous) =>
+            previous.filter(
+              (complaint) =>
+                complaint.uuid !==
+                selectedComplaint.uuid
+            )
+        );
+
+        setSelectedComplaintId(
+          null
+        );
+      } catch (error) {
+        console.error(
+          "Delete complaint failed:",
+          error
+        );
+
+        alert(
+          error.message ||
+            "Unable to delete complaint."
+        );
+      } finally {
+        setDeletingComplaint(
+          false
+        );
+      }
+    };
 
   /* ======================================================
      RENDER
@@ -582,7 +1048,10 @@ function AdminComplaints() {
     <AdminLayout>
       <div className="complaints-page">
 
-        {/* LOADING */}
+        {/* =================================================
+            LOADING
+        ================================================= */}
+
         {loading && (
           <div
             style={{
@@ -594,26 +1063,36 @@ function AdminComplaints() {
           </div>
         )}
 
-        {/* ERROR */}
-        {!loading && error && (
-          <div
-            style={{
-              padding: "40px",
-              textAlign: "center",
-            }}
-          >
-            <strong>
-              Unable to load complaints.
-            </strong>
+        {/* =================================================
+            ERROR
+        ================================================= */}
 
-            <p>{error}</p>
-          </div>
-        )}
+        {!loading &&
+          error && (
+            <div
+              style={{
+                padding: "40px",
+                textAlign: "center",
+              }}
+            >
+              <strong>
+                Unable to load complaints.
+              </strong>
 
-        {/* EMPTY */}
+              <p>
+                {error}
+              </p>
+            </div>
+          )}
+
+        {/* =================================================
+            EMPTY
+        ================================================= */}
+
         {!loading &&
           !error &&
-          complaints.length === 0 && (
+          complaints.length ===
+            0 && (
             <div
               style={{
                 padding: "40px",
@@ -624,7 +1103,10 @@ function AdminComplaints() {
             </div>
           )}
 
-        {/* MAIN CONTENT */}
+        {/* =================================================
+            MAIN CONTENT
+        ================================================= */}
+
         {!loading &&
           !error &&
           selectedComplaint && (
@@ -634,7 +1116,9 @@ function AdminComplaints() {
               ================================================= */}
 
               <div className="complaints-header">
+
                 <div>
+
                   <button
                     className="back-button"
                     onClick={
@@ -642,17 +1126,26 @@ function AdminComplaints() {
                     }
                     aria-label="Back to dashboard"
                   >
-                    <ArrowLeft size={18} />
+                    <ArrowLeft
+                      size={18}
+                    />
                   </button>
 
                   <div className="header-title">
-                    <h1>All Complaints</h1>
+
+                    <h1>
+                      All Complaints
+                    </h1>
+
                     <p>
                       Manage and track citizen
                       complaints
                     </p>
+
                   </div>
+
                 </div>
+
               </div>
 
               {/* =================================================
@@ -670,8 +1163,12 @@ function AdminComplaints() {
                   {/* SEARCH */}
 
                   <div className="complaints-search-row">
+
                     <div className="search-box">
-                      <Search size={18} />
+
+                      <Search
+                        size={18}
+                      />
 
                       <input
                         type="text"
@@ -683,6 +1180,7 @@ function AdminComplaints() {
                           )
                         }
                       />
+
                     </div>
 
                     <button
@@ -692,8 +1190,10 @@ function AdminComplaints() {
                       <SlidersHorizontal
                         size={17}
                       />
+
                       Filter
                     </button>
+
                   </div>
 
                   {/* TABS */}
@@ -702,17 +1202,24 @@ function AdminComplaints() {
 
                     <button
                       className={
-                        activeFilter === "All"
+                        activeFilter ===
+                        "All"
                           ? "active"
                           : ""
                       }
                       onClick={() =>
-                        setActiveFilter("All")
+                        setActiveFilter(
+                          "All"
+                        )
                       }
                     >
                       All{" "}
                       <span>
-                        ({complaints.length})
+                        (
+                        {
+                          complaints.length
+                        }
+                        )
                       </span>
                     </button>
 
@@ -750,12 +1257,15 @@ function AdminComplaints() {
 
                     <button
                       className={
-                        activeFilter === "Pending"
+                        activeFilter ===
+                        "Pending"
                           ? "active"
                           : ""
                       }
                       onClick={() =>
-                        setActiveFilter("Pending")
+                        setActiveFilter(
+                          "Pending"
+                        )
                       }
                     >
                       Pending{" "}
@@ -785,7 +1295,9 @@ function AdminComplaints() {
                           : ""
                       }
                       onClick={() =>
-                        setActiveFilter("Resolved")
+                        setActiveFilter(
+                          "Resolved"
+                        )
                       }
                     >
                       Resolved{" "}
@@ -817,8 +1329,10 @@ function AdminComplaints() {
                     0 ? (
                       <div
                         style={{
-                          padding: "30px",
-                          textAlign: "center",
+                          padding:
+                            "30px",
+                          textAlign:
+                            "center",
                         }}
                       >
                         No matching complaints.
@@ -827,7 +1341,9 @@ function AdminComplaints() {
                       filteredComplaints.map(
                         (complaint) => (
                           <button
-                            key={complaint.id}
+                            key={
+                              complaint.id
+                            }
                             type="button"
                             className={`complaint-card ${
                               complaint.id ===
@@ -842,11 +1358,15 @@ function AdminComplaints() {
                             }
                           >
 
-                            {/* ONE THUMBNAIL IN LIST */}
+                            {/* THUMBNAIL */}
 
                             <img
-                              src={complaint.image}
-                              alt={complaint.title}
+                              src={
+                                complaint.image
+                              }
+                              alt={
+                                complaint.title
+                              }
                               className="complaint-thumbnail"
                             />
 
@@ -855,36 +1375,53 @@ function AdminComplaints() {
                               <div className="complaint-title-row">
 
                                 <h3>
-                                  {complaint.title}
+                                  {
+                                    complaint.title
+                                  }
                                 </h3>
 
                                 <ChevronRight
-                                  size={21}
+                                  size={
+                                    21
+                                  }
                                   className="complaint-arrow"
                                 />
 
                               </div>
 
                               <p className="reported-by">
+
                                 Reported by:{" "}
+
                                 <strong>
                                   {
                                     complaint.reportedBy
                                   }
                                 </strong>
+
                               </p>
 
                               <div className="complaint-meta">
 
                                 <span>
+
                                   <CalendarDays
-                                    size={14}
+                                    size={
+                                      14
+                                    }
                                   />
-                                  {complaint.date}
+
+                                  {
+                                    complaint.date
+                                  }
+
                                 </span>
 
                                 <span>
-                                  • {complaint.time}
+                                  •{" "}
+                                  {
+                                    complaint.time
+                                  }
                                 </span>
 
                               </div>
@@ -929,8 +1466,12 @@ function AdminComplaints() {
                   <div className="complaint-summary">
 
                     <img
-                      src={selectedComplaint.image}
-                      alt={selectedComplaint.title}
+                      src={
+                        selectedComplaint.image
+                      }
+                      alt={
+                        selectedComplaint.title
+                      }
                     />
 
                     <div className="summary-info">
@@ -938,7 +1479,9 @@ function AdminComplaints() {
                       <div className="summary-title-row">
 
                         <h2>
-                          {selectedComplaint.title}
+                          {
+                            selectedComplaint.title
+                          }
                         </h2>
 
                         <span
@@ -946,30 +1489,45 @@ function AdminComplaints() {
                             selectedComplaint.status
                           )}`}
                         >
-                          {selectedComplaint.status}
+                          {
+                            selectedComplaint.status
+                          }
                         </span>
 
                       </div>
 
                       <p>
                         Reported on:{" "}
+
                         <strong>
-                          {selectedComplaint.date}
+                          {
+                            selectedComplaint.date
+                          }
                         </strong>{" "}
-                        • {selectedComplaint.time}
+
+                        •{" "}
+                        {
+                          selectedComplaint.time
+                        }
                       </p>
 
                       <p>
                         Reported by:{" "}
+
                         <strong>
-                          {selectedComplaint.reportedBy}
+                          {
+                            selectedComplaint.reportedBy
+                          }
                         </strong>
                       </p>
 
                       <p>
                         Category:{" "}
+
                         <strong>
-                          {selectedComplaint.category}
+                          {
+                            selectedComplaint.category
+                          }
                         </strong>
                       </p>
 
@@ -977,30 +1535,48 @@ function AdminComplaints() {
 
                   </div>
 
-                  {/* LOCATION */}
+                  {/* =================================================
+                      LOCATION
+                  ================================================= */}
 
                   <div className="detail-section">
 
                     <div className="section-heading">
-                      <MapPin size={18} />
-                      <h3>Location</h3>
+
+                      <MapPin
+                        size={18}
+                      />
+
+                      <h3>
+                        Location
+                      </h3>
+
                     </div>
 
                     <div className="location-row">
 
                       <span>
-                        <MapPin size={17} />
+
+                        <MapPin
+                          size={17}
+                        />
 
                         {
                           selectedComplaint.location
                         }
+
                       </span>
 
                       <button
-                        onClick={goToMap}
+                        onClick={
+                          goToMap
+                        }
                         type="button"
                       >
-                        <Map size={15} />
+                        <Map
+                          size={15}
+                        />
+
                         View on Map
                       </button>
 
@@ -1008,35 +1584,54 @@ function AdminComplaints() {
 
                   </div>
 
-                  {/* DESCRIPTION */}
+                  {/* =================================================
+                      DESCRIPTION
+                  ================================================= */}
 
                   <div className="detail-section">
 
                     <div className="section-heading">
-                      <h3>Description</h3>
+
+                      <h3>
+                        Description
+                      </h3>
+
                     </div>
 
                     <p className="description-text">
+
                       {
                         selectedComplaint.description
                       }
+
                     </p>
 
                   </div>
 
-                  {/* PHOTOS */}
+                  {/* =================================================
+                      PHOTOS
+                  ================================================= */}
 
                   <div className="detail-section photos-section">
 
                     <div className="section-heading">
-                      <h3>Photos</h3>
-                      <span>1 photo</span>
+
+                      <h3>
+                        Photos
+                      </h3>
+
+                      <span>
+                        1 photo
+                      </span>
+
                     </div>
 
                     <div className="photo-grid single-photo">
 
                       <img
-                        src={selectedComplaint.image}
+                        src={
+                          selectedComplaint.image
+                        }
                         alt={`${selectedComplaint.title} photo`}
                       />
 
@@ -1044,15 +1639,25 @@ function AdminComplaints() {
 
                   </div>
 
-                  {/* AUTOMATIC ALLOTMENT */}
+                  {/* =================================================
+                      ASSIGNMENT CARD
+                  ================================================= */}
 
                   <div className="assignment-card">
 
                     <div className="assignment-icon">
-                      <Users size={19} />
+
+                      <Users
+                        size={19}
+                      />
+
                     </div>
 
-                    <div>
+                    <div
+                      style={{
+                        flex: 1,
+                      }}
+                    >
 
                       <span>
                         Assigned Department
@@ -1064,14 +1669,91 @@ function AdminComplaints() {
                         }
                       </strong>
 
-                      {selectedComplaint.automaticallyAssigned && (
-                        <small>
-                          Automatically assigned
-                          by AI
-                        </small>
-                      )}
+                      <small>
+                        {selectedComplaint
+                          .automaticallyAssigned
+                          ? "Automatically assigned by AI"
+                          : selectedComplaint
+                              .department !==
+                              "Not assigned"
+                            ? "Manually assigned by Admin"
+                            : "Not assigned"}
+                      </small>
 
                     </div>
+
+                    {/* CHANGE DEPARTMENT */}
+
+                    <button
+                      type="button"
+                      onClick={
+                        openDepartmentModal
+                      }
+                      disabled={
+                        savingDepartment
+                      }
+                      style={{
+                        border:
+                          "1px solid #d7e5dc",
+                        background:
+                          "#ffffff",
+                        borderRadius:
+                          "10px",
+                        padding:
+                          "9px 13px",
+                        cursor:
+                          "pointer",
+                        display:
+                          "flex",
+                        alignItems:
+                          "center",
+                        gap: "6px",
+                        fontWeight:
+                          600,
+                      }}
+                    >
+                      <Edit3
+                        size={15}
+                      />
+
+                      Change
+                    </button>
+
+                    {/* DELETE */}
+
+                    <button
+                      type="button"
+                      onClick={
+                        deleteComplaint
+                      }
+                      disabled={
+                        deletingComplaint
+                      }
+                      style={{
+                        border:
+                          "1px solid #f0d4d4",
+                        background:
+                          "#fff8f8",
+                        color:
+                          "#c0392b",
+                        borderRadius:
+                          "10px",
+                        padding:
+                          "9px 11px",
+                        cursor:
+                          "pointer",
+                        display:
+                          "flex",
+                        alignItems:
+                          "center",
+                        gap: "6px",
+                      }}
+                      title="Delete complaint"
+                    >
+                      <Trash2
+                        size={15}
+                      />
+                    </button>
 
                   </div>
 
@@ -1086,7 +1768,11 @@ function AdminComplaints() {
                       <div className="update-progress-title">
 
                         <div className="update-progress-icon">
-                          <Edit3 size={17} />
+
+                          <Edit3
+                            size={17}
+                          />
+
                         </div>
 
                         <div>
@@ -1096,7 +1782,8 @@ function AdminComplaints() {
                           </h3>
 
                           <span>
-                            Update the complaint status
+                            Update the complaint
+                            status
                           </span>
 
                         </div>
@@ -1108,7 +1795,9 @@ function AdminComplaints() {
                           selectedComplaint.status
                         )}`}
                       >
-                        {selectedComplaint.status}
+                        {
+                          selectedComplaint.status
+                        }
                       </span>
 
                     </div>
@@ -1131,11 +1820,12 @@ function AdminComplaints() {
                           )
                         }
                       >
+
                         <span className="progress-dot pending-dot"></span>
 
                         Pending
-                      </button>
 
+                      </button>
 
                       {/* IN PROGRESS */}
 
@@ -1153,11 +1843,12 @@ function AdminComplaints() {
                           )
                         }
                       >
+
                         <span className="progress-dot"></span>
 
                         In Progress
-                      </button>
 
+                      </button>
 
                       {/* RESOLVED */}
 
@@ -1175,9 +1866,11 @@ function AdminComplaints() {
                           )
                         }
                       >
+
                         <span className="progress-dot resolved-dot"></span>
 
                         Resolved
+
                       </button>
 
                     </div>
@@ -1195,7 +1888,11 @@ function AdminComplaints() {
                       <div className="ai-analysis-title">
 
                         <div className="ai-icon">
-                          <Sparkles size={16} />
+
+                          <Sparkles
+                            size={16}
+                          />
+
                         </div>
 
                         <div>
@@ -1214,22 +1911,26 @@ function AdminComplaints() {
                       </div>
 
                       <span className="ai-confidence">
+
                         {
                           selectedComplaint
                             .aiAnalysis
                             .confidence
                         }{" "}
                         confidence
+
                       </span>
 
                     </div>
 
                     <p className="ai-summary">
+
                       {
                         selectedComplaint
                           .aiAnalysis
                           .summary
                       }
+
                     </p>
 
                     <div className="ai-insights">
@@ -1238,7 +1939,9 @@ function AdminComplaints() {
 
                       <div className="ai-insight">
 
-                        <Target size={15} />
+                        <Target
+                          size={15}
+                        />
 
                         <div>
 
@@ -1257,7 +1960,6 @@ function AdminComplaints() {
                         </div>
 
                       </div>
-
 
                       {/* PRIORITY */}
 
@@ -1291,12 +1993,13 @@ function AdminComplaints() {
 
                       </div>
 
-
                       {/* DUPLICATE RISK */}
 
                       <div className="ai-insight">
 
-                        <ShieldCheck size={15} />
+                        <ShieldCheck
+                          size={15}
+                        />
 
                         <div>
 
@@ -1322,10 +2025,14 @@ function AdminComplaints() {
 
                     <div className="ai-recommendation">
 
-                      <Sparkles size={14} />
+                      <Sparkles
+                        size={14}
+                      />
 
                       <span>
+
                         Recommended department:{" "}
+
                         <strong>
                           {
                             selectedComplaint
@@ -1333,6 +2040,7 @@ function AdminComplaints() {
                               .department
                           }
                         </strong>
+
                       </span>
 
                     </div>
@@ -1351,7 +2059,9 @@ function AdminComplaints() {
                         />
 
                         <span>
+
                           Priority reason:{" "}
+
                           <strong>
                             {
                               selectedComplaint
@@ -1359,6 +2069,7 @@ function AdminComplaints() {
                                 .priorityReason
                             }
                           </strong>
+
                         </span>
 
                       </div>
@@ -1367,19 +2078,31 @@ function AdminComplaints() {
 
                   </div>
 
-                  {/* STATUS TIMELINE */}
+                  {/* =================================================
+                      STATUS TIMELINE
+                  ================================================= */}
 
                   <div className="detail-section timeline-section">
 
                     <div className="section-heading">
-                      <Clock3 size={18} />
-                      <h3>Status Timeline</h3>
+
+                      <Clock3
+                        size={18}
+                      />
+
+                      <h3>
+                        Status Timeline
+                      </h3>
+
                     </div>
 
                     <div className="timeline">
 
                       {selectedComplaint.timeline.map(
-                        (item, index) => {
+                        (
+                          item,
+                          index
+                        ) => {
 
                           const completed =
                             item.type ===
@@ -1389,7 +2112,8 @@ function AdminComplaints() {
                               item.type ===
                                 "assigned" &&
                               selectedComplaint
-                                .automaticallyAssigned
+                                .department !==
+                                "Not assigned"
                             ) ||
 
                             (
@@ -1411,7 +2135,9 @@ function AdminComplaints() {
                           return (
                             <div
                               className="timeline-item"
-                              key={index}
+                              key={
+                                index
+                              }
                             >
 
                               <div
@@ -1424,11 +2150,15 @@ function AdminComplaints() {
 
                                 {completed ? (
                                   <CheckCircle2
-                                    size={16}
+                                    size={
+                                      16
+                                    }
                                   />
                                 ) : (
                                   <Circle
-                                    size={16}
+                                    size={
+                                      16
+                                    }
                                   />
                                 )}
 
@@ -1447,15 +2177,22 @@ function AdminComplaints() {
                               <div className="timeline-content">
 
                                 <strong>
-                                  {item.title}
+                                  {
+                                    item.title
+                                  }
                                 </strong>
 
-                                {item.date !== "-" && (
+                                {item.date !==
+                                  "-" && (
                                   <span>
-                                    {item.date}
+
+                                    {
+                                      item.date
+                                    }
 
                                     {item.time &&
                                       ` • ${item.time}`}
+
                                   </span>
                                 )}
 
@@ -1475,6 +2212,378 @@ function AdminComplaints() {
               </div>
             </>
           )}
+
+        {/* =================================================
+            CHANGE DEPARTMENT MODAL
+        ================================================= */}
+
+        {showDepartmentModal && (
+          <div
+            style={{
+              position:
+                "fixed",
+              inset: 0,
+              background:
+                "rgba(0, 0, 0, 0.35)",
+              display: "flex",
+              alignItems:
+                "center",
+              justifyContent:
+                "center",
+              zIndex: 9999,
+              padding: "20px",
+            }}
+          >
+
+            <div
+              style={{
+                width:
+                  "100%",
+                maxWidth:
+                  "480px",
+                background:
+                  "#ffffff",
+                borderRadius:
+                  "18px",
+                padding:
+                  "24px",
+                boxShadow:
+                  "0 20px 60px rgba(0,0,0,0.15)",
+              }}
+            >
+
+              {/* HEADER */}
+
+              <div
+                style={{
+                  display:
+                    "flex",
+                  justifyContent:
+                    "space-between",
+                  alignItems:
+                    "center",
+                  marginBottom:
+                    "22px",
+                }}
+              >
+
+                <div>
+
+                  <h2
+                    style={{
+                      margin: 0,
+                      fontSize:
+                        "20px",
+                    }}
+                  >
+                    Change Department
+                  </h2>
+
+                  <p
+                    style={{
+                      margin:
+                        "6px 0 0",
+                      color:
+                        "#718078",
+                      fontSize:
+                        "14px",
+                    }}
+                  >
+                    Reassign this complaint
+                    manually.
+                  </p>
+
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowDepartmentModal(
+                      false
+                    )
+                  }
+                  style={{
+                    border:
+                      "none",
+                    background:
+                      "transparent",
+                    cursor:
+                      "pointer",
+                  }}
+                  aria-label="Close"
+                >
+                  <X
+                    size={20}
+                  />
+                </button>
+
+              </div>
+
+              {/* CURRENT DEPARTMENT */}
+
+              <div
+                style={{
+                  marginBottom:
+                    "18px",
+                }}
+              >
+
+                <label
+                  style={{
+                    display:
+                      "block",
+                    fontSize:
+                      "13px",
+                    fontWeight:
+                      600,
+                    marginBottom:
+                      "7px",
+                  }}
+                >
+                  Current Department
+                </label>
+
+                <div
+                  style={{
+                    padding:
+                      "12px",
+                    background:
+                      "#f5faf6",
+                    borderRadius:
+                      "10px",
+                  }}
+                >
+                  {
+                    selectedComplaint?.department
+                  }
+                </div>
+
+              </div>
+
+              {/* NEW DEPARTMENT */}
+
+              <div
+                style={{
+                  marginBottom:
+                    "18px",
+                }}
+              >
+
+                <label
+                  style={{
+                    display:
+                      "block",
+                    fontSize:
+                      "13px",
+                    fontWeight:
+                      600,
+                    marginBottom:
+                      "7px",
+                  }}
+                >
+                  Assign To
+                </label>
+
+                <select
+                  value={
+                    selectedDepartmentId
+                  }
+                  onChange={(e) =>
+                    setSelectedDepartmentId(
+                      e.target.value
+                    )
+                  }
+                  style={{
+                    width:
+                      "100%",
+                    padding:
+                      "12px",
+                    border:
+                      "1px solid #d7e5dc",
+                    borderRadius:
+                      "10px",
+                    background:
+                      "#ffffff",
+                    fontSize:
+                      "14px",
+                    boxSizing:
+                      "border-box",
+                  }}
+                >
+
+                  <option value="">
+                    Select department
+                  </option>
+
+                  {departments.map(
+                    (
+                      department
+                    ) => (
+                      <option
+                        key={
+                          department.id
+                        }
+                        value={
+                          department.id
+                        }
+                      >
+                        {
+                          department.name
+                        }
+                      </option>
+                    )
+                  )}
+
+                </select>
+
+              </div>
+
+              {/* REASON */}
+
+              <div
+                style={{
+                  marginBottom:
+                    "22px",
+                }}
+              >
+
+                <label
+                  style={{
+                    display:
+                      "block",
+                    fontSize:
+                      "13px",
+                    fontWeight:
+                      600,
+                    marginBottom:
+                      "7px",
+                  }}
+                >
+
+                  Reason for reassignment
+
+                  <span
+                    style={{
+                      fontWeight:
+                        400,
+                      color:
+                        "#8a958e",
+                    }}
+                  >
+                    {" "}
+                    (optional)
+                  </span>
+
+                </label>
+
+                <textarea
+                  value={
+                    assignmentReason
+                  }
+                  onChange={(e) =>
+                    setAssignmentReason(
+                      e.target.value
+                    )
+                  }
+                  placeholder="Why is this complaint being reassigned?"
+                  rows={3}
+                  style={{
+                    width:
+                      "100%",
+                    resize:
+                      "vertical",
+                    padding:
+                      "12px",
+                    border:
+                      "1px solid #d7e5dc",
+                    borderRadius:
+                      "10px",
+                    fontFamily:
+                      "inherit",
+                    fontSize:
+                      "14px",
+                    boxSizing:
+                      "border-box",
+                  }}
+                />
+
+              </div>
+
+              {/* ACTIONS */}
+
+              <div
+                style={{
+                  display:
+                    "flex",
+                  justifyContent:
+                    "flex-end",
+                  gap: "10px",
+                }}
+              >
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowDepartmentModal(
+                      false
+                    )
+                  }
+                  disabled={
+                    savingDepartment
+                  }
+                  style={{
+                    border:
+                      "1px solid #d7e5dc",
+                    background:
+                      "#ffffff",
+                    borderRadius:
+                      "10px",
+                    padding:
+                      "10px 16px",
+                    cursor:
+                      "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    saveDepartmentAssignment
+                  }
+                  disabled={
+                    savingDepartment ||
+                    !selectedDepartmentId
+                  }
+                  style={{
+                    border:
+                      "none",
+                    background:
+                      "#238b57",
+                    color:
+                      "#ffffff",
+                    borderRadius:
+                      "10px",
+                    padding:
+                      "10px 18px",
+                    cursor:
+                      "pointer",
+                    fontWeight:
+                      600,
+                  }}
+                >
+                  {savingDepartment
+                    ? "Saving..."
+                    : "Save Assignment"}
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
 
       </div>
     </AdminLayout>

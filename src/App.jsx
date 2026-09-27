@@ -27,6 +27,8 @@ import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AdminComplaints from "./pages/Admin/AdminComplaints";
 import AdminCategories from "./pages/Admin/AdminCategories";
+import AdminDepartments from "./pages/Admin/AdminDepartments";
+import AdminSettings from "./pages/Admin/AdminSettings";
 
 
 function App() {
@@ -39,7 +41,6 @@ function App() {
             USER
         ========================= */}
 
-        {/* ROOT → LOGIN */}
         <Route
           path="/"
           element={<UserLogin />}
@@ -110,7 +111,6 @@ function App() {
             ADMIN COMPLAINTS
         ========================= */}
 
-        {/* ONE COMPLAINTS PAGE */}
         <Route
           path="/admin/complaints"
           element={<AdminComplaints />}
@@ -124,6 +124,26 @@ function App() {
         <Route
           path="/admin/categories"
           element={<AdminCategories />}
+        />
+
+
+        {/* =========================
+            ADMIN DEPARTMENTS
+        ========================= */}
+
+        <Route
+          path="/admin/departments"
+          element={<AdminDepartments />}
+        />
+
+
+        {/* =========================
+            ADMIN SETTINGS
+        ========================= */}
+
+        <Route
+          path="/admin/settings"
+          element={<AdminSettings />}
         />
 
 
