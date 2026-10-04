@@ -1,0 +1,244 @@
+/* =========================================
+   ADMIN NAVBAR
+========================================= */
+
+.admin-navbar {
+  width: 100%;
+
+  height: 72px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 0 28px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5ebe7;
+
+  z-index: 100;
+}
+
+
+/* =========================================
+   MENU BUTTON
+========================================= */
+
+.navbar-menu-button {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #303942;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.navbar-menu-button:hover {
+  background: #f3f6f4;
+
+  color: #19763a;
+}
+
+
+/* =========================================
+   RIGHT SIDE
+========================================= */
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
+}
+
+
+/* =========================================
+   NOTIFICATIONS
+========================================= */
+
+.navbar-notification {
+  position: relative;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: #303942;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.navbar-notification:hover {
+  background: #f3f6f4;
+}
+
+.notification-count {
+  position: absolute;
+
+  top: 2px;
+  right: 2px;
+
+  min-width: 17px;
+  height: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 4px;
+
+  border: 2px solid #ffffff;
+  border-radius: 20px;
+
+  background: #d83c3c;
+
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+
+/* =========================================
+   PROFILE
+========================================= */
+
+.navbar-profile {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 5px 2px;
+
+  border: none;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  text-align: left;
+}
+
+
+/* Avatar */
+
+.navbar-avatar {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eaf5e9;
+
+  color: #237d42;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* User information */
+
+.navbar-user-info {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 110px;
+}
+
+.navbar-user-info strong {
+  color: #17202a;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1.3;
+}
+
+.navbar-user-info span {
+  margin-top: 2px;
+
+  color: #7a838b;
+
+  font-size: 10px;
+
+  line-height: 1.3;
+}
+
+
+/* Arrow */
+
+.navbar-chevron {
+  color: #667079;
+
+  margin-left: 3px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 900px) {
+
+  .admin-navbar {
+    left: 220px;
+
+    padding: 0 20px;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .admin-navbar {
+    left: 76px;
+
+    height: 64px;
+
+    padding: 0 15px;
+  }
+
+  .navbar-user-info {
+    display: none;
+  }
+
+  .navbar-profile {
+    gap: 0;
+  }
+
+}

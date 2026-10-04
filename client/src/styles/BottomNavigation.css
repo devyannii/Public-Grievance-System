@@ -1,0 +1,257 @@
+/* =========================================
+   SHARED USER BOTTOM NAVIGATION
+========================================= */
+
+
+/* =========================================
+   NAVIGATION CONTAINER
+========================================= */
+
+.user-bottom-navigation,
+.reports-bottom-nav,
+.report-bottom-navigation,
+.issue-details-navigation,
+.map-bottom-navigation,
+.profile-bottom-navigation {
+  position: fixed;
+
+  left: 50%;
+  bottom: 0;
+
+  transform: translateX(-50%);
+
+  width: 100%;
+  max-width: 430px;
+
+  height: 76px;
+
+  display: grid;
+
+  grid-template-columns: repeat(5, 1fr);
+
+  align-items: center;
+
+  padding: 0 10px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-top: 1px solid #edf0f2;
+
+  box-shadow:
+    0 -4px 15px rgba(25, 55, 42, 0.05);
+
+  z-index: 100;
+}
+
+
+/* =========================================
+   ALL NAV ITEMS
+========================================= */
+
+.bottom-nav-item,
+.report-bottom-item,
+.issue-nav-item,
+.map-bottom-item,
+.profile-bottom-item {
+  width: 52px;
+  height: 55px;
+
+  justify-self: center;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #667382;
+
+  font-family: "Inter", Arial, sans-serif;
+
+  font-size: 8px;
+
+  font-weight: 500;
+
+  line-height: 1.2;
+
+  text-align: center;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   NAV ICONS
+========================================= */
+
+.bottom-nav-item svg,
+.report-bottom-item svg,
+.issue-nav-item svg,
+.map-bottom-item svg,
+.profile-bottom-item svg {
+  width: 18px;
+  height: 18px;
+
+  flex-shrink: 0;
+
+  stroke-width: 1.8;
+}
+
+
+/* =========================================
+   ACTIVE NAV ITEM
+========================================= */
+
+.bottom-nav-item.active,
+.report-bottom-item.active,
+.issue-nav-item.active,
+.map-bottom-item.active,
+.profile-bottom-item.active {
+  color: #00a982;
+
+  font-weight: 650;
+}
+
+
+.bottom-nav-item.active svg,
+.report-bottom-item.active svg,
+.issue-nav-item.active svg,
+.map-bottom-item.active svg,
+.profile-bottom-item.active svg {
+  stroke-width: 2.2;
+}
+
+
+/* =========================================
+   CENTER PLUS BUTTON
+========================================= */
+
+.bottom-add-button,
+.report-add-button,
+.issue-nav-add,
+.map-add-button,
+.profile-add-button {
+  width: 50px;
+  height: 50px;
+
+  align-self: center;
+  justify-self: center;
+
+  margin-top: -20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 4px solid #ffffff;
+
+  border-radius: 50%;
+
+  background: #00a982;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 5px 14px rgba(0, 169, 130, 0.28);
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   PLUS ICON
+========================================= */
+
+.bottom-add-button svg,
+.report-add-button svg,
+.issue-nav-add svg,
+.map-add-button svg,
+.profile-add-button svg {
+  width: 24px;
+  height: 24px;
+
+  flex-shrink: 0;
+
+  stroke-width: 2;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 699px) {
+
+  .user-bottom-navigation,
+  .reports-bottom-nav,
+  .report-bottom-navigation,
+  .issue-details-navigation,
+  .map-bottom-navigation,
+  .profile-bottom-navigation {
+    position: fixed;
+
+    left: 50%;
+    right: auto;
+    bottom: 0;
+
+    transform: translateX(-50%);
+
+    width: 100%;
+    max-width: 430px;
+
+    height: 76px;
+
+    border-radius: 0;
+  }
+}
+
+
+/* =========================================
+   DESKTOP / BROWSER PREVIEW
+========================================= */
+
+@media (min-width: 700px) {
+
+  .user-bottom-navigation,
+  .reports-bottom-nav,
+  .report-bottom-navigation,
+  .issue-details-navigation,
+  .map-bottom-navigation,
+  .profile-bottom-navigation {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    transform: none;
+
+    width: 100%;
+    max-width: 430px;
+
+    height: 76px;
+
+    border-radius: 0 0 24px 24px;
+  }
+}

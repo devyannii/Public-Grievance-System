@@ -1,0 +1,513 @@
+/* =========================================
+   MAP VIEW PAGE
+========================================= */
+
+.map-view-page {
+  width: 100%;
+  height: 100dvh;
+
+  display: flex;
+  flex-direction: column;
+
+  position: relative;
+
+  background: #ffffff;
+  color: #071426;
+
+  font-family: "Inter", Arial, sans-serif;
+
+  overflow: hidden;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.map-view-header {
+  width: 100%;
+  height: 68px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 18px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #edf0f2;
+
+  position: relative;
+  z-index: 20;
+
+  box-sizing: border-box;
+}
+
+
+.map-view-header h1 {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  margin: 0;
+
+  font-size: 19px;
+  font-weight: 700;
+
+  color: #071426;
+
+  white-space: nowrap;
+}
+
+
+.map-back-button,
+.map-location-header-button {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #182535;
+
+  cursor: pointer;
+}
+
+
+.map-back-button svg,
+.map-location-header-button svg {
+  stroke-width: 1.8;
+}
+
+
+.map-location-header-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   FILTERS
+========================================= */
+
+.map-filter-container {
+  width: 100%;
+  height: 58px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 16px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #edf0f2;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  white-space: nowrap;
+
+  scrollbar-width: none;
+
+  position: relative;
+  z-index: 20;
+
+  box-sizing: border-box;
+}
+
+
+.map-filter-container::-webkit-scrollbar {
+  display: none;
+}
+
+
+.map-filter {
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 15px;
+
+  border: 1px solid #dce3e8;
+
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  color: #26364a;
+
+  font-family: inherit;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition: 0.2s ease;
+}
+
+
+.map-filter:hover {
+  border-color: #00a982;
+}
+
+
+.map-filter.active {
+  background: #00a982;
+
+  border-color: #00a982;
+
+  color: #ffffff;
+}
+
+
+/* =========================================
+   MAP CONTAINER
+========================================= */
+
+.map-container {
+  width: 100%;
+
+  flex: 1;
+
+  min-height: 0;
+
+  position: relative;
+
+  overflow: hidden;
+
+  background: #dceff3;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   LEAFLET MAP
+========================================= */
+
+.real-map {
+  width: 100%;
+  height: 100%;
+
+  z-index: 1;
+}
+
+
+/* =========================================
+   CURRENT LOCATION BUTTON
+========================================= */
+
+.map-current-location-button {
+  position: absolute;
+
+  right: 16px;
+  bottom: 16px;
+
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #182535;
+
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.18);
+
+  cursor: pointer;
+
+  z-index: 500;
+}
+
+
+.map-current-location-button:hover {
+  background: #f5f8f6;
+}
+
+
+.map-current-location-button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   LEAFLET POPUP
+========================================= */
+
+.leaflet-complaint-popup {
+  width: 210px;
+
+  font-family: "Inter", Arial, sans-serif;
+}
+
+
+.leaflet-complaint-popup h3 {
+  margin: 8px 0 7px;
+
+  font-size: 14px;
+  line-height: 1.35;
+
+  color: #182535;
+
+  font-weight: 700;
+}
+
+
+.map-popup-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 4px 8px;
+
+  border-radius: 12px;
+
+  font-size: 10px;
+
+  font-weight: 600;
+}
+
+
+.map-popup-status.pending {
+  background: #fff3d9;
+  color: #a86c00;
+}
+
+
+.map-popup-status.in-progress {
+  background: #e4f1ff;
+  color: #2672b8;
+}
+
+
+.map-popup-status.resolved {
+  background: #e2f7ed;
+  color: #168052;
+}
+
+
+.map-popup-location {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  margin: 0 0 7px;
+
+  font-size: 11px;
+
+  color: #667382;
+
+  line-height: 1.35;
+}
+
+
+.map-popup-location svg {
+  flex-shrink: 0;
+}
+
+
+.map-popup-id {
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-size: 10px;
+
+  color: #8a969f;
+}
+
+
+.map-popup-view-button {
+  width: 100%;
+
+  height: 34px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: #00a982;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.map-popup-view-button:hover {
+  background: #008f70;
+}
+
+
+/* =========================================
+   LEAFLET OVERRIDES
+========================================= */
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+
+  font-family: "Inter", Arial, sans-serif;
+
+  background: #dceff3;
+}
+
+
+.leaflet-popup-content {
+  margin: 12px;
+}
+
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+}
+
+
+.leaflet-popup-tip {
+  background: #ffffff;
+}
+
+
+.leaflet-control-zoom {
+  margin-right: 12px !important;
+  margin-bottom: 12px !important;
+}
+
+
+.leaflet-control-zoom a {
+  color: #182535 !important;
+
+  font-size: 20px !important;
+
+  line-height: 30px !important;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 699px) {
+
+  .map-view-page {
+    height: 100dvh;
+
+    border-radius: 0;
+  }
+
+
+  .map-view-header {
+    height: 64px;
+
+    padding: 0 14px;
+  }
+
+
+  .map-view-header h1 {
+    font-size: 16px;
+  }
+
+
+  .map-filter-container {
+    height: 56px;
+
+    padding: 0 14px;
+
+    gap: 7px;
+  }
+
+
+  .map-filter {
+    height: 36px;
+
+    padding: 0 13px;
+
+    font-size: 11px;
+  }
+
+
+  .map-current-location-button {
+    right: 14px;
+    bottom: 14px;
+
+    width: 46px;
+    height: 46px;
+  }
+
+
+  .leaflet-control-zoom {
+    margin-right: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+}
+
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media (min-width: 700px) {
+
+  .map-view-page {
+    width: 430px;
+
+    max-width: 430px;
+
+    height: 100dvh;
+
+    margin: 0 auto;
+
+    border-radius: 24px;
+
+    box-shadow:
+      0 8px 35px rgba(20, 45, 35, 0.10);
+
+    overflow: hidden;
+  }
+
+}

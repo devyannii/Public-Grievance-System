@@ -1,0 +1,215 @@
+/* =====================================================
+   UNIFIED USER APP LAYOUT
+   Keeps every user page the same width and viewport size
+===================================================== */
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   COMMON USER PAGE FRAME
+===================================================== */
+
+.user-landing-page,
+.user-dashboard-page,
+.my-reports-page,
+.report-issue-page,
+.issue-details-page,
+.map-view-page,
+.profile-page {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  margin: 0 auto;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   LANDING
+===================================================== */
+
+.user-landing-page {
+  min-height: 100dvh;
+}
+
+.user-landing-card {
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 100dvh;
+  height: auto;
+
+  margin: 0 auto;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   MY REPORTS
+===================================================== */
+
+.my-reports-page {
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 100dvh;
+  height: auto;
+
+  margin: 0 auto;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   REPORT ISSUE
+===================================================== */
+
+.report-issue-page {
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 100dvh;
+  height: auto;
+
+  margin: 0 auto;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   ISSUE DETAILS
+===================================================== */
+
+.issue-details-page {
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 100dvh;
+  height: auto;
+
+  margin: 0 auto;
+
+  box-sizing: border-box;
+}
+
+.issue-details-card {
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 100dvh;
+  height: auto;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   MAP
+===================================================== */
+
+.map-view-page {
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 100dvh;
+  height: 100dvh;
+
+  margin: 0 auto;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+.profile-page {
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 100dvh;
+  height: auto;
+
+  margin: 0 auto;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   USER BOTTOM NAVIGATION
+   Same width as the app
+===================================================== */
+
+.user-bottom-navigation,
+.map-bottom-navigation {
+  width: 100%;
+  max-width: 430px;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 430px) {
+
+  .user-landing-page,
+  .user-dashboard-page,
+  .my-reports-page,
+  .report-issue-page,
+  .issue-details-page,
+  .map-view-page,
+  .profile-page {
+    width: 100%;
+    max-width: 430px;
+
+    margin: 0;
+  }
+
+  .user-landing-card,
+  .issue-details-card {
+    width: 100%;
+    max-width: 430px;
+  }
+
+}
+
+
+/* =====================================================
+   DESKTOP
+   Keep the mobile-style app centered
+===================================================== */
+
+@media (min-width: 431px) {
+
+  .user-landing-page,
+  .user-dashboard-page,
+  .my-reports-page,
+  .report-issue-page,
+  .issue-details-page,
+  .map-view-page,
+  .profile-page {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+}
