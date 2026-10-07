@@ -1,14 +1,16 @@
 import React, { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 
 import {
   User,
+  Mail,
   Lock,
   Eye,
   EyeOff,
-  LogIn,
+  UserPlus,
   MailCheck,
-  KeyRound,
+  ArrowLeft,
 } from "lucide-react";
 
 import { supabase } from "../../lib/supabaseClient";
@@ -18,21 +20,31 @@ import loginImage from "../../assets/images/user-login-image.png";
 import "../../styles/UserAuth.css";
 
 
-function UserLogin() {
+function UserRegister() {
   const navigate = useNavigate();
 
   // =========================================
   // FORM VALUES
   // =========================================
 
-  const [loginValue, setLoginValue] = useState("");
+  const [fullName, setFullName] = useState("");
+
+  const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
+
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
+
 
   // =========================================
   // UI STATES
   // =========================================
 
   const [showPassword, setShowPassword] =
+    useState(false);
+
+  const [showConfirmPassword, setShowConfirmPassword] =
     useState(false);
 
   const [error, setError] = useState("");
@@ -56,138 +68,301 @@ function UserLogin() {
 
 
   // =========================================
-  // LOGIN
+  // GET USER LOCATION
   // =========================================
 
-  const handleLogin = async (e) => {
+  const requestUserLocation = () => {
+    return new Promise((resolve) => {
+
+      if (!("geolocation" in navigator)) {
+
+        console.warn(
+          "Geolocation is not supported by this browser."
+        );
+
+        resolve(null);
+
+        return;
+      }
+
+
+      navigator.geolocation.getCurrentPosition(
+
+        (position) => {
+
+          const locationData = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            timestamp: new Date().toISOString(),
+          };
+
+
+          localStorage.setItem(
+            "userLocation",
+            JSON.stringify(locationData)
+          );
+
+
+          console.log(
+            "User location:",
+            locationData
+          );
+
+
+          resolve(locationData);
+        },
+
+
+        (locationError) => {
+
+          console.warn(
+            "Location permission/error:",
+            locationError.message
+          );
+
+
+          // Location is optional.
+          // Registration continues even if
+          // location permission is denied.
+
+          resolve(null);
+        },
+
+
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+
+      );
+
+    });
+  };
+
+
+  // =========================================
+  // REGISTER
+  // =========================================
+
+  const handleRegister = async (e) => {
+
     e.preventDefault();
 
     setError("");
     setSuccess("");
 
+
+    // -----------------------------------------
+    // FULL NAME VALIDATION
+    // -----------------------------------------
+
+    const cleanFullName =
+      fullName.trim();
+
+
+    if (!cleanFullName) {
+
+      setError(
+        "Please enter your full name."
+      );
+
+      return;
+    }
+
+
     // -----------------------------------------
     // EMAIL VALIDATION
     // -----------------------------------------
 
-    const email =
-      loginValue.trim().toLowerCase();
+    const cleanEmail =
+      email.trim().toLowerCase();
 
-    if (!email) {
+
+    if (!cleanEmail) {
+
       setError(
         "Please enter your email address."
       );
+
       return;
     }
 
-    if (!email.includes("@")) {
+
+    if (!cleanEmail.includes("@")) {
+
       setError(
         "Please enter a valid email address."
       );
+
       return;
     }
+
 
     // -----------------------------------------
     // PASSWORD VALIDATION
     // -----------------------------------------
 
     if (!password) {
+
       setError(
-        "Please enter your password."
+        "Please enter a password."
       );
+
       return;
     }
 
 
+    if (password.length < 6) {
+
+      setError(
+        "Password must be at least 6 characters long."
+      );
+
+      return;
+    }
+
+
+    // -----------------------------------------
+    // CONFIRM PASSWORD
+    // -----------------------------------------
+
+    if (!confirmPassword) {
+
+      setError(
+        "Please confirm your password."
+      );
+
+      return;
+    }
+
+
+    if (password !== confirmPassword) {
+
+      setError(
+        "Passwords do not match."
+      );
+
+      return;
+    }
+
+
+    // =========================================
+    // SUPABASE SIGNUP
+    // =========================================
+
     try {
+
       setLoading(true);
 
-      // -----------------------------------------
-      // SUPABASE LOGIN
-      // -----------------------------------------
+
+      console.log(
+        "Creating account for:",
+        cleanEmail
+      );
+
 
       const {
         data,
-        error: loginError,
+        error: signupError,
       } =
-        await supabase.auth.signInWithPassword({
-          email: email,
+        await supabase.auth.signUp({
+
+          email: cleanEmail,
+
           password: password,
+
+          options: {
+
+            emailRedirectTo:
+              `${window.location.origin}/user/login`,
+
+            data: {
+              full_name: cleanFullName,
+            },
+
+          },
+
         });
 
 
       // -----------------------------------------
-      // HANDLE LOGIN ERROR
+      // HANDLE SIGNUP ERROR
       // -----------------------------------------
 
-      if (loginError) {
+      if (signupError) {
+
         console.error(
-          "Supabase login error:",
-          loginError
+          "Supabase registration error:",
+          signupError
         );
 
-        const errorMessage =
-          loginError.message?.toLowerCase() ||
-          "";
-
-
-        // ---------------------------------------
-        // EMAIL NOT VERIFIED
-        // ---------------------------------------
-
-        if (
-          errorMessage.includes(
-            "email not confirmed"
-          ) ||
-          errorMessage.includes(
-            "email_not_confirmed"
-          )
-        ) {
-          setError(
-            "Please verify your email address before logging in."
-          );
-
-          return;
-        }
-
-
-        // ---------------------------------------
-        // INVALID LOGIN
-        // ---------------------------------------
 
         setError(
-          "Unable to login. Please check your email and password."
+          signupError.message ||
+            "Unable to create your account. Please try again."
         );
+
 
         return;
       }
 
 
       // -----------------------------------------
-      // LOGIN SUCCESSFUL
+      // REGISTRATION SUCCESSFUL
       // -----------------------------------------
 
       console.log(
-        "Login successful:",
+        "Registration successful:",
         data
       );
 
-      navigate("/user", {
-        replace: true,
-      });
 
-    } catch (loginException) {
-      console.error(
-        "Login exception:",
-        loginException
+      // -----------------------------------------
+      // REQUEST LOCATION
+      // -----------------------------------------
+
+      await requestUserLocation();
+
+
+      // -----------------------------------------
+      // SHOW SUCCESS MESSAGE
+      // -----------------------------------------
+
+      setSuccess(
+        "Registration successful! Please check your email and verify your account before logging in."
       );
+
+
+      // -----------------------------------------
+      // CLEAR PASSWORD FIELDS
+      // -----------------------------------------
+
+      setPassword("");
+
+      setConfirmPassword("");
+
+
+    } catch (registerException) {
+
+      console.error(
+        "Registration exception:",
+        registerException
+      );
+
 
       setError(
-        "Unable to login. Please check your email and password."
+        "Unable to create your account. Please try again."
       );
 
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
 
@@ -201,27 +376,33 @@ function UserLogin() {
       setError("");
       setSuccess("");
 
-      const email =
-        loginValue.trim().toLowerCase();
+
+      const cleanEmail =
+        email.trim().toLowerCase();
 
 
-      if (!email) {
+      if (!cleanEmail) {
+
         setError(
           "Please enter your email address first."
         );
+
         return;
       }
 
 
-      if (!email.includes("@")) {
+      if (!cleanEmail.includes("@")) {
+
         setError(
           "Please enter a valid email address."
         );
+
         return;
       }
 
 
       try {
+
         setResending(true);
 
 
@@ -229,26 +410,33 @@ function UserLogin() {
           error: resendError,
         } =
           await supabase.auth.resend({
+
             type: "signup",
 
-            email: email,
+            email: cleanEmail,
 
             options: {
+
               emailRedirectTo:
                 `${window.location.origin}/user/login`,
+
             },
+
           });
 
 
         if (resendError) {
+
           console.error(
             "Resend verification error:",
             resendError
           );
 
+
           setError(
             "Unable to resend the verification email. Please try again later."
           );
+
 
           return;
         }
@@ -258,139 +446,34 @@ function UserLogin() {
           "Verification email sent. Please check your inbox and verify your email."
         );
 
+
       } catch (resendException) {
+
         console.error(
           "Resend verification exception:",
           resendException
         );
 
+
         setError(
           "Unable to resend the verification email. Please try again later."
         );
 
+
       } finally {
+
         setResending(false);
+
       }
+
     };
 
 
   // =========================================
-  // FORGOT PASSWORD
+  // GOOGLE SIGNUP
   // =========================================
 
-  const handleForgotPassword =
-    async () => {
-
-      setError("");
-      setSuccess("");
-
-
-      // -----------------------------------------
-      // GET EMAIL
-      // -----------------------------------------
-
-      const email =
-        loginValue.trim().toLowerCase();
-
-
-      // -----------------------------------------
-      // EMAIL REQUIRED
-      // -----------------------------------------
-
-      if (!email) {
-        setError(
-          "Please enter your email address first."
-        );
-        return;
-      }
-
-
-      // -----------------------------------------
-      // EMAIL VALIDATION
-      // -----------------------------------------
-
-      if (!email.includes("@")) {
-        setError(
-          "Please enter a valid email address."
-        );
-        return;
-      }
-
-
-      try {
-        setLoading(true);
-
-
-        console.log(
-          "Sending password reset email to:",
-          email
-        );
-
-
-        // -----------------------------------------
-        // SEND PASSWORD RESET EMAIL
-        // -----------------------------------------
-
-        const {
-          error: resetError,
-        } =
-          await supabase.auth.resetPasswordForEmail(
-            email,
-            {
-              redirectTo:
-                `${window.location.origin}/user/reset-password`,
-            }
-          );
-
-
-        // -----------------------------------------
-        // HANDLE RESET ERROR
-        // -----------------------------------------
-
-        if (resetError) {
-          console.error(
-            "Password reset error:",
-            resetError
-          );
-
-          setError(
-            resetError.message ||
-              "Unable to send the password reset email. Please try again later."
-          );
-
-          return;
-        }
-
-
-        // -----------------------------------------
-        // SUCCESS
-        // -----------------------------------------
-
-        setSuccess(
-          "Password reset email sent! Please check your inbox and follow the link to reset your password."
-        );
-
-      } catch (resetException) {
-        console.error(
-          "Password reset exception:",
-          resetException
-        );
-
-        setError(
-          "Unable to send the password reset email. Please try again later."
-        );
-
-      } finally {
-        setLoading(false);
-      }
-    };
-
-
-  // =========================================
-  // GOOGLE LOGIN
-  // =========================================
-
-  const handleGoogleLogin =
+  const handleGoogleSignup =
     async () => {
 
       setError("");
@@ -403,12 +486,16 @@ function UserLogin() {
           error: googleError,
         } =
           await supabase.auth.signInWithOAuth({
+
             provider: "google",
 
             options: {
+
               redirectTo:
                 `${window.location.origin}/user`,
+
             },
+
           });
 
 
@@ -416,27 +503,33 @@ function UserLogin() {
           throw googleError;
         }
 
+
       } catch (googleError) {
 
         console.error(
-          "Google login error:",
+          "Google signup error:",
           googleError
         );
+
 
         setError(
           googleError.message ||
             "Unable to continue with Google."
         );
+
       }
+
     };
 
 
   // =========================================
-  // REGISTER
+  // GO TO LOGIN
   // =========================================
 
-  const handleRegister = () => {
-    navigate("/user/register");
+  const handleLogin = () => {
+
+    navigate("/user/login");
+
   };
 
 
@@ -445,6 +538,7 @@ function UserLogin() {
   // =========================================
 
   return (
+
     <div className="user-auth-page">
 
       <div className="user-auth-card">
@@ -462,7 +556,8 @@ function UserLogin() {
           }}
         >
 
-          <div className="user-hero-overlay"></div>
+          <div className="user-hero-overlay">
+          </div>
 
 
           {/* SYSTEM BRANDING */}
@@ -470,13 +565,19 @@ function UserLogin() {
           <div className="user-brand">
 
             <h1>
+
               UNIFIED
+
               <span>
                 GRIEVANCE SYSTEM
               </span>
+
             </h1>
 
-            <div className="brand-divider"></div>
+
+            <div className="brand-divider">
+            </div>
+
 
             <p>
               Building Better Communities
@@ -488,17 +589,18 @@ function UserLogin() {
 
 
         {/* =========================================
-            LOGIN CONTENT
+            REGISTER CONTENT
         ========================================= */}
 
         <div className="user-auth-content">
 
           <h2>
-            Welcome Back!
+            Create Account
           </h2>
 
+
           <p className="auth-subtitle">
-            Login to your account
+            Register for your account
           </p>
 
 
@@ -507,6 +609,7 @@ function UserLogin() {
           ===================================== */}
 
           {error && (
+
             <div
               className="auth-error-message"
               style={{
@@ -531,6 +634,7 @@ function UserLogin() {
                   ⚠
                 </span>
 
+
                 <span>
                   {error}
                 </span>
@@ -538,47 +642,40 @@ function UserLogin() {
               </div>
 
 
-              {/* ---------------------------------
-                  RESEND VERIFICATION
-              --------------------------------- */}
+              {/* RESEND VERIFICATION */}
 
-              {error.includes(
-                "verify your email"
-              ) && (
+              <button
+                type="button"
+                onClick={
+                  handleResendVerification
+                }
+                disabled={resending}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  marginTop: "10px",
+                  padding: 0,
+                  border: "none",
+                  background: "transparent",
+                  cursor: resending
+                    ? "not-allowed"
+                    : "pointer",
+                  fontWeight: 600,
+                  color: "inherit",
+                }}
+              >
 
-                <button
-                  type="button"
-                  onClick={
-                    handleResendVerification
-                  }
-                  disabled={resending}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    marginTop: "10px",
-                    padding: 0,
-                    border: "none",
-                    background: "transparent",
-                    cursor: resending
-                      ? "not-allowed"
-                      : "pointer",
-                    fontWeight: 600,
-                    color: "inherit",
-                  }}
-                >
+                <MailCheck size={16} />
 
-                  <MailCheck size={16} />
+                {resending
+                  ? "Sending..."
+                  : "Resend verification email"}
 
-                  {resending
-                    ? "Sending..."
-                    : "Resend verification email"}
-
-                </button>
-
-              )}
+              </button>
 
             </div>
+
           )}
 
 
@@ -587,6 +684,7 @@ function UserLogin() {
           ===================================== */}
 
           {success && (
+
             <div
               className="auth-success-message"
               style={{
@@ -611,6 +709,7 @@ function UserLogin() {
                   ✓
                 </span>
 
+
                 <span>
                   {success}
                 </span>
@@ -618,22 +717,23 @@ function UserLogin() {
               </div>
 
             </div>
+
           )}
 
 
           {/* =====================================
-              LOGIN FORM
+              REGISTRATION FORM
           ===================================== */}
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleRegister}>
 
 
-            {/* EMAIL */}
+            {/* FULL NAME */}
 
             <div className="user-form-group">
 
-              <label htmlFor="user-login">
-                Email Address
+              <label htmlFor="register-name">
+                Full Name
               </label>
 
 
@@ -644,18 +744,61 @@ function UserLogin() {
                   size={18}
                 />
 
+
                 <input
-                  id="user-login"
-                  type="email"
-                  placeholder="Enter your email address"
-                  autoComplete="email"
-                  value={loginValue}
+                  id="register-name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  autoComplete="name"
+                  value={fullName}
                   onChange={(e) => {
-                    setLoginValue(
+
+                    setFullName(
                       e.target.value
                     );
 
                     clearMessages();
+
+                  }}
+                  required
+                />
+
+              </div>
+
+            </div>
+
+
+            {/* EMAIL */}
+
+            <div className="user-form-group">
+
+              <label htmlFor="register-email">
+                Email Address
+              </label>
+
+
+              <div className="user-input-wrapper">
+
+                <Mail
+                  className="user-input-icon"
+                  size={18}
+                />
+
+
+                <input
+                  id="register-email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => {
+
+                    setEmail(
+                      e.target.value
+                    );
+
+                    clearMessages();
+
                   }}
                   required
                 />
@@ -669,7 +812,7 @@ function UserLogin() {
 
             <div className="user-form-group">
 
-              <label htmlFor="user-password">
+              <label htmlFor="register-password">
                 Password
               </label>
 
@@ -681,22 +824,25 @@ function UserLogin() {
                   size={18}
                 />
 
+
                 <input
-                  id="user-password"
+                  id="register-password"
                   type={
                     showPassword
                       ? "text"
                       : "password"
                   }
                   placeholder="Enter your password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => {
+
                     setPassword(
                       e.target.value
                     );
 
                     clearMessages();
+
                   }}
                   required
                 />
@@ -730,71 +876,93 @@ function UserLogin() {
             </div>
 
 
-            {/* =====================================
-                FORGOT PASSWORD
-            ===================================== */}
+            {/* CONFIRM PASSWORD */}
 
-            <div
-              className="user-forgot-row"
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                marginTop: "-2px",
-                marginBottom: "10px",
-              }}
-            >
+            <div className="user-form-group">
 
-              <button
-                type="button"
-                className="user-forgot-button"
-                onClick={
-                  handleForgotPassword
-                }
-                disabled={loading}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  border: "none",
-                  background: "transparent",
-                  padding: 0,
-                  color: "#111111",
-                  fontSize: "14px",
-                  cursor: loading
-                    ? "not-allowed"
-                    : "pointer",
-                }}
-              >
+              <label htmlFor="register-confirm-password">
+                Confirm Password
+              </label>
 
-                <KeyRound size={16} />
 
-                <span>
-                  {loading
-                    ? "Sending..."
-                    : "Forgot Password?"}
-                </span>
+              <div className="user-input-wrapper">
 
-              </button>
+                <Lock
+                  className="user-input-icon"
+                  size={18}
+                />
+
+
+                <input
+                  id="register-confirm-password"
+                  type={
+                    showConfirmPassword
+                      ? "text"
+                      : "password"
+                  }
+                  placeholder="Confirm your password"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => {
+
+                    setConfirmPassword(
+                      e.target.value
+                    );
+
+                    clearMessages();
+
+                  }}
+                  required
+                />
+
+
+                <button
+                  type="button"
+                  className="user-password-toggle"
+                  onClick={() =>
+                    setShowConfirmPassword(
+                      !showConfirmPassword
+                    )
+                  }
+                  aria-label={
+                    showConfirmPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
+                >
+
+                  {showConfirmPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
+
+                </button>
+
+              </div>
 
             </div>
 
 
-            {/* =====================================
-                LOGIN BUTTON
-            ===================================== */}
+            {/* REGISTER BUTTON */}
 
             <button
               type="submit"
               className="user-login-button"
-              disabled={loading}
+              disabled={
+                loading ||
+                resending
+              }
             >
 
-              <LogIn size={18} />
+              <UserPlus size={18} />
 
               <span>
+
                 {loading
-                  ? "Logging in..."
-                  : "Login"}
+                  ? "Creating Account..."
+                  : "Create Account"}
+
               </span>
 
             </button>
@@ -818,19 +986,22 @@ function UserLogin() {
 
 
           {/* =========================================
-              GOOGLE LOGIN
+              GOOGLE SIGNUP
           ========================================= */}
 
           <button
             type="button"
             className="google-login-button"
-            onClick={handleGoogleLogin}
+            onClick={
+              handleGoogleSignup
+            }
             disabled={loading}
           >
 
             <span className="google-icon">
               G
             </span>
+
 
             <span>
               Continue with Google
@@ -840,20 +1011,58 @@ function UserLogin() {
 
 
           {/* =========================================
-              REGISTER
+              LOGIN
           ========================================= */}
 
           <div className="register-link-row">
 
             <span>
-              Don't have an account?
+              Already have an account?
             </span>
+
 
             <button
               type="button"
-              onClick={handleRegister}
+              onClick={handleLogin}
             >
-              Register Now
+              Login
+            </button>
+
+          </div>
+
+
+          {/* =========================================
+              BACK TO LOGIN
+          ========================================= */}
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "15px",
+            }}
+          >
+
+            <button
+              type="button"
+              onClick={handleLogin}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                border: "none",
+                background: "transparent",
+                padding: 0,
+                color: "#111111",
+                fontSize: "14px",
+                cursor: "pointer",
+              }}
+            >
+
+              <ArrowLeft size={15} />
+
+              Back to Login
+
             </button>
 
           </div>
@@ -863,8 +1072,10 @@ function UserLogin() {
       </div>
 
     </div>
+
   );
+
 }
 
 
-export default UserLogin;
+export default UserRegister;
