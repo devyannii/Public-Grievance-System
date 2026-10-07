@@ -64,7 +64,7 @@ function MyReports() {
 
 
   // ====================================================
-  // LOAD ONLY LOGGED-IN USER'S REPORTS
+  // LOAD LOGGED-IN USER'S REPORTS
   // ====================================================
 
   useEffect(() => {
@@ -73,23 +73,18 @@ function MyReports() {
         setLoading(true);
         setError("");
 
-
         // ----------------------------------------------
-        // Get logged-in user
+        // GET LOGGED-IN USER
         // ----------------------------------------------
 
         const {
-          data: {
-            user,
-          },
+          data: { user },
           error: userError,
         } = await supabase.auth.getUser();
-
 
         if (userError) {
           throw userError;
         }
-
 
         if (!user) {
           navigate("/user/login");
@@ -98,7 +93,7 @@ function MyReports() {
 
 
         // ----------------------------------------------
-        // Get ONLY this user's complaints
+        // GET ONLY THIS USER'S COMPLAINTS
         // ----------------------------------------------
 
         const {
@@ -118,10 +113,10 @@ function MyReports() {
             )
           `)
           .eq("user_id", user.id)
+          .is("deleted_at", null)
           .order("created_at", {
             ascending: false,
           });
-
 
         if (complaintsError) {
           throw complaintsError;
@@ -129,7 +124,7 @@ function MyReports() {
 
 
         // ----------------------------------------------
-        // Format reports
+        // FORMAT REPORTS
         // ----------------------------------------------
 
         const formattedReports =
@@ -141,29 +136,24 @@ function MyReports() {
 
 
                 // ------------------------------------
-                // Get first uploaded image
+                // GET FIRST UPLOADED IMAGE
                 // ------------------------------------
 
                 const firstImage =
                   report.complaint_images?.[0];
 
+                if (firstImage?.storage_path) {
 
-                if (
-                  firstImage?.storage_path
-                ) {
                   const {
                     data: signedImage,
                     error: imageError,
                   } =
                     await supabase.storage
-                      .from(
-                        "complaint-images"
-                      )
+                      .from("complaint-images")
                       .createSignedUrl(
                         firstImage.storage_path,
                         3600
                       );
-
 
                   if (
                     !imageError &&
@@ -176,14 +166,11 @@ function MyReports() {
 
 
                 // ------------------------------------
-                // Format date
+                // FORMAT DATE
                 // ------------------------------------
 
                 const createdAt =
-                  new Date(
-                    report.created_at
-                  );
-
+                  new Date(report.created_at);
 
                 const formattedDate =
                   createdAt.toLocaleDateString(
@@ -196,15 +183,20 @@ function MyReports() {
                   );
 
 
+                // ------------------------------------
+                // RETURN CLEAN REPORT OBJECT
+                // ------------------------------------
+
                 return {
-                  // IMPORTANT:
-                  // This is the REAL UUID.
-                  // IssueDetails expects this.
+                  // REAL UUID
+                  // Used when opening IssueDetails
                   id: report.id,
 
-                  // Human-readable complaint ID
+                  // HUMAN-READABLE COMPLAINT ID
+                  // Example: UGS-1234
                   complaintCode:
-                    report.complaint_code,
+                    report.complaint_code ||
+                    "UGS-—",
 
                   title:
                     report.title ||
@@ -225,9 +217,7 @@ function MyReports() {
           );
 
 
-        setReports(
-          formattedReports
-        );
+        setReports(formattedReports);
 
       } catch (err) {
 
@@ -242,12 +232,15 @@ function MyReports() {
         );
 
       } finally {
+
         setLoading(false);
+
       }
     };
 
 
     loadMyReports();
+
   }, [navigate]);
 
 
@@ -266,7 +259,7 @@ function MyReports() {
 
 
   // ====================================================
-  // OPEN REPORT
+  // OPEN FULL COMPLAINT
   // ====================================================
 
   const openReport = (reportId) => {
@@ -290,6 +283,7 @@ function MyReports() {
       <header className="my-reports-header">
 
         <button
+          type="button"
           className="reports-back-button"
           onClick={() =>
             navigate("/user")
@@ -305,8 +299,7 @@ function MyReports() {
         </h1>
 
 
-        <div className="reports-header-space">
-        </div>
+        <div className="reports-header-space"></div>
 
       </header>
 
@@ -323,27 +316,24 @@ function MyReports() {
 
         <div className="reports-filters">
 
-          {filters.map(
-            (filter) => (
+          {filters.map((filter) => (
 
-              <button
-                key={filter}
-                className={`report-filter ${
-                  activeFilter === filter
-                    ? "active"
-                    : ""
-                }`}
-                onClick={() =>
-                  setActiveFilter(
-                    filter
-                  )
-                }
-              >
-                {filter}
-              </button>
+            <button
+              key={filter}
+              type="button"
+              className={`report-filter ${
+                activeFilter === filter
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() =>
+                setActiveFilter(filter)
+              }
+            >
+              {filter}
+            </button>
 
-            )
-          )}
+          ))}
 
         </div>
 
@@ -353,6 +343,7 @@ function MyReports() {
         ================================================== */}
 
         {loading && (
+
           <section className="reports-list-page">
 
             <div
@@ -367,6 +358,7 @@ function MyReports() {
             </div>
 
           </section>
+
         )}
 
 
@@ -374,33 +366,35 @@ function MyReports() {
             ERROR
         ================================================== */}
 
-        {!loading &&
-          error && (
-            <section className="reports-list-page">
+        {!loading && error && (
+
+          <section className="reports-list-page">
+
+            <div
+              style={{
+                padding: "30px 10px",
+                textAlign: "center",
+                color: "#d9534f",
+                fontSize: "13px",
+              }}
+            >
+
+              Unable to load your reports.
 
               <div
                 style={{
-                  padding: "30px 10px",
-                  textAlign: "center",
-                  color: "#d9534f",
-                  fontSize: "13px",
+                  marginTop: "6px",
+                  fontSize: "11px",
                 }}
               >
-                Unable to load your reports.
-
-                <div
-                  style={{
-                    marginTop: "6px",
-                    fontSize: "11px",
-                  }}
-                >
-                  {error}
-                </div>
-
+                {error}
               </div>
 
-            </section>
-          )}
+            </div>
+
+          </section>
+
+        )}
 
 
         {/* ==================================================
@@ -410,6 +404,7 @@ function MyReports() {
         {!loading &&
           !error &&
           reports.length === 0 && (
+
             <section className="reports-list-page">
 
               <div
@@ -440,6 +435,7 @@ function MyReports() {
               </div>
 
             </section>
+
           )}
 
 
@@ -451,6 +447,7 @@ function MyReports() {
           !error &&
           reports.length > 0 &&
           filteredReports.length === 0 && (
+
             <section className="reports-list-page">
 
               <div
@@ -467,6 +464,7 @@ function MyReports() {
               </div>
 
             </section>
+
           )}
 
 
@@ -480,116 +478,113 @@ function MyReports() {
 
             <section className="reports-list-page">
 
-              {filteredReports.map(
-                (report) => (
+              {filteredReports.map((report) => (
 
-                  <button
-                    className="my-report-card"
-                    key={report.id}
-                    onClick={() =>
-                      openReport(
-                        report.id
-                      )
-                    }
-                    type="button"
-                  >
+                <button
+                  key={report.id}
+                  type="button"
+                  className="my-report-card"
+                  onClick={() =>
+                    openReport(report.id)
+                  }
+                >
 
-                    {/* ======================================
-                        IMAGE
-                    ====================================== */}
+                  {/* ======================================
+                      IMAGE
+                  ====================================== */}
 
-                    <div className="my-report-image">
+                  <div className="my-report-image">
 
-                      {report.image ? (
+                    {report.image ? (
 
-                        <img
-                          src={
-                            report.image
-                          }
-                          alt={
-                            report.title
-                          }
-                        />
+                      <img
+                        src={report.image}
+                        alt={report.title}
+                      />
 
-                      ) : (
+                    ) : (
 
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            alignItems:
-                              "center",
-                            justifyContent:
-                              "center",
-                            color: "#8b9892",
-                            fontSize:
-                              "10px",
-                          }}
-                        >
-                          No image
-                        </div>
-
-                      )}
-
-                    </div>
-
-
-                    {/* ======================================
-                        INFORMATION
-                    ====================================== */}
-
-                    <div className="my-report-information">
-
-                      <h2>
-                        {
-                          report.title
-                        }
-                      </h2>
-
-
-                      <div className="my-report-meta">
-
-                        <span>
-                          {
-                            report.date
-                          }
-                        </span>
-
-
-                        <span className="meta-dot">
-                          •
-                        </span>
-
-
-                        <span
-                          className={`my-report-status ${getStatusClass(
-                            report.status
-                          )}`}
-                        >
-                          {
-                            report.status
-                          }
-                        </span>
-
+                      <div
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "#8b9892",
+                          fontSize: "10px",
+                        }}
+                      >
+                        No image
                       </div>
 
+                    )}
+
+                  </div>
+
+
+                  {/* ======================================
+                      INFORMATION
+                  ====================================== */}
+
+                  <div className="my-report-information">
+
+                    <h2>
+                      {report.title}
+                    </h2>
+
+
+                    {/* ------------------------------------
+                        COMPLAINT ID
+                    ------------------------------------ */}
+
+                    <div className="my-report-complaint-id">
+                      Complaint ID:{" "}
+                      <strong>
+                        {report.complaintCode}
+                      </strong>
                     </div>
 
 
-                    {/* ======================================
-                        ARROW
-                    ====================================== */}
+                    {/* ------------------------------------
+                        DATE + STATUS
+                    ------------------------------------ */}
 
-                    <ChevronRight
-                      className="my-report-arrow"
-                      size={21}
-                    />
+                    <div className="my-report-meta">
 
-                  </button>
+                      <span>
+                        {report.date}
+                      </span>
 
-                )
-              )}
+                      <span className="meta-dot">
+                        •
+                      </span>
+
+                      <span
+                        className={`my-report-status ${getStatusClass(
+                          report.status
+                        )}`}
+                      >
+                        {report.status}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* ======================================
+                      ARROW
+                  ====================================== */}
+
+                  <ChevronRight
+                    className="my-report-arrow"
+                    size={21}
+                  />
+
+                </button>
+
+              ))}
 
             </section>
 
@@ -607,6 +602,7 @@ function MyReports() {
         {/* HOME */}
 
         <button
+          type="button"
           className="bottom-nav-item"
           onClick={() =>
             navigate("/user")
@@ -614,6 +610,7 @@ function MyReports() {
           aria-label="Home"
         >
           <Home />
+
           <span>
             Home
           </span>
@@ -623,6 +620,7 @@ function MyReports() {
         {/* MAP */}
 
         <button
+          type="button"
           className="bottom-nav-item"
           onClick={() =>
             navigate("/user/map")
@@ -630,6 +628,7 @@ function MyReports() {
           aria-label="Map"
         >
           <Map />
+
           <span>
             Map
           </span>
@@ -639,6 +638,7 @@ function MyReports() {
         {/* ADD REPORT */}
 
         <button
+          type="button"
           className="report-add-button"
           onClick={() =>
             navigate("/user/report")
@@ -652,6 +652,7 @@ function MyReports() {
         {/* REPORTS */}
 
         <button
+          type="button"
           className="bottom-nav-item active"
           onClick={() =>
             navigate("/user/reports")
@@ -659,6 +660,7 @@ function MyReports() {
           aria-label="My reports"
         >
           <FileText />
+
           <span>
             Reports
           </span>
@@ -668,6 +670,7 @@ function MyReports() {
         {/* PROFILE */}
 
         <button
+          type="button"
           className="bottom-nav-item"
           onClick={() =>
             navigate("/user/profile")
@@ -675,6 +678,7 @@ function MyReports() {
           aria-label="Profile"
         >
           <User />
+
           <span>
             Profile
           </span>

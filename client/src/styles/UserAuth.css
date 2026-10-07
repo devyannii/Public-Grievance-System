@@ -1,54 +1,63 @@
-/* =========================================
+/* =========================================================
    USER AUTH PAGE
-========================================= */
+========================================================= */
 
 .user-auth-page {
   width: 100%;
+
   min-height: 100vh;
+  min-height: 100dvh;
+  height: 100dvh;
+
+  margin: 0;
+  padding: 0;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  padding: 20px;
-
   box-sizing: border-box;
 
   background: #edf4f8;
 
-  font-family: "Inter", sans-serif;
+  font-family: "Inter", Arial, sans-serif;
+
+  overflow: hidden;
 }
 
 
-/* =========================================
+/* =========================================================
    AUTH CARD
-========================================= */
+========================================================= */
 
 .user-auth-card {
   width: 100%;
   max-width: 430px;
 
-  min-height: 0;
+  height: 100dvh;
+  min-height: 100dvh;
+
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
 
   overflow: hidden;
 
   background: #ffffff;
 
-  border-radius: 22px;
-
   border: 1px solid #e8eeea;
+  border-radius: 0;
 
-  box-shadow:
-    0 12px 35px rgba(24, 73, 42, 0.10);
-
-  display: flex;
-  flex-direction: column;
+  box-shadow: none;
 }
 
 
-/* =========================================
-   HERO IMAGE
-========================================= */
+/* =========================================================
+   HERO
+========================================================= */
 
 .user-auth-hero {
   position: relative;
@@ -70,13 +79,12 @@
 }
 
 
-/* =========================================
+/* =========================================================
    HERO OVERLAY
-========================================= */
+========================================================= */
 
 .user-hero-overlay {
   position: absolute;
-
   inset: 0;
 
   background:
@@ -93,9 +101,9 @@
 }
 
 
-/* =========================================
-   BRANDING
-========================================= */
+/* =========================================================
+   BRAND
+========================================================= */
 
 .user-brand {
   position: relative;
@@ -107,6 +115,8 @@
   padding-top: 24px;
 
   text-align: center;
+
+  box-sizing: border-box;
 }
 
 
@@ -122,9 +132,6 @@
   font-weight: 800;
 
   letter-spacing: 0.3px;
-
-  text-shadow:
-    0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 
@@ -143,7 +150,6 @@
 
 .brand-divider {
   width: 28px;
-
   height: 2px;
 
   margin: 8px auto 5px;
@@ -167,26 +173,58 @@
 }
 
 
-/* =========================================
-   AUTH CONTENT
-========================================= */
+/* =========================================================
+   CONTENT
+========================================================= */
 
 .user-auth-content {
   position: relative;
 
   z-index: 5;
 
+  flex: 1;
+
+  min-height: 0;
+
+  width: 100%;
+
   padding: 20px 28px 28px;
+
+  box-sizing: border-box;
 
   background: #ffffff;
 
-  border-radius: 28px 28px 22px 22px;
+  border-radius: 28px 28px 0 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
 }
 
 
-/* =========================================
+.user-auth-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+
+.user-auth-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.user-auth-content::-webkit-scrollbar-thumb {
+  background: #d5e2dc;
+
+  border-radius: 10px;
+}
+
+
+/* =========================================================
    HEADING
-========================================= */
+========================================================= */
 
 .user-auth-content h2 {
   margin: -2px 0 4px;
@@ -204,58 +242,63 @@
 
 
 .auth-subtitle {
-  margin: 0 0 23px;
+  margin: 0 0 18px;
 
   text-align: center;
 
   color: #687482;
 
   font-size: 12px;
+
+  line-height: 1.4;
 }
 
 
-/* =========================================
-   FORM GROUP
-========================================= */
+/* =========================================================
+   FORM
+========================================================= */
 
 .user-form-group {
-  margin-bottom: 14px;
+  width: 100%;
+
+  margin-bottom: 11px;
+
+  box-sizing: border-box;
 }
 
 
 .user-form-group label {
   display: block;
 
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 
   color: #1b2730;
 
   font-size: 10px;
 
+  line-height: 1.3;
+
   font-weight: 600;
 }
 
 
-/* =========================================
+/* =========================================================
    INPUT WRAPPER
-========================================= */
+========================================================= */
 
 .user-input-wrapper {
   position: relative;
 
   width: 100%;
+
+  box-sizing: border-box;
 }
 
-
-/* =========================================
-   INPUT ICON
-========================================= */
 
 .user-input-icon {
   position: absolute;
 
   left: 12px;
-
   top: 50%;
 
   transform: translateY(-50%);
@@ -263,12 +306,14 @@
   color: #32944f;
 
   pointer-events: none;
+
+  z-index: 2;
 }
 
 
-/* =========================================
+/* =========================================================
    INPUT
-========================================= */
+========================================================= */
 
 .user-input-wrapper input {
   width: 100%;
@@ -281,7 +326,7 @@
 
   border: 1px solid #d9e1df;
 
-  border-radius: 7px;
+  border-radius: 8px;
 
   outline: none;
 
@@ -293,7 +338,9 @@
 
   font-size: 11px;
 
-  transition: 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 
@@ -310,23 +357,24 @@
 }
 
 
-/* =========================================
+/* =========================================================
    PASSWORD TOGGLE
-========================================= */
+========================================================= */
 
 .user-password-toggle {
   position: absolute;
 
-  right: 10px;
-
+  right: 9px;
   top: 50%;
 
   transform: translateY(-50%);
 
+  width: 28px;
+  height: 28px;
+
   display: flex;
 
   align-items: center;
-
   justify-content: center;
 
   padding: 3px;
@@ -338,6 +386,8 @@
   color: #71808b;
 
   cursor: pointer;
+
+  z-index: 3;
 }
 
 
@@ -346,67 +396,107 @@
 }
 
 
-/* =========================================
+.user-password-toggle:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.6;
+}
+
+
+/* =========================================================
    FORGOT PASSWORD
-========================================= */
+========================================================= */
 
 .user-forgot-row {
+  width: 100%;
+
   display: flex;
 
-  justify-content: flex-end;
+  justify-content: flex-start;
 
-  margin-top: -3px;
+  align-items: center;
 
-  margin-bottom: 14px;
+  margin-top: -2px;
+
+  margin-bottom: 10px;
 }
 
 
 .user-forgot-button {
-  border: none;
-
-  padding: 0;
-
-  background: transparent;
-
-  color: #238242;
-
-  font-family: inherit;
-
-  font-size: 10px;
-
-  font-weight: 600;
-
-  cursor: pointer;
-}
-
-
-.user-forgot-button:hover {
-  color: #116a31;
-
-  text-decoration: underline;
-}
-
-
-/* =========================================
-   LOGIN / CREATE ACCOUNT BUTTON
-========================================= */
-
-.user-login-button {
-  width: 100%;
-
-  height: 38px;
-
-  display: flex;
+  display: inline-flex;
 
   align-items: center;
 
   justify-content: center;
 
-  gap: 8px;
+  gap: 5px;
+
+  padding: 0;
 
   border: none;
 
-  border-radius: 7px;
+  background: transparent;
+
+  color: #168442;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.user-forgot-button:hover {
+  color: #0b6b34;
+
+  text-decoration: underline;
+
+  transform: translateY(-1px);
+}
+
+
+.user-forgot-button:active {
+  transform: translateY(0);
+}
+
+
+.user-forgot-button:disabled {
+  color: #8ca596;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* =========================================================
+   MAIN BUTTON
+========================================================= */
+
+.user-login-button {
+  width: 100%;
+
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 3px;
+
+  border: none;
+
+  border-radius: 8px;
 
   color: #ffffff;
 
@@ -425,7 +515,9 @@
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 
@@ -442,11 +534,22 @@
 }
 
 
-/* =========================================
+.user-login-button:disabled {
+  opacity: 0.7;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* =========================================================
    DIVIDER
-========================================= */
+========================================================= */
 
 .user-divider {
+  width: 100%;
+
   display: flex;
 
   align-items: center;
@@ -475,14 +578,14 @@
 }
 
 
-/* =========================================
-   GOOGLE LOGIN
-========================================= */
+/* =========================================================
+   GOOGLE
+========================================================= */
 
 .google-login-button {
   width: 100%;
 
-  height: 36px;
+  height: 38px;
 
   display: flex;
 
@@ -494,7 +597,7 @@
 
   border: 1px solid #d7e0dd;
 
-  border-radius: 7px;
+  border-radius: 8px;
 
   background: #ffffff;
 
@@ -508,7 +611,9 @@
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 
@@ -519,9 +624,12 @@
 }
 
 
-/* =========================================
-   GOOGLE ICON
-========================================= */
+.google-login-button:disabled {
+  opacity: 0.7;
+
+  cursor: not-allowed;
+}
+
 
 .google-icon {
   display: flex;
@@ -540,9 +648,9 @@
 }
 
 
-/* =========================================
-   REGISTER / LOGIN LINK
-========================================= */
+/* =========================================================
+   LOGIN LINK
+========================================================= */
 
 .register-link-row {
   display: flex;
@@ -553,7 +661,9 @@
 
   gap: 6px;
 
-  margin-top: 17px;
+  margin-top: 14px;
+
+  padding-bottom: 4px;
 
   font-size: 10px;
 
@@ -581,64 +691,162 @@
 
 
 .register-link-row button:hover {
-  color: #116a31;
-
   text-decoration: underline;
 }
 
 
-/* =========================================
-   REGISTRATION PAGE
-========================================= */
+/* =========================================================
+   OTP
+========================================================= */
 
-.user-auth-content:has(#full-name) {
-  padding-top: 18px;
-
-  padding-bottom: 24px;
+.otp-form {
+  width: 100%;
 }
 
 
-.user-auth-content:has(#full-name) h2 {
-  font-size: 20px;
+.otp-resend-button,
+.otp-change-button {
+  width: 100%;
 
-  margin-bottom: 4px;
+  height: 36px;
+
+  margin-top: 10px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
 }
 
 
-.user-auth-content:has(#full-name) .auth-subtitle {
-  margin-bottom: 18px;
+.otp-resend-button {
+  border: 1px solid #188442;
+
+  background: #ffffff;
+
+  color: #188442;
 }
 
 
-.user-auth-content:has(#full-name) .user-form-group {
-  margin-bottom: 10px;
+.otp-resend-button:hover {
+  background: #f1f8f4;
 }
 
 
-.user-auth-content:has(#full-name)
-.user-input-wrapper input {
-  height: 38px;
+.otp-change-button {
+  border: none;
+
+  background: transparent;
+
+  color: #687482;
 }
 
 
-.user-auth-content:has(#full-name)
-.user-login-button {
-  margin-top: 3px;
+.otp-change-button:hover {
+  color: #188442;
 }
 
 
-/* =========================================
+/* =========================================================
+   ERROR
+========================================================= */
+
+.auth-error-message {
+  width: 100%;
+
+  margin-bottom: 12px;
+
+  padding: 9px 10px;
+
+  box-sizing: border-box;
+
+  border-radius: 8px;
+
+  background: #fff1f0;
+
+  color: #b42318;
+
+  border: 1px solid #f5c2c0;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+
+.auth-message-content {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 8px;
+}
+
+
+.auth-message-icon {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   SUCCESS
+========================================================= */
+
+.auth-success-message {
+  width: 100%;
+
+  margin-bottom: 12px;
+
+  padding: 9px 10px;
+
+  box-sizing: border-box;
+
+  border-radius: 8px;
+
+  background: #eef8f0;
+
+  color: #287a3e;
+
+  border: 1px solid #c9e6ce;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+
+.auth-success-icon {
+  flex-shrink: 0;
+
+  margin-top: 1px;
+}
+
+
+/* =========================================================
    MOBILE
-========================================= */
+========================================================= */
 
-@media (max-width: 767px) {
+@media (max-width: 699px) {
 
   .user-auth-page {
-    min-height: 100vh;
+    width: 100%;
 
-    padding: 12px;
+    min-height: 100dvh;
 
-    align-items: flex-start;
+    height: 100dvh;
+
+    padding: 0;
+
+    align-items: stretch;
+
+    background: #ffffff;
   }
 
 
@@ -647,7 +855,17 @@
 
     max-width: 430px;
 
-    margin: 12px auto;
+    height: 100dvh;
+
+    min-height: 100dvh;
+
+    margin: 0 auto;
+
+    border: none;
+
+    border-radius: 0;
+
+    box-shadow: none;
   }
 
 
@@ -677,7 +895,9 @@
 
 
   .user-auth-content {
-    padding: 18px 24px 22px;
+    padding: 18px 22px 26px;
+
+    border-radius: 28px 28px 0 0;
   }
 
 
@@ -706,105 +926,43 @@
 
 
   .user-input-wrapper input {
-    height: 38px;
+    height: 39px;
 
     font-size: 10px;
   }
 
 
-  .user-input-icon {
-    left: 11px;
+  .user-forgot-button {
+    font-size: 10px;
   }
 
 
-  .user-password-toggle {
-    right: 9px;
-  }
-
-
-  /* Registration */
-
-  .user-auth-content:has(#full-name) {
-    padding-top: 16px;
-
-    padding-bottom: 18px;
-  }
-
-
-  .user-auth-content:has(#full-name) h2 {
-    font-size: 20px;
-  }
-
-
-  .user-auth-content:has(#full-name)
-  .auth-subtitle {
-    margin-bottom: 14px;
-  }
-
-
-  .user-auth-content:has(#full-name)
-  .user-form-group {
-    margin-bottom: 8px;
-  }
-
-
-  .user-auth-content:has(#full-name)
-  .user-input-wrapper input {
-    height: 37px;
-  }
-
-
-  .user-auth-content:has(#full-name)
   .user-login-button {
-    height: 38px;
+    height: 39px;
 
-    margin-top: 2px;
-  }
-
-
-  .user-divider {
-    margin: 10px 0;
+    font-size: 11px;
   }
 
 
   .google-login-button {
-    height: 35px;
-  }
-
-
-  .register-link-row {
-    margin-top: 12px;
+    height: 37px;
   }
 }
 
 
-/* =========================================
+/* =========================================================
    SMALL PHONES
-========================================= */
+========================================================= */
 
 @media (max-width: 390px) {
 
-  .user-auth-page {
-    padding: 10px;
-  }
-
-
-  .user-auth-card {
-    max-width: 100%;
-
-    margin: 8px auto;
-  }
-
-
-  .user-auth-content {
-    padding-left: 22px;
-
-    padding-right: 22px;
-  }
-
-
   .user-auth-hero {
-    height: 225px;
+    height: 220px;
+  }
+
+
+  .user-brand {
+    padding-top: 18px;
   }
 
 
@@ -816,39 +974,34 @@
   .user-brand h1 span {
     font-size: 19px;
   }
-}
-
-
-/* =========================================
-   VERY SMALL PHONES
-========================================= */
-
-@media (max-width: 350px) {
-
-  .user-auth-page {
-    padding: 8px;
-  }
-
-
-  .user-auth-card {
-    margin: 4px auto;
-  }
 
 
   .user-auth-content {
-    padding-left: 19px;
+    padding-left: 18px;
 
-    padding-right: 19px;
+    padding-right: 18px;
   }
 
 
+  .user-auth-content h2 {
+    font-size: 20px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 350px) {
+
   .user-auth-hero {
-    height: 210px;
+    height: 205px;
   }
 
 
   .user-brand {
-    padding-top: 16px;
+    padding-top: 15px;
   }
 
 
@@ -862,6 +1015,18 @@
   }
 
 
+  .user-brand p {
+    font-size: 8px;
+  }
+
+
+  .user-auth-content {
+    padding-left: 15px;
+
+    padding-right: 15px;
+  }
+
+
   .user-auth-content h2 {
     font-size: 19px;
   }
@@ -872,143 +1037,43 @@
   }
 
 
-  .user-form-group label {
-    font-size: 8px;
+  .user-input-wrapper input {
+    height: 37px;
+
+    font-size: 9px;
   }
 
 
-  .user-input-wrapper input {
-    height: 36px;
-
+  .user-forgot-button {
     font-size: 9px;
   }
 
 
   .user-login-button {
-    height: 36px;
+    height: 37px;
 
-    font-size: 11px;
-  }
-
-
-  .google-login-button {
-    height: 34px;
-
-    font-size: 9px;
-  }
-
-
-  .register-link-row {
-    font-size: 9px;
-  }
-
-
-  .register-link-row button {
-    font-size: 9px;
+    font-size: 10px;
   }
 }
 
 
-/* =========================================
-   SHORT PHONE SCREENS
-========================================= */
-
-@media (max-width: 767px) and (max-height: 750px) {
-
-  .user-auth-page {
-    padding: 8px;
-
-    align-items: flex-start;
-  }
-
-
-  .user-auth-card {
-    margin: 5px auto;
-  }
-
-
-  .user-auth-hero {
-    height: 210px;
-  }
-
-
-  .user-brand {
-    padding-top: 16px;
-  }
-
-
-  .user-brand h1 {
-    font-size: 21px;
-  }
-
-
-  .user-brand h1 span {
-    font-size: 18px;
-  }
-
-
-  .user-auth-content {
-    padding: 14px 22px 16px;
-  }
-
-
-  .user-auth-content:has(#full-name) {
-    padding-top: 13px;
-
-    padding-bottom: 15px;
-  }
-
-
-  .user-auth-content:has(#full-name)
-  .auth-subtitle {
-    margin-bottom: 11px;
-  }
-
-
-  .user-auth-content:has(#full-name)
-  .user-form-group {
-    margin-bottom: 6px;
-  }
-
-
-  .user-auth-content:has(#full-name)
-  .user-input-wrapper input {
-    height: 35px;
-  }
-
-
-  .user-auth-content:has(#full-name)
-  .user-login-button {
-    height: 36px;
-  }
-
-
-  .user-divider {
-    margin: 8px 0;
-  }
-
-
-  .google-login-button {
-    height: 33px;
-  }
-
-
-  .register-link-row {
-    margin-top: 9px;
-  }
-}
-
-
-/* =========================================
+/* =========================================================
    DESKTOP
-========================================= */
+========================================================= */
 
-@media (min-width: 768px) {
+@media (min-width: 700px) {
+
+  body {
+    background: #eef7f9;
+  }
+
 
   .user-auth-page {
-    min-height: 100vh;
+    min-height: 100dvh;
 
-    padding: 30px;
+    height: 100dvh;
+
+    padding: 0;
   }
 
 
@@ -1017,7 +1082,16 @@
 
     max-width: 430px;
 
-    min-height: auto;
+    height: 100dvh;
+
+    min-height: 100dvh;
+
+    border-radius: 24px;
+
+    border: 1px solid #e8eeea;
+
+    box-shadow:
+      0 12px 35px rgba(30, 60, 70, 0.12);
   }
 
 
@@ -1027,86 +1101,29 @@
 }
 
 
-/* =========================================
-   ACCESSIBILITY
-========================================= */
+/* =========================================================
+   BOX SIZING
+========================================================= */
+
+.user-auth-page *,
+.user-auth-card *,
+.user-auth-content * {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
 
 .user-login-button:focus-visible,
 .google-login-button:focus-visible,
 .user-forgot-button:focus-visible,
 .register-link-row button:focus-visible,
-.user-password-toggle:focus-visible {
+.user-password-toggle:focus-visible,
+.otp-resend-button:focus-visible,
+.otp-change-button:focus-visible {
   outline: 2px solid #238242;
 
   outline-offset: 2px;
-}
-.auth-error-message {
-  margin-bottom: 16px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #fff1f0;
-  color: #b42318;
-  border: 1px solid #f5c2c0;
-  font-size: 14px;
-}
-
-.auth-success-message {
-  margin-bottom: 16px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #eef8f0;
-  color: #287a3e;
-  border: 1px solid #c9e6ce;
-  font-size: 14px;
-}
-
-.user-login-button:disabled,
-.google-login-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* =========================================
-   UNIFIED LOGIN + REGISTER CARD
-========================================= */
-
-.user-auth-card {
-  width: 100%;
-  max-width: 430px;
-  height: 700px;
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
-}
-
-/* Same hero size on both */
-.user-auth-hero {
-  height: 255px;
-  flex-shrink: 0;
-}
-
-/* Desktop */
-@media (min-width: 768px) {
-  .user-auth-card {
-    width: 430px;
-    max-width: 430px;
-    height: 780px;
-  }
-
-  .user-auth-hero {
-    height: 255px;
-  }
-}
-
-/* Phones */
-@media (max-width: 767px) {
-  .user-auth-card {
-    width: 100%;
-    max-width: 430px;
-    height: 700px;
-  }
-
-  .user-auth-hero {
-    height: 235px;
-  }
 }

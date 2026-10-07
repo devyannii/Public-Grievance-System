@@ -11,38 +11,46 @@ import {
 } from "lucide-react";
 
 import landingImage from "../../assets/images/user-landing-image.png";
+
 import "../../styles/UserLanding.css";
 import "../../styles/UserAppLayout.css";
 import "../../styles/BottomNavigation.css";
 
 function UserLanding() {
-
   const navigate = useNavigate();
 
+  /* =========================================================
+     REPORT ISSUE
+  ========================================================= */
 
   const handleReportIssue = () => {
     navigate("/user/report");
   };
 
+  /* =========================================================
+     TRACK ISSUE
+     
+     User enters their Complaint ID on the tracking page.
+     Example:
+     UGS-1024
+  ========================================================= */
 
   const handleTrackIssue = () => {
-    navigate("/user/reports");
+    navigate("/user/track");
   };
-
 
   return (
     <div className="user-landing-page">
 
-      {/* =========================================
+      {/* =====================================================
           MAIN LANDING CARD
-      ========================================= */}
+      ===================================================== */}
 
       <main className="user-landing-card">
 
-
-        {/* =========================================
+        {/* ===================================================
             IMAGE / HERO SECTION
-        ========================================= */}
+        =================================================== */}
 
         <section
           className="user-landing-hero"
@@ -51,12 +59,16 @@ function UserLanding() {
           }}
         >
 
-          {/* Soft overlay */}
+          {/* =================================================
+              SOFT IMAGE OVERLAY
+          ================================================= */}
 
           <div className="landing-image-overlay"></div>
 
 
-          {/* Hero content */}
+          {/* =================================================
+              HERO CONTENT
+          ================================================= */}
 
           <div className="landing-content">
 
@@ -83,13 +95,16 @@ function UserLanding() {
             </p>
 
 
-            {/* =====================================
+            {/* =================================================
                 ACTION BUTTONS
-            ===================================== */}
+            ================================================= */}
 
             <div className="landing-actions">
 
+              {/* REPORT AN ISSUE */}
+
               <button
+                type="button"
                 className="report-issue-button"
                 onClick={handleReportIssue}
               >
@@ -103,7 +118,10 @@ function UserLanding() {
               </button>
 
 
+              {/* TRACK AN ISSUE */}
+
               <button
+                type="button"
                 className="track-issue-button"
                 onClick={handleTrackIssue}
               >
@@ -119,32 +137,41 @@ function UserLanding() {
           </div>
 
 
-          {/* =====================================
+          {/* =================================================
               PAGE INDICATORS
-          ===================================== */}
+          ================================================= */}
 
           <div className="landing-indicators">
 
-            <span className="landing-dot active"></span>
+            <span
+              className="landing-dot active"
+            ></span>
 
-            <span className="landing-dot"></span>
+            <span
+              className="landing-dot"
+            ></span>
 
-            <span className="landing-dot"></span>
+            <span
+              className="landing-dot"
+            ></span>
 
           </div>
 
         </section>
 
 
-        {/* =========================================
+        {/* =====================================================
             BOTTOM NAVIGATION
-        ========================================= */}
+        ===================================================== */}
 
         <nav className="user-bottom-navigation">
 
-          {/* HOME */}
+          {/* =================================================
+              HOME
+          ================================================= */}
 
           <button
+            type="button"
             className="bottom-nav-item active"
             onClick={() => navigate("/user")}
           >
@@ -158,9 +185,12 @@ function UserLanding() {
           </button>
 
 
-          {/* MAP */}
+          {/* =================================================
+              MAP
+          ================================================= */}
 
           <button
+            type="button"
             className="bottom-nav-item"
             onClick={() => navigate("/user/map")}
           >
@@ -174,9 +204,12 @@ function UserLanding() {
           </button>
 
 
-          {/* ADD / REPORT */}
+          {/* =================================================
+              ADD / REPORT
+          ================================================= */}
 
           <button
+            type="button"
             className="bottom-add-button"
             onClick={handleReportIssue}
             aria-label="Report an issue"
@@ -187,9 +220,12 @@ function UserLanding() {
           </button>
 
 
-          {/* REPORTS */}
+          {/* =================================================
+              REPORTS
+          ================================================= */}
 
           <button
+            type="button"
             className="bottom-nav-item"
             onClick={() => navigate("/user/reports")}
           >
@@ -203,9 +239,12 @@ function UserLanding() {
           </button>
 
 
-          {/* PROFILE */}
+          {/* =================================================
+              PROFILE
+          ================================================= */}
 
           <button
+            type="button"
             className="bottom-nav-item"
             onClick={() => navigate("/user/profile")}
           >
@@ -225,6 +264,5 @@ function UserLanding() {
     </div>
   );
 }
-
 
 export default UserLanding;

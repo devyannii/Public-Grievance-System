@@ -1,110 +1,185 @@
-/* =========================================
+/* =========================================================
    MY REPORTS PAGE
-========================================= */
+========================================================= */
 
 .my-reports-page {
   width: 100%;
   max-width: 430px;
 
-  min-height: 100vh;
+  height: 100dvh;
   min-height: 100dvh;
 
   margin: 0 auto;
 
-  background: #ffffff;
-
-  font-family: "Inter", Arial, sans-serif;
-  color: #071426;
+  display: flex;
+  flex-direction: column;
 
   position: relative;
 
-  box-sizing: border-box;
+  background: #ffffff;
+
+  color: #071426;
+
+  font-family: "Inter", Arial, sans-serif;
 
   overflow: hidden;
+
+  box-sizing: border-box;
 }
 
 
-/* =========================================
+/* =========================================================
    HEADER
-========================================= */
+========================================================= */
 
 .my-reports-header {
+  width: 100%;
   height: 64px;
+
+  flex-shrink: 0;
 
   display: flex;
   align-items: center;
 
   padding: 0 16px;
 
-  border-bottom: 1px solid #edf0f2;
+  position: relative;
 
   background: #ffffff;
 
-  position: relative;
+  border-bottom: 1px solid #edf0f2;
 
   box-sizing: border-box;
 }
+
 
 .my-reports-header h1 {
   position: absolute;
 
   left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+
+  transform: translate(-50%, -50%);
 
   margin: 0;
 
-  font-size: 15px;
-  font-weight: 700;
-
   color: #071426;
+
+  font-size: 15px;
+
+  line-height: 1.2;
+
+  font-weight: 700;
 
   white-space: nowrap;
 }
 
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
 .reports-back-button {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   padding: 0;
 
-  border: none;
-  background: transparent;
+  border: 1px solid #dce9e1;
 
-  color: #182535;
+  border-radius: 13px;
+
+  background: #ffffff;
+
+  color: #37704e;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
+
+
+.reports-back-button:hover {
+  background: #f4faf6;
+
+  border-color: #c9ded1;
+}
+
+
+.reports-back-button:active {
+  transform: scale(0.97);
+}
+
 
 .reports-back-button svg {
-  width: 21px;
-  height: 21px;
+  width: 22px;
+  height: 22px;
+
+  stroke-width: 2;
 }
 
 
-/* =========================================
+/* =========================================================
    CONTENT
-========================================= */
+========================================================= */
 
 .my-reports-content {
-  padding: 14px 14px 82px;
+  flex: 1;
+
+  min-height: 0;
+
+  width: 100%;
+
+  padding: 14px 14px 12px;
 
   box-sizing: border-box;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
 }
 
 
-/* =========================================
+.my-reports-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+
+.my-reports-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.my-reports-content::-webkit-scrollbar-thumb {
+  background: #d8e3dd;
+
+  border-radius: 10px;
+}
+
+
+/* =========================================================
    FILTERS
-========================================= */
+========================================================= */
 
 .reports-filters {
+  width: 100%;
+
   display: flex;
+
   align-items: center;
 
-  gap: 8px;
+  gap: 10px;
 
   margin-bottom: 14px;
 
@@ -113,31 +188,48 @@
   scrollbar-width: none;
 }
 
+
 .reports-filters::-webkit-scrollbar {
   display: none;
 }
 
+
 .report-filter {
   flex-shrink: 0;
 
-  height: 32px;
+  height: 38px;
 
-  padding: 0 14px;
+  padding: 0 17px;
 
-  border: 1px solid #dce3e7;
-  border-radius: 18px;
+  border: 2px solid #dce3e7;
+
+  border-radius: 22px;
 
   background: #ffffff;
 
-  color: #1d2c3b;
+  color: #263646;
 
-  font-size: 10px;
+  font-family: inherit;
+
+  font-size: 11px;
+
   font-weight: 500;
 
   cursor: pointer;
 
   white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
+
+
+.report-filter:hover {
+  border-color: #b9cec3;
+}
+
 
 .report-filter.active {
   border-color: #079c79;
@@ -150,68 +242,88 @@
 }
 
 
-/* =========================================
+/* =========================================================
    REPORT LIST
-========================================= */
+========================================================= */
 
 .reports-list-page {
+  width: 100%;
+
   display: flex;
+
   flex-direction: column;
 
-  gap: 8px;
+  gap: 10px;
 }
 
 
-/* =========================================
+/* =========================================================
    REPORT CARD
-========================================= */
+========================================================= */
 
 .my-report-card {
   width: 100%;
-  min-height: 72px;
+
+  min-height: 112px;
 
   display: flex;
+
   align-items: center;
 
-  padding: 8px 10px;
+  padding: 12px;
 
-  border: 1px solid #e2e7e9;
-  border-radius: 12px;
+  border: 2px solid #e3e8ea;
+
+  border-radius: 20px;
 
   background: #ffffff;
 
-  box-shadow: 0 2px 8px rgba(20, 40, 50, 0.04);
+  box-shadow:
+    0 3px 12px rgba(20, 40, 50, 0.045);
 
   text-align: left;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
-
   box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
+
 
 .my-report-card:hover {
   border-color: #cfd9dc;
+
+  box-shadow:
+    0 5px 15px rgba(20, 40, 50, 0.07);
 }
 
 
-/* =========================================
-   IMAGE
-========================================= */
+.my-report-card:active {
+  transform: scale(0.995);
+}
+
+
+/* =========================================================
+   REPORT IMAGE
+========================================================= */
 
 .my-report-image {
-  width: 58px;
-  height: 58px;
+  width: 123px;
+  height: 88px;
 
   flex-shrink: 0;
 
-  border-radius: 9px;
+  border-radius: 17px;
 
   overflow: hidden;
 
   background: #eef0ef;
 }
+
 
 .my-report-image img {
   width: 100%;
@@ -223,132 +335,353 @@
 }
 
 
-/* =========================================
-   INFORMATION
-========================================= */
+/* =========================================================
+   REPORT INFORMATION
+========================================================= */
 
 .my-report-information {
   min-width: 0;
 
   flex: 1;
 
-  margin-left: 12px;
+  margin-left: 16px;
 
   display: flex;
+
   flex-direction: column;
 
   justify-content: center;
 }
 
+
 .my-report-information h2 {
-  margin: 0 0 5px;
+  margin: 0 0 7px;
 
   overflow: hidden;
 
   color: #081526;
 
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 16px;
 
   line-height: 1.2;
 
+  font-weight: 700;
+
   white-space: nowrap;
+
   text-overflow: ellipsis;
 }
 
 
-/* =========================================
-   META
-========================================= */
+/* =========================================================
+   COMPLAINT ID
+========================================================= */
 
-.my-report-meta {
-  display: flex;
-  align-items: center;
+.my-report-complaint-id {
+  margin-bottom: 7px;
 
-  gap: 5px;
+  color: #687b91;
 
-  color: #64748b;
+  font-size: 12px;
 
-  font-size: 9px;
+  line-height: 1.2;
 
   white-space: nowrap;
 }
+
+
+.my-report-complaint-id strong {
+  color: #1d4937;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   REPORT META
+========================================================= */
+
+.my-report-meta {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #64748b;
+
+  font-size: 11px;
+
+  white-space: nowrap;
+}
+
 
 .meta-dot {
   color: #9aa4ad;
 }
 
 
-/* =========================================
+/* =========================================================
    STATUS
-========================================= */
+========================================================= */
 
 .my-report-status {
   display: inline-flex;
+
   align-items: center;
+  justify-content: center;
 
-  height: 18px;
+  min-height: 28px;
 
-  padding: 0 8px;
+  padding: 0 13px;
 
-  border-radius: 10px;
+  border-radius: 18px;
 
-  font-size: 8px;
+  font-size: 10px;
+
   font-weight: 600;
 
   line-height: 1;
 }
 
+
 .status-progress {
   background: #fff1cf;
+
   color: #e99a00;
 }
 
+
 .status-resolved {
   background: #ddf6e9;
+
   color: #009b68;
 }
 
+
 .status-pending {
-  background: #ffe5e7;
-  color: #f04444;
+  background: #fff0d0;
+
+  color: #d98b00;
 }
 
 
-/* =========================================
+/* =========================================================
    ARROW
-========================================= */
+========================================================= */
 
 .my-report-arrow {
   flex-shrink: 0;
 
-  margin-left: 6px;
+  width: 23px;
+  height: 23px;
+
+  margin-left: 8px;
 
   color: #68798a;
 
-  width: 18px;
-  height: 18px;
+  stroke-width: 2;
 }
 
 
-/* =========================================
-   DESKTOP / BROWSER PREVIEW
-========================================= */
+/* =========================================================
+   BOTTOM NAVIGATION
+   430px APP WIDTH
+========================================================= */
+
+.reports-bottom-nav {
+  width: 100%;
+
+  height: 76px;
+
+  flex-shrink: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr
+    1fr
+    1fr
+    1fr;
+
+  align-items: center;
+
+  position: relative;
+
+  z-index: 100;
+
+  background: #ffffff;
+
+  border-top: 1px solid #e8eded;
+
+  box-shadow:
+    0 -4px 15px rgba(25, 55, 42, 0.05);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   NAV ITEMS
+========================================================= */
+
+.reports-bottom-nav .bottom-nav-item {
+  width: 100%;
+  height: 76px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  padding: 0;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color: #657180;
+
+  font-family: inherit;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+
+.reports-bottom-nav
+.bottom-nav-item svg {
+  width: 22px;
+  height: 22px;
+
+  stroke-width: 1.8;
+}
+
+
+.reports-bottom-nav
+.bottom-nav-item span {
+  font-size: 10px;
+
+  line-height: 1.2;
+
+  font-weight: 500;
+}
+
+
+.reports-bottom-nav
+.bottom-nav-item.active {
+  color: #009d78;
+
+  font-weight: 600;
+}
+
+
+.reports-bottom-nav
+.bottom-nav-item.active svg {
+  stroke-width: 2.3;
+}
+
+
+/* =========================================================
+   CENTER PLUS BUTTON
+   WHITE OUTER RING
+========================================================= */
+
+.reports-bottom-nav
+.report-add-button {
+  width: 52px;
+  height: 52px;
+
+  align-self: center;
+  justify-self: center;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 4px solid #ffffff;
+
+  border-radius: 50%;
+
+  background: #00a878;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 4px 13px rgba(0, 169, 130, 0.30);
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transform: none;
+
+  position: relative;
+
+  z-index: 110;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.reports-bottom-nav
+.report-add-button:hover {
+  transform: scale(1.03);
+
+  box-shadow:
+    0 6px 16px rgba(0, 169, 130, 0.34);
+}
+
+
+.reports-bottom-nav
+.report-add-button:active {
+  transform: scale(0.97);
+}
+
+
+.reports-bottom-nav
+.report-add-button svg {
+  width: 27px;
+  height: 27px;
+
+  stroke-width: 2.2;
+}
+
+
+/* =========================================================
+   DESKTOP
+========================================================= */
 
 @media (min-width: 700px) {
 
   body {
+    margin: 0;
+
     background: #eef7f9;
   }
 
+
   .my-reports-page {
-    width: 100%;
+    width: 430px;
+
     max-width: 430px;
 
-    min-height: 100vh;
-    min-height: 100dvh;
-
     height: 100dvh;
+
+    min-height: 100dvh;
 
     margin: 0 auto;
 
@@ -360,56 +693,283 @@
     overflow: hidden;
   }
 
-  .my-reports-content {
-    padding-bottom: 82px;
+
+  .reports-bottom-nav {
+    width: 100%;
+
+    max-width: 430px;
+
+    border-radius: 0 0 24px 24px;
   }
 }
 
 
-/* =========================================
-   SMALL PHONES
-========================================= */
+/* =========================================================
+   MOBILE
+========================================================= */
 
-@media (max-width: 430px) {
+@media (max-width: 699px) {
 
   .my-reports-page {
     width: 100%;
+
     max-width: 430px;
+
+    height: 100dvh;
 
     min-height: 100dvh;
 
-    margin: 0;
+    margin: 0 auto;
 
     border-radius: 0;
+
+    box-shadow: none;
+  }
+
+
+  .reports-bottom-nav {
+    width: 100%;
+
+    max-width: 430px;
   }
 }
 
 
-/* =========================================
-   VERY SMALL PHONES
-========================================= */
+/* =========================================================
+   SMALL PHONES
+========================================================= */
 
-@media (max-width: 380px) {
+@media (max-width: 390px) {
 
   .my-reports-content {
     padding-left: 12px;
+
     padding-right: 12px;
   }
 
+
   .my-report-card {
-    min-height: 68px;
+    min-height: 100px;
+
+    padding: 10px;
   }
+
 
   .my-report-image {
-    width: 54px;
-    height: 54px;
+    width: 92px;
+
+    height: 78px;
+
+    border-radius: 14px;
   }
+
 
   .my-report-information {
-    margin-left: 10px;
+    margin-left: 12px;
   }
 
+
   .my-report-information h2 {
-    font-size: 11px;
+    font-size: 14px;
   }
+
+
+  .my-report-complaint-id {
+    font-size: 10px;
+  }
+
+
+  .my-report-meta {
+    font-size: 9px;
+  }
+
+
+  .my-report-status {
+    min-height: 24px;
+
+    padding: 0 10px;
+
+    font-size: 9px;
+  }
+
+
+  .my-report-arrow {
+    width: 20px;
+    height: 20px;
+
+    margin-left: 5px;
+  }
+
+
+  .reports-bottom-nav {
+    height: 70px;
+  }
+
+
+  .reports-bottom-nav
+  .bottom-nav-item {
+    height: 70px;
+  }
+
+
+  .reports-bottom-nav
+  .bottom-nav-item span {
+    font-size: 9px;
+  }
+
+
+  .reports-bottom-nav
+  .bottom-nav-item svg {
+    width: 20px;
+    height: 20px;
+  }
+
+
+  .reports-bottom-nav
+  .report-add-button {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 350px) {
+
+  .my-reports-header {
+    height: 60px;
+
+    padding: 0 12px;
+  }
+
+
+  .my-reports-header h1 {
+    font-size: 14px;
+  }
+
+
+  .reports-back-button {
+    width: 36px;
+    height: 36px;
+  }
+
+
+  .my-reports-content {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+
+  .reports-filters {
+    gap: 7px;
+  }
+
+
+  .report-filter {
+    height: 35px;
+
+    padding: 0 13px;
+
+    font-size: 10px;
+  }
+
+
+  .my-report-card {
+    min-height: 92px;
+
+    padding: 8px;
+  }
+
+
+  .my-report-image {
+    width: 78px;
+
+    height: 72px;
+
+    border-radius: 12px;
+  }
+
+
+  .my-report-information {
+    margin-left: 9px;
+  }
+
+
+  .my-report-information h2 {
+    font-size: 13px;
+
+    margin-bottom: 5px;
+  }
+
+
+  .my-report-complaint-id {
+    font-size: 9px;
+
+    margin-bottom: 5px;
+  }
+
+
+  .my-report-meta {
+    font-size: 8px;
+
+    gap: 4px;
+  }
+
+
+  .my-report-status {
+    min-height: 22px;
+
+    padding: 0 8px;
+
+    font-size: 8px;
+  }
+
+
+  .reports-bottom-nav {
+    height: 70px;
+  }
+
+
+  .reports-bottom-nav
+  .bottom-nav-item {
+    height: 70px;
+  }
+
+
+  .reports-bottom-nav
+  .report-add-button {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+
+/* =========================================================
+   BOX SIZING
+========================================================= */
+
+.my-reports-page *,
+.my-reports-page *::before,
+.my-reports-page *::after {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.my-report-card:focus-visible,
+.reports-back-button:focus-visible,
+.report-filter:focus-visible,
+.reports-bottom-nav
+.bottom-nav-item:focus-visible,
+.reports-bottom-nav
+.report-add-button:focus-visible {
+  outline: 2px solid #238242;
+
+  outline-offset: 2px;
 }

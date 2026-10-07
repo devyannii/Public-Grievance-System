@@ -1,0 +1,992 @@
+/* =========================================
+   TRACK ISSUE PAGE
+========================================= */
+
+.track-issue-page {
+
+  width: 100%;
+  max-width: 430px;
+
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  height: 100dvh;
+
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #f4f9f7;
+
+  color: #071426;
+
+  font-family: "Inter", Arial, sans-serif;
+
+  position: relative;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.track-issue-header {
+
+  height: 64px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 0 16px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5ebea;
+
+  position: relative;
+
+  z-index: 10;
+}
+
+.track-issue-header h1 {
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  margin: 0;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  color: #071426;
+
+  white-space: nowrap;
+}
+
+.track-back-button {
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #182535;
+
+  cursor: pointer;
+}
+
+.track-back-button svg {
+
+  width: 21px;
+  height: 21px;
+}
+
+.track-header-space {
+
+  width: 34px;
+  height: 34px;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.track-issue-content {
+
+  flex: 1;
+
+  min-height: 0;
+
+  padding: 28px 20px 90px;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  scrollbar-width: none;
+}
+
+.track-issue-content::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================
+   TRACK CARD
+   NO INNER BOX
+========================================= */
+
+.track-card {
+
+  width: 100%;
+
+  padding: 4px 4px 20px;
+
+  box-sizing: border-box;
+
+  background: transparent;
+
+  border: none;
+
+  border-radius: 0;
+
+  box-shadow: none;
+}
+
+
+/* =========================================
+   ICON
+========================================= */
+
+.track-icon {
+
+  width: 43px;
+  height: 43px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 16px;
+
+  border-radius: 12px;
+
+  background: #e7f6ef;
+
+  color: #00a982;
+}
+
+
+/* =========================================
+   TITLE
+========================================= */
+
+.track-card h2 {
+
+  margin: 0 0 8px;
+
+  font-size: 21px;
+
+  font-weight: 500;
+
+  line-height: 1.25;
+
+  color: #071426;
+}
+
+
+/* =========================================
+   DESCRIPTION
+========================================= */
+
+.track-description {
+
+  margin: 0 0 22px;
+
+  color: #718096;
+
+  font-size: 11px;
+
+  line-height: 1.55;
+}
+
+
+/* =========================================
+   LABEL
+========================================= */
+
+.track-label {
+
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #263b34;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================
+   INPUT
+========================================= */
+
+.track-input-wrapper {
+
+  width: 100%;
+
+  height: 47px;
+
+  display: flex;
+
+  align-items: center;
+
+  box-sizing: border-box;
+
+  padding: 0 13px;
+
+  border: 1px solid #cfe0d9;
+
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  transition: 0.2s ease;
+}
+
+.track-input-wrapper:focus-within {
+
+  border-color: #00a982;
+
+  box-shadow:
+    0 0 0 3px rgba(0, 169, 130, 0.08);
+}
+
+.track-input-icon {
+
+  flex-shrink: 0;
+
+  margin-right: 10px;
+
+  color: #91a29b;
+}
+
+.track-input-wrapper input {
+
+  width: 100%;
+
+  min-width: 0;
+
+  height: 100%;
+
+  padding: 0;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color: #071426;
+
+  font-family: inherit;
+
+  font-size: 12px;
+}
+
+.track-input-wrapper input::placeholder {
+
+  color: #9aaba4;
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.track-error {
+
+  margin-top: 9px;
+
+  padding: 9px 11px;
+
+  border-radius: 8px;
+
+  background: #fff1f1;
+
+  color: #d64545;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================
+   TRACK BUTTON
+========================================= */
+
+.track-submit-button {
+
+  width: 100%;
+
+  height: 45px;
+
+  margin-top: 12px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #00a982;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.track-submit-button:hover {
+
+  background: #009874;
+}
+
+.track-submit-button:disabled {
+
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   OR DIVIDER
+========================================= */
+
+.track-help-divider {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin: 19px 0 15px;
+}
+
+.track-help-divider span {
+
+  flex: 1;
+
+  height: 1px;
+
+  background: #dfe8e4;
+}
+
+.track-help-divider small {
+
+  color: #9aa8a2;
+
+  font-size: 9px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================
+   DON'T KNOW ID
+========================================= */
+
+.track-no-id {
+
+  text-align: center;
+}
+
+.track-no-id p {
+
+  margin: 0 0 7px;
+
+  color: #718096;
+
+  font-size: 10px;
+}
+
+.track-no-id button {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #008f6f;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.track-no-id button:hover {
+
+  color: #006f58;
+}
+
+.track-no-id button span {
+
+  font-size: 11px;
+}
+
+.track-no-id button strong {
+
+  font-size: 14px;
+
+  line-height: 1;
+}
+
+
+/* =========================================
+   RESULT CARD
+========================================= */
+
+.track-result-card {
+
+  margin-top: 10px;
+
+  padding: 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #dce8e3;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 6px 20px rgba(25, 70, 55, 0.05);
+}
+
+
+/* =========================================
+   RESULT HEADER
+========================================= */
+
+.track-result-header {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding-bottom: 14px;
+
+  border-bottom: 1px solid #edf1ef;
+}
+
+.track-result-label {
+
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #7b8984;
+
+  font-size: 9px;
+
+  font-weight: 500;
+}
+
+.track-result-header h3 {
+
+  margin: 0;
+
+  color: #183b2a;
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================
+   RESULT STATUS
+========================================= */
+
+.track-result-status {
+
+  flex-shrink: 0;
+
+  padding: 6px 9px;
+
+  border-radius: 10px;
+
+  background: #fff1d8;
+
+  color: #d89000;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.track-result-status.in-progress {
+
+  background: #fff1d8;
+
+  color: #d89000;
+}
+
+.track-result-status.resolved {
+
+  background: #ddf6e9;
+
+  color: #009b68;
+}
+
+.track-result-status.pending {
+
+  background: #fff1d8;
+
+  color: #d89000;
+}
+
+
+/* =========================================
+   RESULT TITLE
+========================================= */
+
+.track-result-title {
+
+  margin: 15px 0;
+
+  color: #071426;
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================
+   RESULT ROW
+========================================= */
+
+.track-result-row {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 8px 0;
+
+  border-top: 1px solid #f0f3f2;
+
+  font-size: 10px;
+}
+
+.track-result-row span {
+
+  color: #718096;
+}
+
+.track-result-row strong {
+
+  max-width: 60%;
+
+  color: #263b34;
+
+  text-align: right;
+
+  font-weight: 600;
+}
+
+
+/* =========================================
+   TIMELINE
+========================================= */
+
+.track-timeline {
+
+  margin-top: 15px;
+
+  padding-top: 8px;
+
+  border-top: 1px solid #edf1ef;
+}
+
+.track-step {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  min-height: 48px;
+
+  position: relative;
+}
+
+.track-step:not(:last-child)::after {
+
+  content: "";
+
+  position: absolute;
+
+  left: 9px;
+
+  top: 20px;
+
+  width: 1px;
+
+  height: 32px;
+
+  background: #dfe7e3;
+}
+
+.track-step.completed:not(:last-child)::after {
+
+  background: #8bd6bc;
+}
+
+.track-step-dot {
+
+  width: 19px;
+  height: 19px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #edf2ef;
+
+  color: #ffffff;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  z-index: 1;
+}
+
+.track-step.completed .track-step-dot {
+
+  background: #00a982;
+}
+
+.track-step strong {
+
+  display: block;
+
+  margin-bottom: 2px;
+
+  color: #263b34;
+
+  font-size: 10px;
+
+  font-weight: 700;
+}
+
+.track-step span {
+
+  display: block;
+
+  color: #8a9792;
+
+  font-size: 9px;
+}
+
+
+/* =========================================
+   FULL DETAILS
+========================================= */
+
+.track-full-details {
+
+  width: 100%;
+
+  height: 40px;
+
+  margin-top: 10px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 0 12px;
+
+  border: 1px solid #d5e6df;
+
+  border-radius: 9px;
+
+  background: #f5fbf8;
+
+  color: #008f6f;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.track-full-details strong {
+
+  font-size: 15px;
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+.track-bottom-navigation {
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  width: 100%;
+
+  height: 64px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr
+    1fr
+    1fr
+    1fr;
+
+  align-items: center;
+
+  background: #ffffff;
+
+  border-top: 1px solid #edf0f2;
+
+  z-index: 50;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   NAV ITEMS
+========================================= */
+
+.track-bottom-item {
+
+  height: 64px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #657180;
+
+  font-family: inherit;
+
+  font-size: 8px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.track-bottom-item svg {
+
+  width: 18px;
+  height: 18px;
+
+  stroke-width: 1.8;
+}
+
+
+/* =========================================
+   PLUS BUTTON
+========================================= */
+
+.track-add-button {
+
+  width: 48px;
+  height: 48px;
+
+  align-self: center;
+  justify-self: center;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #00a982;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 5px 14px rgba(0, 169, 130, 0.28);
+
+  cursor: pointer;
+}
+
+.track-add-button svg {
+
+  width: 26px;
+  height: 26px;
+
+  stroke-width: 2;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 699px) {
+
+  .track-issue-page {
+
+    width: 100%;
+
+    max-width: 430px;
+
+    min-height: 100dvh;
+
+    height: 100dvh;
+
+    margin: 0;
+  }
+
+  .track-issue-content {
+
+    padding:
+      24px
+      14px
+      90px;
+  }
+}
+
+
+/* =========================================
+   DESKTOP / BROWSER PREVIEW
+========================================= */
+
+@media (min-width: 700px) {
+
+  body {
+
+    background: #eef7f9;
+  }
+
+  .track-issue-page {
+
+    width: 100%;
+
+    max-width: 430px;
+
+    min-height: 100vh;
+
+    min-height: 100dvh;
+
+    height: 100dvh;
+
+    margin: 0 auto;
+
+    border-radius: 24px;
+
+    box-shadow:
+      0 12px 35px rgba(30, 60, 70, 0.12);
+  }
+
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+  .track-issue-content {
+
+    padding-left: 12px;
+
+    padding-right: 12px;
+  }
+
+  .track-card {
+
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .track-card h2 {
+
+    font-size: 19px;
+  }
+}
