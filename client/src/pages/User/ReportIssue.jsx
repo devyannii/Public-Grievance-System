@@ -17,6 +17,9 @@ import {
   Mic,
   MicOff,
   Languages,
+  Camera,
+  Image as ImageIcon,
+  X,
 } from "lucide-react";
 
 import { supabase } from "../../lib/supabaseClient";
@@ -64,7 +67,7 @@ const LANGUAGES = {
     locationUnavailable:
       "Your location could not be determined. Please enter it manually.",
     locationTimeout:
-      "Location detection timed out. Please try again or enter the location manually.",
+      "Location detection timed out. Please try again or enter it manually.",
     locationError: "Unable to detect your location.",
     descriptionRequired:
       "Please enter a description or turn on AI assistance.",
@@ -243,9 +246,13 @@ async function getReadableLocation(latitude, longitude) {
     const address = data.address || {};
 
     const parts = [
-      address.road || address.pedestrian || address.neighbourhood,
+      address.road ||
+        address.pedestrian ||
+        address.neighbourhood,
       address.suburb || address.city_district,
-      address.city || address.town || address.village,
+      address.city ||
+        address.town ||
+        address.village,
       address.state,
     ].filter(Boolean);
 
@@ -282,13 +289,20 @@ function ReportIssue() {
   const [locationText, setLocationText] = useState("");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
-  const [isLocationEditing, setIsLocationEditing] = useState(false);
-  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [isLocationEditing, setIsLocationEditing] =
+    useState(false);
+  const [isDetectingLocation, setIsDetectingLocation] =
+    useState(false);
+
+  const [showLocationPopup, setShowLocationPopup] =
+    useState(true);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
   const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
+
   const recognitionRef = useRef(null);
   const shouldKeepListeningRef = useRef(false);
 
@@ -296,13 +310,15 @@ function ReportIssue() {
     localStorage.setItem("ugs_language", language);
 
     if (recognitionRef.current) {
-      recognitionRef.current.lang = LANGUAGES[language].code;
+      recognitionRef.current.lang =
+        LANGUAGES[language].code;
     }
   }, [language]);
 
   useEffect(() => {
     const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       setSpeechSupported(false);
@@ -324,9 +340,14 @@ function ReportIssue() {
     recognition.onresult = (event) => {
       let transcript = "";
 
-      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+      for (
+        let i = event.resultIndex;
+        i < event.results.length;
+        i += 1
+      ) {
         if (event.results[i].isFinal) {
-          transcript += event.results[i][0].transcript;
+          transcript +=
+            event.results[i][0].transcript;
         }
       }
 
@@ -342,7 +363,10 @@ function ReportIssue() {
     };
 
     recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event.error);
+      console.error(
+        "Speech recognition error:",
+        event.error
+      );
 
       if (
         event.error === "not-allowed" ||
@@ -364,10 +388,16 @@ function ReportIssue() {
 
       if (shouldKeepListeningRef.current) {
         try {
-          recognition.lang = LANGUAGES[language].code;
+          recognition.lang =
+            LANGUAGES[language].code;
+
           recognition.start();
         } catch (error) {
-          console.warn("Could not restart speech recognition:", error);
+          console.warn(
+            "Could not restart speech recognition:",
+            error
+          );
+
           shouldKeepListeningRef.current = false;
         }
       }
@@ -381,7 +411,10 @@ function ReportIssue() {
       try {
         recognition.stop();
       } catch (error) {
-        console.warn("Could not stop speech recognition:", error);
+        console.warn(
+          "Could not stop speech recognition:",
+          error
+        );
       }
 
       recognitionRef.current = null;
@@ -391,7 +424,10 @@ function ReportIssue() {
   const handleLanguageChange = (event) => {
     const newLanguage = event.target.value;
 
-    if (isListening && recognitionRef.current) {
+    if (
+      isListening &&
+      recognitionRef.current
+    ) {
       shouldKeepListeningRef.current = false;
 
       try {
@@ -426,7 +462,10 @@ function ReportIssue() {
       try {
         recognition.stop();
       } catch (error) {
-        console.warn("Could not stop speech recognition:", error);
+        console.warn(
+          "Could not stop speech recognition:",
+          error
+        );
       }
 
       setIsListening(false);
@@ -434,13 +473,17 @@ function ReportIssue() {
     }
 
     setSubmitError("");
+
     shouldKeepListeningRef.current = true;
     recognition.lang = t.code;
 
     try {
       recognition.start();
     } catch (error) {
-      console.warn("Could not start speech recognition:", error);
+      console.warn(
+        "Could not start speech recognition:",
+        error
+      );
 
       shouldKeepListeningRef.current = false;
       setIsListening(false);
@@ -449,68 +492,96 @@ function ReportIssue() {
     }
   };
 
-  // =========================================================
-  // LOCATION
-  // =========================================================
+  /* =========================================================
+     LOCATION
+  ========================================================= */
 
   const detectLocation = () => {
-    console.log("=================================");
-    console.log("📍 LOCATION REQUEST STARTED");
-    console.log("=================================");
+    console.log(
+      "================================="
+    );
+    console.log("LOCATION REQUEST STARTED");
+    console.log(
+      "================================="
+    );
 
     if (!window.isSecureContext) {
-      console.error("❌ Website is not running in a secure context.");
+      console.error(
+        "Website is not running in HTTPS."
+      );
 
       setSubmitError(
         "Location requires a secure HTTPS connection."
       );
 
-      setIsDetectingLocation(false);
       return;
     }
 
     if (!navigator.geolocation) {
-      console.error("❌ Geolocation is not supported.");
+      console.error(
+        "Geolocation is not supported."
+      );
 
-      setSubmitError(t.locationUnsupported);
-      setIsDetectingLocation(false);
+      setSubmitError(
+        "Location is not supported on this device/browser."
+      );
+
       return;
     }
 
     setSubmitError("");
     setIsDetectingLocation(true);
-    setLocationText("Getting your location...");
+    setLocationText(
+      "Getting your location..."
+    );
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        console.log("=================================");
-        console.log("✅ LOCATION RECEIVED");
-        console.log("=================================");
-        console.log("Latitude:", position.coords.latitude);
-        console.log("Longitude:", position.coords.longitude);
-        console.log("Accuracy:", position.coords.accuracy, "meters");
+        console.log(
+          "================================="
+        );
+        console.log("LOCATION SUCCESS");
+        console.log(
+          "================================="
+        );
 
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+        const lat =
+          position.coords.latitude;
 
-        // Save coordinates immediately.
+        const lng =
+          position.coords.longitude;
+
+        console.log("Latitude:", lat);
+        console.log("Longitude:", lng);
+        console.log(
+          "Accuracy:",
+          position.coords.accuracy
+        );
+
         setLatitude(lat);
         setLongitude(lng);
 
-        // Show coordinates immediately.
         setLocationText(
-          `Location captured (${lat.toFixed(6)}, ${lng.toFixed(6)})`
+          `Location captured (${lat.toFixed(
+            6
+          )}, ${lng.toFixed(6)})`
         );
 
+        setShowLocationPopup(false);
         setIsLocationEditing(false);
 
-        // Now try to convert coordinates into a readable address.
         try {
-          const readableLocation = await getReadableLocation(lat, lng);
+          const readableLocation =
+            await getReadableLocation(
+              lat,
+              lng
+            );
 
           if (readableLocation) {
             setLocationText(
-              `${readableLocation} (${lat.toFixed(6)}, ${lng.toFixed(6)})`
+              `${readableLocation} (${lat.toFixed(
+                6
+              )}, ${lng.toFixed(6)})`
             );
           }
         } catch (error) {
@@ -524,81 +595,129 @@ function ReportIssue() {
       },
 
       (error) => {
-        console.error("=================================");
-        console.error("❌ GEOLOCATION ERROR");
-        console.error("=================================");
-        console.error("Error code:", error.code);
-        console.error("Error message:", error.message);
+        console.error(
+          "================================="
+        );
+        console.error("LOCATION ERROR");
+        console.error(
+          "================================="
+        );
+
+        console.error(
+          "Error code:",
+          error.code
+        );
+
+        console.error(
+          "Error message:",
+          error.message
+        );
 
         setIsDetectingLocation(false);
 
         if (error.code === 1) {
           setSubmitError(
-            `Location permission was denied. Please allow location access for this website. (Code: ${error.code})`
+            "Location permission was denied. Please allow location access for this website in your browser settings."
           );
         } else if (error.code === 2) {
           setSubmitError(
-            `Your phone could not determine your location. Turn on Location/GPS and try again. (Code: ${error.code})`
+            "Your device could not determine your location. Turn on GPS/Location and try again."
           );
         } else if (error.code === 3) {
           setSubmitError(
-            `Location request timed out. Please try again. (Code: ${error.code})`
+            "Location request timed out. Please try again."
           );
         } else {
           setSubmitError(
-            `Unable to get your location: ${error.message} (Code: ${error.code})`
+            `Unable to get your location: ${error.message}`
           );
         }
       },
 
       {
-        // Important for mobile devices.
-        // This allows Wi-Fi/network location instead of
-        // waiting only for a high-accuracy GPS fix.
         enableHighAccuracy: false,
-
-        // Give phones enough time to determine location.
         timeout: 30000,
-
-        // A recent location is acceptable.
         maximumAge: 60000,
       }
     );
   };
 
-  // =========================================================
-  // IMAGE
-  // =========================================================
+  /* =========================================================
+     PHOTO HANDLING
+  ========================================================= */
 
   const handleImageUpload = (event) => {
     const file = event.target.files?.[0];
 
     if (!file) return;
 
-    setSelectedFile(file);
+    if (!file.type.startsWith("image/")) {
+      setSubmitError(
+        "Please select an image file."
+      );
 
-    const imageURL = URL.createObjectURL(file);
+      return;
+    }
+
+    if (image) {
+      URL.revokeObjectURL(image);
+    }
+
+    const imageURL =
+      URL.createObjectURL(file);
+
+    setSelectedFile(file);
     setImage(imageURL);
+    setSubmitError("");
+
+    // Allows selecting the same file again later.
+    event.target.value = "";
+  };
+
+  const deletePhoto = () => {
+    if (image) {
+      URL.revokeObjectURL(image);
+    }
+
+    setImage(null);
+    setSelectedFile(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = "";
+    }
 
     setSubmitError("");
   };
 
-  // =========================================================
-  // SUBMIT
-  // =========================================================
+  /* =========================================================
+     SUBMIT
+  ========================================================= */
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     setSubmitError("");
 
-    if (!letAISuggest && !description.trim()) {
-      setSubmitError(t.descriptionRequired);
+    if (
+      !letAISuggest &&
+      !description.trim()
+    ) {
+      setSubmitError(
+        t.descriptionRequired
+      );
+
       return;
     }
 
     if (!selectedFile) {
-      setSubmitError(t.photoRequired);
+      setSubmitError(
+        t.photoRequired
+      );
+
       return;
     }
 
@@ -619,7 +738,8 @@ function ReportIssue() {
         return;
       }
 
-      const complaintCode = generateComplaintCode();
+      const complaintCode =
+        generateComplaintCode();
 
       const {
         data: complaint,
@@ -627,18 +747,31 @@ function ReportIssue() {
       } = await supabase
         .from("complaints")
         .insert({
-          complaint_code: complaintCode,
+          complaint_code:
+            complaintCode,
+
           user_id: user.id,
+
           title: letAISuggest
             ? "Civic Issue"
-            : selectedIssue || "Other",
-          description: description.trim(),
+            : selectedIssue ||
+              "Other",
+
+          description:
+            description.trim(),
+
           category_id: null,
+
           location_text:
-            locationText.trim() || "Location not provided",
+            locationText.trim() ||
+            "Location not provided",
+
           latitude,
+
           longitude,
-          original_language: language,
+
+          original_language:
+            language,
         })
         .select()
         .single();
@@ -648,40 +781,61 @@ function ReportIssue() {
       }
 
       const fileExtension =
-        selectedFile.name.split(".").pop()?.toLowerCase() ||
-        "jpg";
+        selectedFile.name
+          .split(".")
+          .pop()
+          ?.toLowerCase() || "jpg";
 
-      const filePath = `${user.id}/${complaint.id}.${fileExtension}`;
+      const filePath =
+        `${user.id}/${complaint.id}.${fileExtension}`;
 
-      const { error: uploadError } = await supabase.storage
+      const {
+        error: uploadError,
+      } = await supabase.storage
         .from("complaint-images")
-        .upload(filePath, selectedFile, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: selectedFile.type,
-        });
+        .upload(
+          filePath,
+          selectedFile,
+          {
+            cacheControl: "3600",
+            upsert: false,
+            contentType:
+              selectedFile.type,
+          }
+        );
 
       if (uploadError) {
         throw uploadError;
       }
 
-      const { error: imageRecordError } = await supabase
+      const {
+        error: imageRecordError,
+      } = await supabase
         .from("complaint_images")
         .insert({
-          complaint_id: complaint.id,
-          storage_path: filePath,
-          file_name: selectedFile.name,
-          file_type: selectedFile.type,
-          file_size: selectedFile.size,
+          complaint_id:
+            complaint.id,
+
+          storage_path:
+            filePath,
+
+          file_name:
+            selectedFile.name,
+
+          file_type:
+            selectedFile.type,
+
+          file_size:
+            selectedFile.size,
         });
 
       if (imageRecordError) {
         throw imageRecordError;
       }
 
-      // =====================================================
-      // AI ANALYSIS
-      // =====================================================
+      /* =====================================================
+         AI ANALYSIS
+      ===================================================== */
 
       try {
         const apiBaseUrl =
@@ -692,15 +846,19 @@ function ReportIssue() {
           `${apiBaseUrl}/api/ai/analyze/${complaintCode}`,
           {
             method: "POST",
+
             headers: {
-              Accept: "application/json",
+              Accept:
+                "application/json",
             },
+
             keepalive: true,
           }
         )
           .then(async (response) => {
             if (!response.ok) {
-              const aiErrorText = await response.text();
+              const aiErrorText =
+                await response.text();
 
               console.error(
                 "AI analysis failed:",
@@ -710,7 +868,8 @@ function ReportIssue() {
               return;
             }
 
-            const aiResult = await response.json();
+            const aiResult =
+              await response.json();
 
             console.log(
               "AI analysis completed:",
@@ -730,7 +889,9 @@ function ReportIssue() {
         );
       }
 
-      navigate(`/user/issue/${complaint.id}`);
+      navigate(
+        `/user/issue/${complaint.id}`
+      );
     } catch (error) {
       console.error(
         "Complaint submission error:",
@@ -738,7 +899,8 @@ function ReportIssue() {
       );
 
       setSubmitError(
-        error?.message || t.genericError
+        error?.message ||
+          t.genericError
       );
     } finally {
       setIsSubmitting(false);
@@ -749,6 +911,153 @@ function ReportIssue() {
     <div className="report-issue-page">
 
       {/* =====================================================
+          LOCATION PERMISSION POPUP
+      ===================================================== */}
+
+      {showLocationPopup && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background:
+              "rgba(0,0,0,0.45)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            padding: "20px",
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "360px",
+              background: "#fff",
+              borderRadius: "20px",
+              padding: "26px",
+              textAlign: "center",
+              boxShadow:
+                "0 20px 50px rgba(0,0,0,0.2)",
+            }}
+          >
+
+            <div
+              style={{
+                width: "58px",
+                height: "58px",
+                margin:
+                  "0 auto 16px",
+                borderRadius: "50%",
+                background: "#eaf6ef",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MapPin
+                size={28}
+                color="#009f7f"
+              />
+            </div>
+
+            <h2
+              style={{
+                margin:
+                  "0 0 8px",
+                color: "#294336",
+                fontSize: "20px",
+              }}
+            >
+              Allow Location Access?
+            </h2>
+
+            <p
+              style={{
+                margin:
+                  "0 0 22px",
+                color: "#718078",
+                fontSize: "13px",
+                lineHeight: 1.5,
+              }}
+            >
+              We use your location
+              to accurately identify
+              where the issue was
+              reported.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSubmitError("");
+                detectLocation();
+              }}
+              disabled={
+                isDetectingLocation
+              }
+              style={{
+                width: "100%",
+                border: "none",
+                borderRadius: "12px",
+                padding: "13px",
+                background: "#009f7f",
+                color: "#fff",
+                fontWeight: 700,
+                cursor:
+                  isDetectingLocation
+                    ? "default"
+                    : "pointer",
+                marginBottom: "10px",
+              }}
+            >
+              {isDetectingLocation
+                ? "Getting Location..."
+                : "Allow Location"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowLocationPopup(
+                  false
+                );
+
+                setSubmitError("");
+              }}
+              style={{
+                width: "100%",
+                border:
+                  "1px solid #dce8df",
+                borderRadius: "12px",
+                padding: "13px",
+                background: "#fff",
+                color: "#294336",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Maybe Later
+            </button>
+
+            {submitError && (
+              <p
+                style={{
+                  margin:
+                    "14px 0 0",
+                  color: "#d64545",
+                  fontSize: "12px",
+                  lineHeight: 1.45,
+                }}
+              >
+                {submitError}
+              </p>
+            )}
+
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================
           HEADER
       ===================================================== */}
 
@@ -756,7 +1065,9 @@ function ReportIssue() {
 
         <button
           className="report-issue-back"
-          onClick={() => navigate("/user")}
+          onClick={() =>
+            navigate("/user")
+          }
         >
           <ArrowLeft size={21} />
         </button>
@@ -767,7 +1078,8 @@ function ReportIssue() {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-end",
+            justifyContent:
+              "flex-end",
           }}
         >
           <div
@@ -775,7 +1087,8 @@ function ReportIssue() {
               display: "flex",
               alignItems: "center",
               gap: "4px",
-              border: "1px solid #dce8df",
+              border:
+                "1px solid #dce8df",
               borderRadius: "8px",
               padding: "3px 6px",
               background: "#f7fbf8",
@@ -788,12 +1101,15 @@ function ReportIssue() {
 
             <select
               value={language}
-              onChange={handleLanguageChange}
+              onChange={
+                handleLanguageChange
+              }
               aria-label="Select language"
               style={{
                 border: "none",
                 outline: "none",
-                background: "transparent",
+                background:
+                  "transparent",
                 color: "#294336",
                 fontSize: "11px",
                 fontWeight: 600,
@@ -817,6 +1133,10 @@ function ReportIssue() {
 
       </header>
 
+      {/* =====================================================
+          MAIN
+      ===================================================== */}
+
       <main className="report-issue-content">
 
         <form onSubmit={handleSubmit}>
@@ -835,15 +1155,20 @@ function ReportIssue() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "space-between",
+                justifyContent:
+                  "space-between",
                 gap: "12px",
-                padding: "12px 14px",
-                marginBottom: "12px",
+                padding:
+                  "12px 14px",
+                marginBottom:
+                  "12px",
                 borderRadius: "12px",
-                border: "1px solid #dce8df",
-                background: letAISuggest
-                  ? "#f1f8f3"
-                  : "#fff",
+                border:
+                  "1px solid #dce8df",
+                background:
+                  letAISuggest
+                    ? "#f1f8f3"
+                    : "#fff",
                 cursor: "pointer",
               }}
             >
@@ -854,7 +1179,8 @@ function ReportIssue() {
                   style={{
                     display: "block",
                     fontSize: "13px",
-                    color: "#294336",
+                    color:
+                      "#294336",
                   }}
                 >
                   {t.aiTitle}
@@ -865,7 +1191,8 @@ function ReportIssue() {
                     display: "block",
                     marginTop: "3px",
                     fontSize: "11px",
-                    color: "#718078",
+                    color:
+                      "#718078",
                   }}
                 >
                   {t.aiDescription}
@@ -875,15 +1202,21 @@ function ReportIssue() {
 
               <input
                 type="checkbox"
-                checked={letAISuggest}
+                checked={
+                  letAISuggest
+                }
                 onChange={(event) => {
                   const enabled =
                     event.target.checked;
 
-                  setLetAISuggest(enabled);
+                  setLetAISuggest(
+                    enabled
+                  );
 
                   if (enabled) {
-                    setSelectedIssue("");
+                    setSelectedIssue(
+                      ""
+                    );
                   }
                 }}
               />
@@ -893,34 +1226,47 @@ function ReportIssue() {
             {!letAISuggest && (
               <div className="issue-type-list">
 
-                {issueTypes.map((issue) => {
-                  const Icon = issue.icon;
+                {issueTypes.map(
+                  (issue) => {
+                    const Icon =
+                      issue.icon;
 
-                  return (
-                    <button
-                      type="button"
-                      key={issue.name}
-                      className={`issue-type-card ${
-                        selectedIssue === issue.name
-                          ? "selected"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        setSelectedIssue(
+                    return (
+                      <button
+                        type="button"
+                        key={
                           issue.name
-                        );
+                        }
+                        className={`issue-type-card ${
+                          selectedIssue ===
+                          issue.name
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedIssue(
+                            issue.name
+                          );
 
-                        setLetAISuggest(false);
-                      }}
-                    >
-                      <Icon size={19} />
+                          setLetAISuggest(
+                            false
+                          );
+                        }}
+                      >
+                        <Icon size={19} />
 
-                      <span>
-                        {t.issueNames[issue.name]}
-                      </span>
-                    </button>
-                  );
-                })}
+                        <span>
+                          {
+                            t
+                              .issueNames[
+                              issue.name
+                            ]
+                          }
+                        </span>
+                      </button>
+                    );
+                  }
+                )}
 
               </div>
             )}
@@ -946,13 +1292,17 @@ function ReportIssue() {
                 {isLocationEditing ? (
                   <input
                     type="text"
-                    value={locationText}
+                    value={
+                      locationText
+                    }
                     onChange={(event) =>
                       setLocationText(
                         event.target.value
                       )
                     }
-                    placeholder={t.location}
+                    placeholder={
+                      t.location
+                    }
                     autoFocus
                   />
                 ) : (
@@ -967,9 +1317,11 @@ function ReportIssue() {
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
+                  alignItems:
+                    "center",
                   gap: "10px",
-                  marginLeft: "8px",
+                  marginLeft:
+                    "8px",
                 }}
               >
 
@@ -978,7 +1330,8 @@ function ReportIssue() {
                   className="change-location"
                   onClick={() =>
                     setIsLocationEditing(
-                      (value) => !value
+                      (value) =>
+                        !value
                     )
                   }
                 >
@@ -990,8 +1343,13 @@ function ReportIssue() {
                 <button
                   type="button"
                   className="change-location"
-                  onClick={detectLocation}
-                  disabled={isDetectingLocation}
+                  onClick={() => {
+                    setSubmitError("");
+                    detectLocation();
+                  }}
+                  disabled={
+                    isDetectingLocation
+                  }
                 >
                   {isDetectingLocation
                     ? t.detecting
@@ -1019,7 +1377,8 @@ function ReportIssue() {
                   style={{
                     fontWeight: 400,
                     fontSize: "11px",
-                    color: "#8a968f",
+                    color:
+                      "#8a968f",
                   }}
                 >
                   {" "}
@@ -1032,7 +1391,8 @@ function ReportIssue() {
             <div
               className="description-wrapper"
               style={{
-                position: "relative",
+                position:
+                  "relative",
               }}
             >
 
@@ -1053,15 +1413,19 @@ function ReportIssue() {
                     : t.normalPlaceholder
                 }
                 style={{
-                  paddingRight: "48px",
-                  paddingBottom: "28px",
+                  paddingRight:
+                    "48px",
+                  paddingBottom:
+                    "28px",
                 }}
               />
 
               {speechSupported && (
                 <button
                   type="button"
-                  onClick={toggleSpeechToText}
+                  onClick={
+                    toggleSpeechToText
+                  }
                   aria-label={
                     isListening
                       ? "Stop speech to text"
@@ -1073,28 +1437,30 @@ function ReportIssue() {
                       : "Speak"
                   }
                   style={{
-                    position: "absolute",
+                    position:
+                      "absolute",
                     top: "10px",
                     right: "10px",
                     width: "34px",
                     height: "34px",
-                    borderRadius: "50%",
+                    borderRadius:
+                      "50%",
                     border: "none",
-                    background: isListening
-                      ? "#dc5a5a"
-                      : "#eaf6ef",
-                    color: isListening
-                      ? "#ffffff"
-                      : "#009f7f",
+                    background:
+                      isListening
+                        ? "#dc5a5a"
+                        : "#eaf6ef",
+                    color:
+                      isListening
+                        ? "#fff"
+                        : "#009f7f",
                     display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    boxShadow: isListening
-                      ? "0 0 0 4px rgba(220, 90, 90, 0.12)"
-                      : "none",
-                    transition:
-                      "all 0.2s ease",
+                    alignItems:
+                      "center",
+                    justifyContent:
+                      "center",
+                    cursor:
+                      "pointer",
                   }}
                 >
                   {isListening ? (
@@ -1114,9 +1480,11 @@ function ReportIssue() {
             {isListening && (
               <p
                 style={{
-                  margin: "7px 0 0",
+                  margin:
+                    "7px 0 0",
                   fontSize: "11px",
-                  color: "#dc5a5a",
+                  color:
+                    "#dc5a5a",
                   fontWeight: 600,
                 }}
               >
@@ -1127,9 +1495,11 @@ function ReportIssue() {
             {letAISuggest && (
               <p
                 style={{
-                  margin: "7px 0 0",
+                  margin:
+                    "7px 0 0",
                   fontSize: "11px",
-                  color: "#718078",
+                  color:
+                    "#718078",
                 }}
               >
                 {t.aiHint}
@@ -1148,53 +1518,304 @@ function ReportIssue() {
               {t.uploadPhoto}
             </label>
 
-            <div className="upload-container">
+            {!image ? (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "1fr 1fr",
+                  gap: "10px",
+                }}
+              >
 
-              {image && (
-                <div className="uploaded-image">
+                {/* CAMERA */}
 
-                  <img
-                    src={image}
-                    alt="Uploaded issue"
+                <button
+                  type="button"
+                  onClick={() =>
+                    cameraInputRef.current?.click()
+                  }
+                  style={{
+                    minHeight:
+                      "110px",
+                    border:
+                      "1px solid #dce8df",
+                    borderRadius:
+                      "14px",
+                    background:
+                      "#f7fbf8",
+                    color:
+                      "#294336",
+                    display: "flex",
+                    flexDirection:
+                      "column",
+                    alignItems:
+                      "center",
+                    justifyContent:
+                      "center",
+                    gap: "8px",
+                    cursor:
+                      "pointer",
+                  }}
+                >
+                  <Camera
+                    size={28}
+                    color="#009f7f"
                   />
 
-                </div>
-              )}
+                  <strong
+                    style={{
+                      fontSize:
+                        "13px",
+                    }}
+                  >
+                    Take a Picture
+                  </strong>
 
-              <button
-                type="button"
-                className="add-photo-button"
-                onClick={() =>
-                  document
-                    .getElementById(
-                      "camera-input"
-                    )
-                    ?.click()
-                }
-                aria-label={t.uploadPhoto}
+                  <span
+                    style={{
+                      fontSize:
+                        "10px",
+                      color:
+                        "#718078",
+                    }}
+                  >
+                    Use Camera
+                  </span>
+                </button>
+
+                {/* GALLERY */}
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    fileInputRef.current?.click()
+                  }
+                  style={{
+                    minHeight:
+                      "110px",
+                    border:
+                      "1px solid #dce8df",
+                    borderRadius:
+                      "14px",
+                    background:
+                      "#f7fbf8",
+                    color:
+                      "#294336",
+                    display: "flex",
+                    flexDirection:
+                      "column",
+                    alignItems:
+                      "center",
+                    justifyContent:
+                      "center",
+                    gap: "8px",
+                    cursor:
+                      "pointer",
+                  }}
+                >
+                  <ImageIcon
+                    size={28}
+                    color="#009f7f"
+                  />
+
+                  <strong
+                    style={{
+                      fontSize:
+                        "13px",
+                    }}
+                  >
+                    Upload from Gallery
+                  </strong>
+
+                  <span
+                    style={{
+                      fontSize:
+                        "10px",
+                      color:
+                        "#718078",
+                    }}
+                  >
+                    Camera Roll
+                  </span>
+                </button>
+
+              </div>
+            ) : (
+              <div
+                style={{
+                  position:
+                    "relative",
+                  width: "100%",
+                  borderRadius:
+                    "16px",
+                  overflow:
+                    "hidden",
+                  background:
+                    "#f1f5f2",
+                  border:
+                    "1px solid #dce8df",
+                }}
               >
-                <Plus size={24} />
-              </button>
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleImageUpload}
-                hidden
-              />
+                <img
+                  src={image}
+                  alt="Issue preview"
+                  style={{
+                    width: "100%",
+                    maxHeight:
+                      "300px",
+                    objectFit:
+                      "cover",
+                    display:
+                      "block",
+                  }}
+                />
 
-              <input
-                id="camera-input"
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleImageUpload}
-                hidden
-              />
+                {/* DELETE */}
 
-            </div>
+                <button
+                  type="button"
+                  onClick={
+                    deletePhoto
+                  }
+                  aria-label="Delete photo"
+                  style={{
+                    position:
+                      "absolute",
+                    top: "10px",
+                    right: "10px",
+                    width: "38px",
+                    height: "38px",
+                    borderRadius:
+                      "50%",
+                    border: "none",
+                    background:
+                      "rgba(0,0,0,0.7)",
+                    color:
+                      "#fff",
+                    display: "flex",
+                    alignItems:
+                      "center",
+                    justifyContent:
+                      "center",
+                    cursor:
+                      "pointer",
+                  }}
+                >
+                  <X size={20} />
+                </button>
+
+                {/* CHANGE PHOTO */}
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "1fr 1fr",
+                    gap: "8px",
+                    padding:
+                      "10px",
+                  }}
+                >
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      cameraInputRef.current?.click()
+                    }
+                    style={{
+                      border:
+                        "1px solid #dce8df",
+                      borderRadius:
+                        "10px",
+                      padding:
+                        "10px",
+                      background:
+                        "#fff",
+                      color:
+                        "#294336",
+                      fontWeight:
+                        600,
+                      cursor:
+                        "pointer",
+                      display: "flex",
+                      alignItems:
+                        "center",
+                      justifyContent:
+                        "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <Camera
+                      size={16}
+                    />
+                    Retake
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      fileInputRef.current?.click()
+                    }
+                    style={{
+                      border:
+                        "1px solid #dce8df",
+                      borderRadius:
+                        "10px",
+                      padding:
+                        "10px",
+                      background:
+                        "#fff",
+                      color:
+                        "#294336",
+                      fontWeight:
+                        600,
+                      cursor:
+                        "pointer",
+                      display: "flex",
+                      alignItems:
+                        "center",
+                      justifyContent:
+                        "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <ImageIcon
+                      size={16}
+                    />
+                    Choose Another
+                  </button>
+
+                </div>
+
+              </div>
+            )}
+
+            {/* CAMERA INPUT */}
+
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={
+                handleImageUpload
+              }
+              hidden
+            />
+
+            {/* GALLERY INPUT */}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={
+                handleImageUpload
+              }
+              hidden
+            />
 
           </section>
 
@@ -1202,17 +1823,19 @@ function ReportIssue() {
               ERROR
           ================================================= */}
 
-          {submitError && (
-            <p
-              style={{
-                color: "#d64545",
-                fontSize: "13px",
-                margin: "8px 0 12px",
-              }}
-            >
-              {submitError}
-            </p>
-          )}
+          {submitError &&
+            !showLocationPopup && (
+              <p
+                style={{
+                  color: "#d64545",
+                  fontSize: "13px",
+                  margin:
+                    "8px 0 12px",
+                }}
+              >
+                {submitError}
+              </p>
+            )}
 
           {/* =================================================
               SUBMIT
@@ -1240,7 +1863,9 @@ function ReportIssue() {
 
         <button
           className="report-bottom-item"
-          onClick={() => navigate("/user")}
+          onClick={() =>
+            navigate("/user")
+          }
         >
           <Home size={19} />
           <span>Home</span>
@@ -1248,7 +1873,9 @@ function ReportIssue() {
 
         <button
           className="report-bottom-item"
-          onClick={() => navigate("/user/map")}
+          onClick={() =>
+            navigate("/user/map")
+          }
         >
           <Map size={19} />
           <span>Map</span>
