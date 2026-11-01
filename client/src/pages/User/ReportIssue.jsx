@@ -219,6 +219,7 @@ const issueTypes = [
 
 function generateComplaintCode() {
   const randomNumber = Math.floor(1000 + Math.random() * 9000);
+
   return `UGS-${randomNumber}`;
 }
 
@@ -249,10 +250,13 @@ async function getReadableLocation(latitude, longitude) {
       address.road ||
         address.pedestrian ||
         address.neighbourhood,
+
       address.suburb || address.city_district,
+
       address.city ||
         address.town ||
         address.village,
+
       address.state,
     ].filter(Boolean);
 
@@ -262,7 +266,11 @@ async function getReadableLocation(latitude, longitude) {
 
     return data.display_name || "";
   } catch (error) {
-    console.warn("Could not get readable location:", error);
+    console.warn(
+      "Could not get readable location:",
+      error
+    );
+
     return "";
   }
 }
@@ -271,43 +279,101 @@ function ReportIssue() {
   const navigate = useNavigate();
 
   const [language, setLanguage] = useState(() => {
-    return localStorage.getItem("ugs_language") || "English";
+    return (
+      localStorage.getItem("ugs_language") ||
+      "English"
+    );
   });
 
   const t = LANGUAGES[language];
 
-  const [selectedIssue, setSelectedIssue] = useState("");
-  const [letAISuggest, setLetAISuggest] = useState(true);
+  const [selectedIssue, setSelectedIssue] =
+    useState("");
 
-  const [description, setDescription] = useState("");
-  const [isListening, setIsListening] = useState(false);
-  const [speechSupported, setSpeechSupported] = useState(true);
+  const [letAISuggest, setLetAISuggest] =
+    useState(true);
+
+  const [description, setDescription] =
+    useState("");
+
+  const [isListening, setIsListening] =
+    useState(false);
+
+  const [speechSupported, setSpeechSupported] =
+    useState(true);
 
   const [image, setImage] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
 
-  const [locationText, setLocationText] = useState("");
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
+  /*
+   * This state is kept for compatibility with the
+   * existing component.
+   *
+   * The authoritative file used for upload is now
+   * selectedFileRef.current.
+   */
+  const [selectedFile, setSelectedFile] =
+    useState(null);
+
+  const [locationText, setLocationText] =
+    useState("");
+
+  const [latitude, setLatitude] =
+    useState(null);
+
+  const [longitude, setLongitude] =
+    useState(null);
+
   const [isLocationEditing, setIsLocationEditing] =
     useState(false);
+
   const [isDetectingLocation, setIsDetectingLocation] =
     useState(false);
 
   const [showLocationPopup, setShowLocationPopup] =
     useState(true);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
+
+  const [isProcessingImage, setIsProcessingImage] =
+    useState(false);
+
+  const [submitError, setSubmitError] =
+    useState("");
 
   const fileInputRef = useRef(null);
+
   const cameraInputRef = useRef(null);
 
+  /*
+   * IMPORTANT:
+   *
+   * This ref stores the exact processed file that
+   * the user currently sees in the preview.
+   *
+   * The submit function uses this ref instead of
+   * relying only on React state.
+   */
+  const selectedFileRef = useRef(null);
+
+  /*
+   * Every image selection gets a unique number.
+   *
+   * If image A is still being compressed and the user
+   * selects image B, image A is not allowed to overwrite
+   * image B when its processing finishes.
+   */
+  const imageSelectionIdRef = useRef(0);
+
   const recognitionRef = useRef(null);
+
   const shouldKeepListeningRef = useRef(false);
 
   useEffect(() => {
-    localStorage.setItem("ugs_language", language);
+    localStorage.setItem(
+      "ugs_language",
+      language
+    );
 
     if (recognitionRef.current) {
       recognitionRef.current.lang =
@@ -325,11 +391,16 @@ function ReportIssue() {
       return;
     }
 
-    const recognition = new SpeechRecognition();
+    const recognition =
+      new SpeechRecognition();
 
     recognition.continuous = true;
+
     recognition.interimResults = false;
-    recognition.lang = LANGUAGES[language].code;
+
+    recognition.lang =
+      LANGUAGES[language].code;
+
     recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
@@ -372,21 +443,33 @@ function ReportIssue() {
         event.error === "not-allowed" ||
         event.error === "service-not-allowed"
       ) {
-        setSubmitError(t.microphoneDenied);
-      } else if (event.error === "no-speech") {
+        setSubmitError(
+          t.microphoneDenied
+        );
+      } else if (
+        event.error === "no-speech"
+      ) {
         setSubmitError(t.noSpeech);
-      } else if (event.error !== "aborted") {
-        setSubmitError(t.speechError);
+      } else if (
+        event.error !== "aborted"
+      ) {
+        setSubmitError(
+          t.speechError
+        );
       }
 
-      shouldKeepListeningRef.current = false;
+      shouldKeepListeningRef.current =
+        false;
+
       setIsListening(false);
     };
 
     recognition.onend = () => {
       setIsListening(false);
 
-      if (shouldKeepListeningRef.current) {
+      if (
+        shouldKeepListeningRef.current
+      ) {
         try {
           recognition.lang =
             LANGUAGES[language].code;
@@ -398,7 +481,8 @@ function ReportIssue() {
             error
           );
 
-          shouldKeepListeningRef.current = false;
+          shouldKeepListeningRef.current =
+            false;
         }
       }
     };
@@ -406,7 +490,8 @@ function ReportIssue() {
     recognitionRef.current = recognition;
 
     return () => {
-      shouldKeepListeningRef.current = false;
+      shouldKeepListeningRef.current =
+        false;
 
       try {
         recognition.stop();
@@ -422,13 +507,15 @@ function ReportIssue() {
   }, [language]);
 
   const handleLanguageChange = (event) => {
-    const newLanguage = event.target.value;
+    const newLanguage =
+      event.target.value;
 
     if (
       isListening &&
       recognitionRef.current
     ) {
-      shouldKeepListeningRef.current = false;
+      shouldKeepListeningRef.current =
+        false;
 
       try {
         recognitionRef.current.stop();
@@ -440,24 +527,33 @@ function ReportIssue() {
     }
 
     setLanguage(newLanguage);
+
     setSubmitError("");
   };
 
   const toggleSpeechToText = () => {
     if (!speechSupported) {
-      setSubmitError(t.speechUnsupported);
+      setSubmitError(
+        t.speechUnsupported
+      );
+
       return;
     }
 
-    const recognition = recognitionRef.current;
+    const recognition =
+      recognitionRef.current;
 
     if (!recognition) {
-      setSubmitError(t.speechError);
+      setSubmitError(
+        t.speechError
+      );
+
       return;
     }
 
     if (isListening) {
-      shouldKeepListeningRef.current = false;
+      shouldKeepListeningRef.current =
+        false;
 
       try {
         recognition.stop();
@@ -469,12 +565,15 @@ function ReportIssue() {
       }
 
       setIsListening(false);
+
       return;
     }
 
     setSubmitError("");
 
-    shouldKeepListeningRef.current = true;
+    shouldKeepListeningRef.current =
+      true;
+
     recognition.lang = t.code;
 
     try {
@@ -485,10 +584,14 @@ function ReportIssue() {
         error
       );
 
-      shouldKeepListeningRef.current = false;
+      shouldKeepListeningRef.current =
+        false;
+
       setIsListening(false);
 
-      setSubmitError(t.speechError);
+      setSubmitError(
+        t.speechError
+      );
     }
   };
 
@@ -500,7 +603,11 @@ function ReportIssue() {
     console.log(
       "================================="
     );
-    console.log("LOCATION REQUEST STARTED");
+
+    console.log(
+      "LOCATION REQUEST STARTED"
+    );
+
     console.log(
       "================================="
     );
@@ -530,7 +637,9 @@ function ReportIssue() {
     }
 
     setSubmitError("");
+
     setIsDetectingLocation(true);
+
     setLocationText(
       "Getting your location..."
     );
@@ -540,7 +649,11 @@ function ReportIssue() {
         console.log(
           "================================="
         );
-        console.log("LOCATION SUCCESS");
+
+        console.log(
+          "LOCATION SUCCESS"
+        );
+
         console.log(
           "================================="
         );
@@ -551,14 +664,23 @@ function ReportIssue() {
         const lng =
           position.coords.longitude;
 
-        console.log("Latitude:", lat);
-        console.log("Longitude:", lng);
+        console.log(
+          "Latitude:",
+          lat
+        );
+
+        console.log(
+          "Longitude:",
+          lng
+        );
+
         console.log(
           "Accuracy:",
           position.coords.accuracy
         );
 
         setLatitude(lat);
+
         setLongitude(lng);
 
         setLocationText(
@@ -568,6 +690,7 @@ function ReportIssue() {
         );
 
         setShowLocationPopup(false);
+
         setIsLocationEditing(false);
 
         try {
@@ -598,7 +721,11 @@ function ReportIssue() {
         console.error(
           "================================="
         );
-        console.error("LOCATION ERROR");
+
+        console.error(
+          "LOCATION ERROR"
+        );
+
         console.error(
           "================================="
         );
@@ -646,48 +773,507 @@ function ReportIssue() {
      PHOTO HANDLING
   ========================================================= */
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files?.[0];
+  const compressImage = (file) => {
+    return new Promise(
+      (resolve, reject) => {
+        const maxDimension = 2560;
 
-    if (!file) return;
+        const maxBytes =
+          10 * 1024 * 1024;
 
-    if (!file.type.startsWith("image/")) {
+        const objectUrl =
+          URL.createObjectURL(file);
+
+        const img = new Image();
+
+        img.onload = () => {
+          try {
+            const scale = Math.min(
+              1,
+              maxDimension /
+                Math.max(
+                  img.naturalWidth,
+                  img.naturalHeight
+                )
+            );
+
+            let width = Math.max(
+              1,
+              Math.round(
+                img.naturalWidth *
+                  scale
+              )
+            );
+
+            let height = Math.max(
+              1,
+              Math.round(
+                img.naturalHeight *
+                  scale
+              )
+            );
+
+            const canvas =
+              document.createElement(
+                "canvas"
+              );
+
+            const ctx =
+              canvas.getContext(
+                "2d",
+                {
+                  alpha: false,
+                }
+              );
+
+            if (!ctx) {
+              throw new Error(
+                "Could not prepare the image for upload."
+              );
+            }
+
+            const render = (
+              w,
+              h,
+              quality
+            ) =>
+              new Promise(
+                (
+                  resolveBlob,
+                  rejectBlob
+                ) => {
+                  canvas.width = w;
+
+                  canvas.height = h;
+
+                  ctx.fillStyle =
+                    "#ffffff";
+
+                  ctx.fillRect(
+                    0,
+                    0,
+                    w,
+                    h
+                  );
+
+                  ctx.drawImage(
+                    img,
+                    0,
+                    0,
+                    w,
+                    h
+                  );
+
+                  canvas.toBlob(
+                    (blob) => {
+                      if (!blob) {
+                        rejectBlob(
+                          new Error(
+                            "Could not compress the image."
+                          )
+                        );
+
+                        return;
+                      }
+
+                      resolveBlob(
+                        blob
+                      );
+                    },
+                    "image/jpeg",
+                    quality
+                  );
+                }
+              );
+
+            const finish =
+              async () => {
+                let quality =
+                  0.90;
+
+                let blob =
+                  await render(
+                    width,
+                    height,
+                    quality
+                  );
+
+                while (
+                  blob.size >
+                    maxBytes &&
+                  quality > 0.45
+                ) {
+                  quality -= 0.07;
+
+                  blob =
+                    await render(
+                      width,
+                      height,
+                      quality
+                    );
+                }
+
+                while (
+                  blob.size >
+                    maxBytes &&
+                  Math.max(
+                    width,
+                    height
+                  ) > 900
+                ) {
+                  width = Math.max(
+                    900,
+                    Math.round(
+                      width * 0.85
+                    )
+                  );
+
+                  height = Math.max(
+                    900,
+                    Math.round(
+                      height * 0.85
+                    )
+                  );
+
+                  quality = 0.72;
+
+                  blob =
+                    await render(
+                      width,
+                      height,
+                      quality
+                    );
+
+                  while (
+                    blob.size >
+                      maxBytes &&
+                    quality > 0.4
+                  ) {
+                    quality -=
+                      0.06;
+
+                    blob =
+                      await render(
+                        width,
+                        height,
+                        quality
+                      );
+                  }
+                }
+
+                const baseName =
+                  file.name.replace(
+                    /\.[^/.]+$/,
+                    ""
+                  ) ||
+                  "complaint-photo";
+
+                resolve(
+                  new File(
+                    [blob],
+                    `${baseName}.jpg`,
+                    {
+                      type:
+                        "image/jpeg",
+
+                      lastModified:
+                        Date.now(),
+                    }
+                  )
+                );
+              };
+
+            finish().catch(
+              reject
+            );
+          } catch (error) {
+            reject(error);
+          } finally {
+            URL.revokeObjectURL(
+              objectUrl
+            );
+          }
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(
+            objectUrl
+          );
+
+          reject(
+            new Error(
+              "This image format could not be processed. Please choose another photo."
+            )
+          );
+        };
+
+        img.src = objectUrl;
+      }
+    );
+  };
+
+  /*
+   * IMAGE UPLOAD
+   *
+   * The important fix is here:
+   *
+   * 1. Every selected image gets an ID.
+   * 2. The exact selected file is processed.
+   * 3. If the user selects another image while
+   *    processing is still happening, the old result
+   *    is discarded.
+   * 4. The processed file is stored in selectedFileRef.
+   * 5. handleSubmit uploads selectedFileRef.current.
+   */
+
+  const handleImageUpload = async (
+    event
+  ) => {
+    const file =
+      event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (
+      !file.type.startsWith(
+        "image/"
+      )
+    ) {
       setSubmitError(
         "Please select an image file."
       );
 
+      event.target.value = "";
+
       return;
     }
 
+    /*
+     * Give this image selection a
+     * unique operation ID.
+     */
+    const selectionId =
+      ++imageSelectionIdRef.current;
+
+    /*
+     * Immediately invalidate the
+     * previous selected file.
+     */
+    selectedFileRef.current =
+      null;
+
+    setSelectedFile(null);
+
+    /*
+     * Remove the previous preview.
+     */
     if (image) {
-      URL.revokeObjectURL(image);
-    }
-
-    const imageURL =
-      URL.createObjectURL(file);
-
-    setSelectedFile(file);
-    setImage(imageURL);
-    setSubmitError("");
-
-    // Allows selecting the same file again later.
-    event.target.value = "";
-  };
-
-  const deletePhoto = () => {
-    if (image) {
-      URL.revokeObjectURL(image);
+      URL.revokeObjectURL(
+        image
+      );
     }
 
     setImage(null);
-    setSelectedFile(null);
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    setIsProcessingImage(
+      true
+    );
+
+    setSubmitError("");
+
+    console.log(
+      "========================================"
+    );
+
+    console.log(
+      "NEW IMAGE SELECTED"
+    );
+
+    console.log(
+      "Selection ID:",
+      selectionId
+    );
+
+    console.log(
+      "Original file:",
+      file.name
+    );
+
+    console.log(
+      "Original type:",
+      file.type
+    );
+
+    console.log(
+      "Original size:",
+      file.size
+    );
+
+    console.log(
+      "========================================"
+    );
+
+    try {
+      /*
+       * Process THIS exact file.
+       */
+      const compressedFile =
+        await compressImage(
+          file
+        );
+
+      /*
+       * If another image was selected
+       * while this image was processing,
+       * ignore this old result.
+       */
+      if (
+        selectionId !==
+        imageSelectionIdRef.current
+      ) {
+        console.log(
+          "Ignoring outdated image processing result:",
+          selectionId
+        );
+
+        return;
+      }
+
+      const imageURL =
+        URL.createObjectURL(
+          compressedFile
+        );
+
+      /*
+       * Store the exact processed
+       * file in the ref.
+       */
+      selectedFileRef.current =
+        compressedFile;
+
+      /*
+       * Keep React state updated too.
+       */
+      setSelectedFile(
+        compressedFile
+      );
+
+      setImage(imageURL);
+
+      console.log(
+        "========================================"
+      );
+
+      console.log(
+        "IMAGE READY FOR SUBMISSION"
+      );
+
+      console.log(
+        "Selection ID:",
+        selectionId
+      );
+
+      console.log(
+        "Processed file:",
+        compressedFile.name
+      );
+
+      console.log(
+        "Processed type:",
+        compressedFile.type
+      );
+
+      console.log(
+        "Processed size:",
+        compressedFile.size
+      );
+
+      console.log(
+        "========================================"
+      );
+    } catch (error) {
+      /*
+       * Only clear the image if this
+       * is still the newest selection.
+       */
+      if (
+        selectionId ===
+        imageSelectionIdRef.current
+      ) {
+        selectedFileRef.current =
+          null;
+
+        setSelectedFile(null);
+
+        setImage(null);
+
+        console.error(
+          "Image processing error:",
+          error
+        );
+
+        setSubmitError(
+          error?.message ||
+            "Could not process this photo. Please choose another image."
+        );
+      }
+    } finally {
+      /*
+       * Only the newest image operation
+       * is allowed to change this state.
+       */
+      if (
+        selectionId ===
+        imageSelectionIdRef.current
+      ) {
+        setIsProcessingImage(
+          false
+        );
+      }
+
+      /*
+       * Allow the same file to be
+       * selected again.
+       */
+      event.target.value = "";
+    }
+  };
+
+  const deletePhoto = () => {
+    /*
+     * Invalidate any image-processing
+     * operation that is still running.
+     */
+    imageSelectionIdRef.current +=
+      1;
+
+    if (image) {
+      URL.revokeObjectURL(
+        image
+      );
     }
 
-    if (cameraInputRef.current) {
-      cameraInputRef.current.value = "";
+    selectedFileRef.current =
+      null;
+
+    setImage(null);
+
+    setSelectedFile(null);
+
+    setIsProcessingImage(false);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value =
+        "";
+    }
+
+    if (
+      cameraInputRef.current
+    ) {
+      cameraInputRef.current.value =
+        "";
     }
 
     setSubmitError("");
@@ -697,8 +1283,23 @@ function ReportIssue() {
      SUBMIT
   ========================================================= */
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (
+    event
+  ) => {
     event.preventDefault();
+
+    /*
+     * Do not allow submission while
+     * the selected image is still
+     * being processed.
+     */
+    if (isProcessingImage) {
+      setSubmitError(
+        "Please wait for the photo to finish processing."
+      );
+
+      return;
+    }
 
     setSubmitError("");
 
@@ -713,7 +1314,17 @@ function ReportIssue() {
       return;
     }
 
-    if (!selectedFile) {
+    /*
+     * IMPORTANT:
+     *
+     * Use the exact file stored in the ref.
+     * This prevents React state timing from
+     * changing which file gets uploaded.
+     */
+    const fileToUpload =
+      selectedFileRef.current;
+
+    if (!fileToUpload) {
       setSubmitError(
         t.photoRequired
       );
@@ -735,12 +1346,16 @@ function ReportIssue() {
 
       if (!user) {
         navigate("/user/login");
+
         return;
       }
 
       const complaintCode =
         generateComplaintCode();
 
+      /*
+       * CREATE COMPLAINT
+       */
       const {
         data: complaint,
         error: complaintError,
@@ -780,27 +1395,93 @@ function ReportIssue() {
         throw complaintError;
       }
 
+      /*
+       * CREATE UNIQUE STORAGE PATH
+       *
+       * The complaint UUID guarantees
+       * that this complaint gets its own
+       * image path.
+       */
       const fileExtension =
-        selectedFile.name
+        fileToUpload.name
           .split(".")
           .pop()
-          ?.toLowerCase() || "jpg";
+          ?.toLowerCase() ||
+        "jpg";
 
       const filePath =
         `${user.id}/${complaint.id}.${fileExtension}`;
 
+      console.log(
+        "========================================"
+      );
+
+      console.log(
+        "UPLOADING COMPLAINT IMAGE"
+      );
+
+      console.log(
+        "User ID:",
+        user.id
+      );
+
+      console.log(
+        "Complaint ID:",
+        complaint.id
+      );
+
+      console.log(
+        "Complaint Code:",
+        complaintCode
+      );
+
+      console.log(
+        "File name:",
+        fileToUpload.name
+      );
+
+      console.log(
+        "File type:",
+        fileToUpload.type
+      );
+
+      console.log(
+        "File size:",
+        fileToUpload.size
+      );
+
+      console.log(
+        "Storage path:",
+        filePath
+      );
+
+      console.log(
+        "========================================"
+      );
+
+      /*
+       * UPLOAD EXACT FILE
+       */
       const {
         error: uploadError,
       } = await supabase.storage
-        .from("complaint-images")
+        .from(
+          "complaint-images"
+        )
         .upload(
           filePath,
-          selectedFile,
+          fileToUpload,
           {
             cacheControl: "3600",
+
+            /*
+             * Never overwrite another
+             * object accidentally.
+             */
             upsert: false,
+
             contentType:
-              selectedFile.type,
+              fileToUpload.type,
           }
         );
 
@@ -808,10 +1489,20 @@ function ReportIssue() {
         throw uploadError;
       }
 
+      console.log(
+        "IMAGE UPLOAD SUCCESS:",
+        filePath
+      );
+
+      /*
+       * SAVE IMAGE RECORD
+       */
       const {
         error: imageRecordError,
       } = await supabase
-        .from("complaint_images")
+        .from(
+          "complaint_images"
+        )
         .insert({
           complaint_id:
             complaint.id,
@@ -820,18 +1511,32 @@ function ReportIssue() {
             filePath,
 
           file_name:
-            selectedFile.name,
+            fileToUpload.name,
 
           file_type:
-            selectedFile.type,
+            fileToUpload.type,
 
           file_size:
-            selectedFile.size,
+            fileToUpload.size,
         });
 
       if (imageRecordError) {
         throw imageRecordError;
       }
+
+      console.log(
+        "COMPLAINT IMAGE RECORD CREATED:",
+        {
+          complaintId:
+            complaint.id,
+
+          storagePath:
+            filePath,
+
+          fileName:
+            fileToUpload.name,
+        }
+      );
 
       /* =====================================================
          AI ANALYSIS
@@ -839,7 +1544,8 @@ function ReportIssue() {
 
       try {
         const apiBaseUrl =
-          import.meta.env.VITE_API_URL ||
+          import.meta.env
+            .VITE_API_URL ||
           "http://127.0.0.1:8000";
 
         fetch(
@@ -855,33 +1561,39 @@ function ReportIssue() {
             keepalive: true,
           }
         )
-          .then(async (response) => {
-            if (!response.ok) {
-              const aiErrorText =
-                await response.text();
+          .then(
+            async (
+              response
+            ) => {
+              if (!response.ok) {
+                const aiErrorText =
+                  await response.text();
 
-              console.error(
-                "AI analysis failed:",
-                aiErrorText
+                console.error(
+                  "AI analysis failed:",
+                  aiErrorText
+                );
+
+                return;
+              }
+
+              const aiResult =
+                await response.json();
+
+              console.log(
+                "AI analysis completed:",
+                aiResult
               );
-
-              return;
             }
-
-            const aiResult =
-              await response.json();
-
-            console.log(
-              "AI analysis completed:",
-              aiResult
-            );
-          })
-          .catch((aiError) => {
-            console.error(
-              "Could not connect to AI service:",
-              aiError
-            );
-          });
+          )
+          .catch(
+            (aiError) => {
+              console.error(
+                "Could not connect to AI service:",
+                aiError
+              );
+            }
+          );
       } catch (aiError) {
         console.error(
           "Could not start AI analysis:",
@@ -889,6 +1601,13 @@ function ReportIssue() {
         );
       }
 
+      /*
+       * Navigate only after:
+       *
+       * 1. Complaint created
+       * 2. Exact image uploaded
+       * 3. complaint_images record created
+       */
       navigate(
         `/user/issue/${complaint.id}`
       );
@@ -908,8 +1627,19 @@ function ReportIssue() {
   };
 
   return (
-    <div className="report-issue-page">
-
+    <div
+      className="report-issue-page"
+      style={{
+        minHeight: "100vh",
+        height: "auto",
+        overflowY: "auto",
+        overflowX: "hidden",
+        WebkitOverflowScrolling:
+          "touch",
+        paddingBottom: "110px",
+        touchAction: "pan-y",
+      }}
+    >
       {/* =====================================================
           LOCATION PERMISSION POPUP
       ===================================================== */}
@@ -922,8 +1652,10 @@ function ReportIssue() {
             background:
               "rgba(0,0,0,0.45)",
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            alignItems:
+              "center",
+            justifyContent:
+              "center",
             zIndex: 9999,
             padding: "20px",
           }}
@@ -940,18 +1672,21 @@ function ReportIssue() {
                 "0 20px 50px rgba(0,0,0,0.2)",
             }}
           >
-
             <div
               style={{
                 width: "58px",
                 height: "58px",
                 margin:
                   "0 auto 16px",
-                borderRadius: "50%",
-                background: "#eaf6ef",
+                borderRadius:
+                  "50%",
+                background:
+                  "#eaf6ef",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems:
+                  "center",
+                justifyContent:
+                  "center",
               }}
             >
               <MapPin
@@ -998,16 +1733,19 @@ function ReportIssue() {
               style={{
                 width: "100%",
                 border: "none",
-                borderRadius: "12px",
+                borderRadius:
+                  "12px",
                 padding: "13px",
-                background: "#009f7f",
+                background:
+                  "#009f7f",
                 color: "#fff",
                 fontWeight: 700,
                 cursor:
                   isDetectingLocation
                     ? "default"
                     : "pointer",
-                marginBottom: "10px",
+                marginBottom:
+                  "10px",
               }}
             >
               {isDetectingLocation
@@ -1028,7 +1766,8 @@ function ReportIssue() {
                 width: "100%",
                 border:
                   "1px solid #dce8df",
-                borderRadius: "12px",
+                borderRadius:
+                  "12px",
                 padding: "13px",
                 background: "#fff",
                 color: "#294336",
@@ -1052,7 +1791,6 @@ function ReportIssue() {
                 {submitError}
               </p>
             )}
-
           </div>
         </div>
       )}
@@ -1062,7 +1800,6 @@ function ReportIssue() {
       ===================================================== */}
 
       <header className="report-issue-header">
-
         <button
           className="report-issue-back"
           onClick={() =>
@@ -1077,7 +1814,8 @@ function ReportIssue() {
         <div
           style={{
             display: "flex",
-            alignItems: "center",
+            alignItems:
+              "center",
             justifyContent:
               "flex-end",
           }}
@@ -1085,13 +1823,17 @@ function ReportIssue() {
           <div
             style={{
               display: "flex",
-              alignItems: "center",
+              alignItems:
+                "center",
               gap: "4px",
               border:
                 "1px solid #dce8df",
-              borderRadius: "8px",
-              padding: "3px 6px",
-              background: "#f7fbf8",
+              borderRadius:
+                "8px",
+              padding:
+                "3px 6px",
+              background:
+                "#f7fbf8",
             }}
           >
             <Languages
@@ -1130,7 +1872,6 @@ function ReportIssue() {
             </select>
           </div>
         </div>
-
       </header>
 
       {/* =====================================================
@@ -1138,15 +1879,14 @@ function ReportIssue() {
       ===================================================== */}
 
       <main className="report-issue-content">
-
-        <form onSubmit={handleSubmit}>
-
+        <form
+          onSubmit={handleSubmit}
+        >
           {/* =================================================
               ISSUE TYPE / AI
           ================================================= */}
 
           <section className="report-form-section">
-
             <label className="report-section-label">
               {t.issueType}
             </label>
@@ -1154,7 +1894,8 @@ function ReportIssue() {
             <label
               style={{
                 display: "flex",
-                alignItems: "center",
+                alignItems:
+                  "center",
                 justifyContent:
                   "space-between",
                 gap: "12px",
@@ -1162,7 +1903,8 @@ function ReportIssue() {
                   "12px 14px",
                 marginBottom:
                   "12px",
-                borderRadius: "12px",
+                borderRadius:
+                  "12px",
                 border:
                   "1px solid #dce8df",
                 background:
@@ -1172,13 +1914,13 @@ function ReportIssue() {
                 cursor: "pointer",
               }}
             >
-
               <span>
-
                 <strong
                   style={{
-                    display: "block",
-                    fontSize: "13px",
+                    display:
+                      "block",
+                    fontSize:
+                      "13px",
                     color:
                       "#294336",
                   }}
@@ -1188,16 +1930,18 @@ function ReportIssue() {
 
                 <span
                   style={{
-                    display: "block",
-                    marginTop: "3px",
-                    fontSize: "11px",
+                    display:
+                      "block",
+                    marginTop:
+                      "3px",
+                    fontSize:
+                      "11px",
                     color:
                       "#718078",
                   }}
                 >
                   {t.aiDescription}
                 </span>
-
               </span>
 
               <input
@@ -1205,9 +1949,12 @@ function ReportIssue() {
                 checked={
                   letAISuggest
                 }
-                onChange={(event) => {
+                onChange={(
+                  event
+                ) => {
                   const enabled =
-                    event.target.checked;
+                    event.target
+                      .checked;
 
                   setLetAISuggest(
                     enabled
@@ -1220,12 +1967,10 @@ function ReportIssue() {
                   }
                 }}
               />
-
             </label>
 
             {!letAISuggest && (
               <div className="issue-type-list">
-
                 {issueTypes.map(
                   (issue) => {
                     const Icon =
@@ -1267,10 +2012,8 @@ function ReportIssue() {
                     );
                   }
                 )}
-
               </div>
             )}
-
           </section>
 
           {/* =================================================
@@ -1278,15 +2021,12 @@ function ReportIssue() {
           ================================================= */}
 
           <section className="report-form-section">
-
             <label className="report-section-label">
               {t.location}
             </label>
 
             <div className="location-field">
-
               <div className="location-left">
-
                 <MapPin size={18} />
 
                 {isLocationEditing ? (
@@ -1295,9 +2035,12 @@ function ReportIssue() {
                     value={
                       locationText
                     }
-                    onChange={(event) =>
+                    onChange={(
+                      event
+                    ) =>
                       setLocationText(
-                        event.target.value
+                        event.target
+                          .value
                       )
                     }
                     placeholder={
@@ -1311,7 +2054,6 @@ function ReportIssue() {
                       t.locationNotSelected}
                   </span>
                 )}
-
               </div>
 
               <div
@@ -1324,7 +2066,6 @@ function ReportIssue() {
                     "8px",
                 }}
               >
-
                 <button
                   type="button"
                   className="change-location"
@@ -1344,7 +2085,10 @@ function ReportIssue() {
                   type="button"
                   className="change-location"
                   onClick={() => {
-                    setSubmitError("");
+                    setSubmitError(
+                      ""
+                    );
+
                     detectLocation();
                   }}
                   disabled={
@@ -1355,11 +2099,8 @@ function ReportIssue() {
                     ? t.detecting
                     : t.useCurrent}
                 </button>
-
               </div>
-
             </div>
-
           </section>
 
           {/* =================================================
@@ -1367,16 +2108,15 @@ function ReportIssue() {
           ================================================= */}
 
           <section className="report-form-section">
-
             <label className="report-section-label">
-
               {t.description}
 
               {!letAISuggest && (
                 <span
                   style={{
                     fontWeight: 400,
-                    fontSize: "11px",
+                    fontSize:
+                      "11px",
                     color:
                       "#8a968f",
                   }}
@@ -1385,7 +2125,6 @@ function ReportIssue() {
                   {t.required}
                 </span>
               )}
-
             </label>
 
             <div
@@ -1395,10 +2134,11 @@ function ReportIssue() {
                   "relative",
               }}
             >
-
               <textarea
                 value={description}
-                onChange={(event) =>
+                onChange={(
+                  event
+                ) =>
                   setDescription(
                     event.target.value.slice(
                       0,
@@ -1442,7 +2182,8 @@ function ReportIssue() {
                     top: "10px",
                     right: "10px",
                     width: "34px",
-                    height: "34px",
+                    height:
+                      "34px",
                     borderRadius:
                       "50%",
                     border: "none",
@@ -1464,7 +2205,9 @@ function ReportIssue() {
                   }}
                 >
                   {isListening ? (
-                    <MicOff size={17} />
+                    <MicOff
+                      size={17}
+                    />
                   ) : (
                     <Mic size={17} />
                   )}
@@ -1474,7 +2217,6 @@ function ReportIssue() {
               <span className="character-count">
                 {description.length}/500
               </span>
-
             </div>
 
             {isListening && (
@@ -1482,7 +2224,8 @@ function ReportIssue() {
                 style={{
                   margin:
                     "7px 0 0",
-                  fontSize: "11px",
+                  fontSize:
+                    "11px",
                   color:
                     "#dc5a5a",
                   fontWeight: 600,
@@ -1497,7 +2240,8 @@ function ReportIssue() {
                 style={{
                   margin:
                     "7px 0 0",
-                  fontSize: "11px",
+                  fontSize:
+                    "11px",
                   color:
                     "#718078",
                 }}
@@ -1505,7 +2249,6 @@ function ReportIssue() {
                 {t.aiHint}
               </p>
             )}
-
           </section>
 
           {/* =================================================
@@ -1513,7 +2256,6 @@ function ReportIssue() {
           ================================================= */}
 
           <section className="report-form-section">
-
             <label className="report-section-label">
               {t.uploadPhoto}
             </label>
@@ -1527,7 +2269,6 @@ function ReportIssue() {
                   gap: "10px",
                 }}
               >
-
                 {/* CAMERA */}
 
                 <button
@@ -1639,7 +2380,6 @@ function ReportIssue() {
                     Camera Roll
                   </span>
                 </button>
-
               </div>
             ) : (
               <div
@@ -1657,7 +2397,6 @@ function ReportIssue() {
                     "1px solid #dce8df",
                 }}
               >
-
                 <img
                   src={image}
                   alt="Issue preview"
@@ -1686,14 +2425,14 @@ function ReportIssue() {
                     top: "10px",
                     right: "10px",
                     width: "38px",
-                    height: "38px",
+                    height:
+                      "38px",
                     borderRadius:
                       "50%",
                     border: "none",
                     background:
                       "rgba(0,0,0,0.7)",
-                    color:
-                      "#fff",
+                    color: "#fff",
                     display: "flex",
                     alignItems:
                       "center",
@@ -1718,7 +2457,6 @@ function ReportIssue() {
                       "10px",
                   }}
                 >
-
                   <button
                     type="button"
                     onClick={() =>
@@ -1750,6 +2488,7 @@ function ReportIssue() {
                     <Camera
                       size={16}
                     />
+
                     Retake
                   </button>
 
@@ -1784,11 +2523,10 @@ function ReportIssue() {
                     <ImageIcon
                       size={16}
                     />
+
                     Choose Another
                   </button>
-
                 </div>
-
               </div>
             )}
 
@@ -1816,7 +2554,6 @@ function ReportIssue() {
               }
               hidden
             />
-
           </section>
 
           {/* =================================================
@@ -1827,8 +2564,10 @@ function ReportIssue() {
             !showLocationPopup && (
               <p
                 style={{
-                  color: "#d64545",
-                  fontSize: "13px",
+                  color:
+                    "#d64545",
+                  fontSize:
+                    "13px",
                   margin:
                     "8px 0 12px",
                 }}
@@ -1844,15 +2583,16 @@ function ReportIssue() {
           <button
             type="submit"
             className="submit-report-button"
-            disabled={isSubmitting}
+            disabled={
+              isSubmitting ||
+              isProcessingImage
+            }
           >
             {isSubmitting
               ? t.submitting
               : t.submit}
           </button>
-
         </form>
-
       </main>
 
       {/* =====================================================
@@ -1860,7 +2600,6 @@ function ReportIssue() {
       ===================================================== */}
 
       <nav className="report-bottom-navigation">
-
         <button
           className="report-bottom-item"
           onClick={() =>
@@ -1909,9 +2648,7 @@ function ReportIssue() {
           <User size={19} />
           <span>Profile</span>
         </button>
-
       </nav>
-
     </div>
   );
 }

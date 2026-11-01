@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
 import {
   ArrowLeft,
   MapPin,
@@ -9,7 +11,10 @@ import {
   Plus,
   FileText,
   User,
+  Download,
 } from "lucide-react";
+
+import { QRCodeCanvas } from "qrcode.react";
 
 import { supabase } from "../../lib/supabaseClient";
 
@@ -46,6 +51,9 @@ function IssueDetails() {
   const [categoryName, setCategoryName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // QR CODE
+  const qrCanvasRef = useRef(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -121,6 +129,7 @@ function IssueDetails() {
             setImageUrl(signedImage?.signedUrl || "");
           }
         }
+
         // ------------------------------------------------
         // Get category name without using ambiguous joins
         // ------------------------------------------------
@@ -138,7 +147,6 @@ function IssueDetails() {
         } else if (isMounted) {
           setCategoryName("");
         }
-
 
       } catch (err) {
         console.error("Issue details error:", err);
@@ -181,6 +189,31 @@ function IssueDetails() {
     complaint?.location_text || "Location not available";
 
   const title = complaint?.title || "Issue Details";
+
+  // ======================================================
+  // QR CODE TRACKING URL
+  // ======================================================
+
+  const trackingUrl = complaint
+    ? `https://unified-grievance-system.vercel.app/user/issue/${complaint.id}`
+    : "";
+
+  // ======================================================
+  // DOWNLOAD QR CODE
+  // ======================================================
+
+  const downloadQRCode = () => {
+    const canvas = qrCanvasRef.current;
+
+    if (!canvas || !complaint) return;
+
+    const link = document.createElement("a");
+
+    link.download = `Complaint-${complaint.complaint_code}-QR.png`;
+    link.href = canvas.toDataURL("image/png");
+
+    link.click();
+  };
 
   return (
     <div className="issue-details-page">
@@ -292,6 +325,48 @@ function IssueDetails() {
                   {complaint.description ||
                     "Description is being generated from the submitted image."}
                 </p>
+              </section>
+
+              {/* QR CODE DOWNLOAD */}
+              <section
+                className="issue-qr-section"
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: "12px",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={downloadQRCode}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "7px 11px",
+                    background: "#f5faf7",
+                    color: "#183b2a",
+                    border: "1px solid #dcebe2",
+                    borderRadius: "7px",
+                    cursor: "pointer",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                  }}
+                >
+                  <Download size={14} />
+                  Download QR
+                </button>
+
+                {/* Hidden QR canvas used for downloading */}
+                <div style={{ display: "none" }}>
+                  <QRCodeCanvas
+                    ref={qrCanvasRef}
+                    value={trackingUrl}
+                    size={300}
+                    level="H"
+                    includeMargin
+                  />
+                </div>
               </section>
 
               {/* STATUS TIMELINE */}

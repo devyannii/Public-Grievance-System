@@ -1226,3 +1226,1878 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   FINAL OVERRIDES
+   Scoped, explicit styles for this page's interactive buttons
+   and image wrappers. These prevent global button styles from
+   overriding the complaint cards or image layout.
+========================================================= */
+
+.complaints-page .complaint-card {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-height: 94px;
+  margin: 0;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  box-sizing: border-box;
+  border: 1px solid #e0e8e3;
+  border-radius: 9px;
+  background: #fff;
+  color: #17221c;
+  font: inherit;
+  text-align: left;
+  line-height: normal;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease,
+    box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.complaints-page .complaint-card:hover {
+  border-color: #bdd9c5;
+  background: #fbfefc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(29, 65, 42, 0.06);
+}
+
+.complaints-page .complaint-card.selected {
+  border-color: #35aa5b;
+  background: #f0faf3;
+  box-shadow: 0 0 0 1px rgba(53, 170, 91, 0.15);
+}
+
+.complaints-page .complaint-card:focus-visible,
+.complaints-page .complaint-photo-button:focus-visible,
+.complaints-page .complaint-summary-image-button:focus-visible {
+  outline: 3px solid rgba(42, 155, 82, 0.35);
+  outline-offset: 2px;
+}
+
+.complaints-page .complaint-thumbnail {
+  width: 78px;
+  height: 72px;
+  min-width: 78px;
+  max-width: 78px;
+  margin: 0;
+  display: block;
+  object-fit: cover;
+  border: 0;
+  border-radius: 7px;
+  background: #edf2ee;
+}
+
+.complaints-page .complaint-card-content {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.complaints-page .complaint-card .status-badge {
+  align-self: center;
+}
+
+.complaints-page .complaint-summary {
+  grid-template-columns: 150px minmax(0, 1fr);
+  align-items: start;
+}
+
+.complaints-page .complaint-summary-image-button {
+  position: relative;
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+  height: 118px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: block;
+  border: 0;
+  border-radius: 9px;
+  background: #edf2ee;
+  cursor: zoom-in;
+  box-shadow: none;
+}
+
+.complaints-page .complaint-summary-image-button img {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  display: block;
+  object-fit: cover;
+  border: 0;
+  border-radius: inherit;
+}
+
+.complaints-page .image-view-hint {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  background: rgba(17, 26, 21, 0.72);
+  color: #fff;
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.complaints-page .complaint-summary-image-button:hover .image-view-hint {
+  opacity: 1;
+}
+
+.complaints-page .photo-grid.single-photo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.complaints-page .complaint-photo-button {
+  position: relative;
+  width: 112px;
+  height: 84px;
+  min-width: 112px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: block;
+  border: 1px solid #e0e8e3;
+  border-radius: 8px;
+  background: #edf2ee;
+  cursor: zoom-in;
+  box-shadow: none;
+}
+
+.complaints-page .complaint-photo-button img {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  display: block;
+  object-fit: cover;
+  border: 0;
+  border-radius: inherit;
+  transition: transform 0.2s ease;
+}
+
+.complaints-page .complaint-photo-button:hover img {
+  transform: scale(1.04);
+}
+
+.complaints-page .photo-view-overlay {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 5px 6px;
+  background: rgba(17, 26, 21, 0.68);
+  color: #fff;
+  font-size: 10px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.complaints-page .complaint-photo-button:hover .photo-view-overlay {
+  opacity: 1;
+}
+
+.complaint-image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  padding: 56px 24px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: rgba(10, 18, 13, 0.88);
+  animation: complaint-lightbox-fade 0.18s ease both;
+}
+
+.complaint-image-lightbox .lightbox-image {
+  display: block;
+  max-width: min(100%, 1200px);
+  max-height: calc(100vh - 120px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+}
+
+.complaint-image-lightbox .lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+}
+
+.complaint-image-lightbox .lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.complaint-image-lightbox .lightbox-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  right: 16px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  text-align: center;
+}
+
+@keyframes complaint-lightbox-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 1200px) {
+  .complaints-page .complaint-summary {
+    grid-template-columns: 125px minmax(0, 1fr);
+  }
+
+  .complaints-page .complaint-summary-image-button {
+    width: 125px;
+    min-width: 125px;
+    max-width: 125px;
+    height: 105px;
+  }
+}
+
+@media (max-width: 950px) {
+  .complaints-page .complaint-details-panel {
+    max-height: none;
+  }
+
+  .complaints-page .complaint-cards {
+    max-height: 520px;
+  }
+}
+
+@media (max-width: 600px) {
+  .complaints-page .complaint-card {
+    grid-template-columns: 68px minmax(0, 1fr);
+  }
+
+  .complaints-page .complaint-thumbnail {
+    width: 68px;
+    height: 65px;
+    min-width: 68px;
+    max-width: 68px;
+  }
+
+  .complaints-page .complaint-card > .status-badge {
+    display: none;
+  }
+
+  .complaints-page .complaint-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .complaints-page .complaint-summary-image-button {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 180px;
+  }
+
+  .complaints-page .summary-title-row {
+    flex-direction: column;
+  }
+
+  .complaint-image-lightbox {
+    padding: 60px 12px 52px;
+  }
+
+  .complaint-image-lightbox .lightbox-image {
+    max-width: 100%;
+    max-height: calc(100vh - 130px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .complaints-page .complaint-card,
+  .complaints-page .complaint-photo-button img,
+  .complaints-page .photo-view-overlay,
+  .complaints-page .image-view-hint,
+  .complaint-image-lightbox {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* =========================================================
+   UNIFIED GRIEVANCE SYSTEM
+   ADMIN COMPLAINTS — PREMIUM FOREST GREEN REDESIGN
+   UI styling only — preserve existing React functionality
+========================================================= */
+
+.complaints-page {
+  --premium-green: #176b42;
+  --premium-green-dark: #104b30;
+  --premium-green-soft: #eaf5ee;
+  --premium-green-border: #d7e7dc;
+  --premium-text: #1c2b22;
+  --premium-muted: #748279;
+  --premium-surface: #ffffff;
+
+  width: 100%;
+  min-height: calc(100vh - 72px);
+  padding: 28px 32px 36px;
+  background: #f4f7f4;
+  color: var(--premium-text);
+  box-sizing: border-box;
+}
+
+/* PAGE HEADER */
+
+.complaints-header {
+  margin-bottom: 24px;
+}
+
+.complaints-header > div {
+  align-items: center;
+  gap: 13px;
+}
+
+.back-button {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  color: var(--premium-green);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+  background: #e4f0e7;
+  transform: translateX(-2px);
+}
+
+.header-title h1 {
+  color: #183c29;
+  font-size: 29px;
+  font-weight: 750;
+  letter-spacing: -0.7px;
+}
+
+.header-title p {
+  margin-top: 7px;
+  color: #78867d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* TWO-PANEL LAYOUT: MORE SPACE FOR DETAILS */
+
+.complaints-layout {
+  grid-template-columns: minmax(340px, 0.82fr) minmax(0, 1.38fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.complaints-list-panel,
+.complaint-details-panel {
+  min-width: 0;
+  border: 1px solid #e0e9e2;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 18px rgba(25, 61, 39, 0.045);
+  overflow: hidden;
+}
+
+.complaint-details-panel {
+  max-height: calc(100vh - 132px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #c7d8cc transparent;
+}
+
+/* SEARCH AND FILTER */
+
+.complaints-search-row {
+  padding: 17px;
+  gap: 10px;
+  border-bottom: 1px solid #edf1ed;
+}
+
+.search-box {
+  height: 44px;
+  padding: 0 13px;
+  border: 1px solid #dce6de;
+  border-radius: 10px;
+  background: #fbfdfb;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-box:focus-within {
+  border-color: #418b5d;
+  box-shadow: 0 0 0 4px rgba(39, 112, 67, 0.09);
+  background: #ffffff;
+}
+
+.search-box input {
+  font-size: 12px;
+}
+
+.filter-button {
+  height: 44px;
+  padding: 0 15px;
+  border-radius: 10px;
+  border-color: #dce6de;
+  color: #365443;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.filter-button:hover {
+  border-color: #b7d1be;
+  background: #f0f7f1;
+}
+
+/* STATUS TABS */
+
+.complaint-tabs {
+  padding: 13px 16px;
+  gap: 7px;
+  background: #ffffff;
+}
+
+.complaint-tabs button {
+  height: 34px;
+  padding: 0 13px;
+  border-radius: 9px;
+  font-size: 11px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.complaint-tabs button.active {
+  background: var(--premium-green);
+  color: #ffffff;
+  font-weight: 650;
+}
+
+.complaint-tabs button:hover:not(.active) {
+  background: #edf5ef;
+  color: var(--premium-green-dark);
+}
+
+/* COMPLAINT LIST */
+
+.complaint-cards {
+  padding: 13px;
+  gap: 10px;
+  max-height: calc(100vh - 255px);
+}
+
+.complaint-card {
+  min-height: 102px;
+  padding: 11px;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  gap: 12px;
+  border: 1px solid #e4ebe5;
+  border-radius: 12px;
+  background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.complaint-card:hover {
+  border-color: #b6d1bd;
+  background: #fbfefb;
+  box-shadow: 0 4px 12px rgba(29, 77, 45, 0.055);
+  transform: translateY(-1px);
+}
+
+.complaint-card.selected {
+  border-color: #43885a;
+  background: #edf6ef;
+  box-shadow: inset 3px 0 0 #287345;
+}
+
+.complaint-thumbnail {
+  width: 78px;
+  height: 76px;
+  min-width: 78px;
+  max-width: 78px;
+  border-radius: 9px;
+  background: #edf2ee;
+}
+
+.complaint-title-row h3 {
+  color: #203b2b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.complaint-arrow {
+  color: #789182;
+  transition: transform 0.2s ease;
+}
+
+.complaint-card:hover .complaint-arrow {
+  transform: translateX(3px);
+  color: var(--premium-green);
+}
+
+.reported-by {
+  margin: 7px 0;
+  color: #7c8980;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.reported-by strong {
+  color: #43594a;
+}
+
+.complaint-card .complaint-meta {
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  font-size: 10px;
+}
+
+/* STATUS BADGES */
+
+.complaint-card .status-badge,
+.complaint-summary .status-badge {
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.status-pending {
+  background: #fff3d9;
+  color: #a86b00;
+}
+
+.status-progress {
+  background: #e9f1ff;
+  color: #2867bd;
+}
+
+.status-resolved {
+  background: #e4f4e8;
+  color: #176b42;
+}
+
+/* COMPLAINT SUMMARY */
+
+.complaint-summary {
+  padding: 22px;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  border-bottom: 1px solid #e9efea;
+  background: linear-gradient(135deg, #ffffff 65%, #f7fbf7);
+}
+
+.complaint-summary > img {
+  width: 170px;
+  height: 136px;
+  min-width: 170px;
+  max-width: 170px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(24, 54, 34, 0.09);
+}
+
+.summary-info {
+  padding-top: 2px;
+}
+
+.summary-title-row {
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.summary-title-row h2 {
+  color: #183c29;
+  font-size: 21px;
+  font-weight: 750;
+  letter-spacing: -0.4px;
+}
+
+.summary-info p {
+  margin-top: 10px;
+  color: #78867d;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.summary-info p strong {
+  color: #344d3b;
+}
+
+/* LOCATION, DESCRIPTION AND PHOTOS */
+
+.detail-section {
+  padding: 20px 22px;
+  border-bottom: 1px solid #edf1ed;
+  background: #ffffff;
+}
+
+.section-heading {
+  min-height: 22px;
+  margin-bottom: 12px;
+  gap: 9px;
+  color: var(--premium-green);
+}
+
+.section-heading h3 {
+  color: #294333;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.section-heading > span {
+  color: #849188;
+  font-size: 10px;
+}
+
+.location-row {
+  align-items: center;
+  gap: 14px;
+}
+
+.location-row > span {
+  gap: 9px;
+  color: #647469;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.location-row > span svg {
+  color: #47845b;
+}
+
+.location-row button {
+  height: 35px;
+  padding: 0 12px;
+  gap: 7px;
+  border: 1px solid #d4e5d8;
+  border-radius: 9px;
+  background: #f3f8f3;
+  color: #216d41;
+  font-size: 10px;
+  transition: all 0.2s ease;
+}
+
+.location-row button:hover {
+  border-color: #9dc4a7;
+  background: #e6f2e8;
+}
+
+.description-text {
+  color: #5b6c60;
+  font-size: 12px;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+/* PHOTOS — REMOVE EXCESS EMPTY SPACE */
+
+.photos-section {
+  padding-top: 17px;
+  padding-bottom: 18px !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.photos-section .section-heading {
+  margin-bottom: 12px;
+}
+
+.photo-grid.single-photo {
+  display: flex !important;
+  align-items: flex-start !important;
+  flex-wrap: wrap;
+  gap: 12px;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0;
+  padding: 0;
+}
+
+.complaint-photo-button {
+  position: relative;
+  display: block;
+  width: 174px;
+  height: 130px;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #dce8df;
+  border-radius: 12px;
+  background: #f0f5f1;
+  cursor: zoom-in;
+  box-shadow: 0 3px 10px rgba(25, 55, 36, 0.07);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.complaint-photo-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 18px rgba(25, 55, 36, 0.13);
+}
+
+.complaint-photo-button img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  max-width: none;
+  object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.complaint-photo-button:hover img {
+  transform: scale(1.045);
+}
+
+/* ASSIGNED DEPARTMENT */
+
+.assignment-card {
+  margin: 18px 20px;
+  padding: 16px;
+  gap: 13px;
+  border: 1px solid #d5e7d9;
+  border-radius: 13px;
+  background: linear-gradient(120deg, #eff8f0, #f8fbf8);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.assignment-card:hover {
+  border-color: #b8d4be;
+  box-shadow: 0 3px 12px rgba(29, 77, 45, 0.05);
+}
+
+.assignment-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 11px;
+  background: #dcefe0;
+  color: #176b42;
+}
+
+.assignment-card span {
+  color: #718077;
+  font-size: 10px;
+}
+
+.assignment-card strong {
+  margin-top: 5px;
+  color: #23432e;
+  font-size: 12px;
+}
+
+.assignment-card small {
+  margin-top: 4px;
+  color: #50815e;
+  font-size: 9px;
+}
+
+/* UPDATE PROGRESS */
+
+.update-progress-card {
+  margin: 18px 20px;
+  padding: 17px;
+  border: 1px solid #dce8de;
+  border-radius: 13px;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(24, 54, 34, 0.035);
+}
+
+.update-progress-header {
+  margin-bottom: 13px;
+}
+
+/* Style status-choice controls without changing their behavior. */
+.update-progress-card button {
+  border-radius: 9px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* AI ANALYSIS */
+
+.ai-analysis-card {
+  margin: 18px 20px;
+  padding: 18px;
+  border: 1px solid #d8e8dc;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #f3f9f4, #ffffff);
+  box-shadow: 0 3px 12px rgba(24, 54, 34, 0.035);
+}
+
+.ai-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 11px;
+  background: #dfefe3;
+  color: #176b42;
+}
+
+.ai-analysis-title h3 {
+  color: #24442f;
+  font-size: 13px;
+}
+
+.ai-analysis-title span {
+  font-size: 9px;
+}
+
+.ai-confidence {
+  color: #176b42;
+  font-size: 10px;
+}
+
+.ai-summary {
+  margin: 14px 0;
+  color: #5b6c60;
+  font-size: 11px;
+  line-height: 1.75;
+}
+
+.ai-insights {
+  gap: 9px;
+}
+
+.ai-insight {
+  min-height: 56px;
+  padding: 11px;
+  gap: 8px;
+  border: 1px solid #e2ebe4;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.ai-insight span {
+  font-size: 9px;
+}
+
+.ai-insight strong {
+  color: #294333;
+  font-size: 10px;
+}
+
+.ai-recommendation {
+  margin-top: 10px;
+  padding: 11px;
+  gap: 8px;
+  border: 1px solid #dcebdd;
+  border-radius: 9px;
+  background: #edf7ef;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+/* TIMELINE */
+
+.timeline-section {
+  border-bottom: none;
+}
+
+.timeline {
+  padding-top: 3px;
+}
+
+.timeline-item {
+  min-height: 53px;
+  gap: 11px;
+}
+
+.timeline-dot {
+  width: 27px;
+  height: 27px;
+  min-width: 27px;
+  background: #edf2ee;
+  color: #849188;
+}
+
+.timeline-dot.completed {
+  background: #e0f1e4;
+  color: #176b42;
+}
+
+.timeline-line {
+  left: 12px;
+  top: 27px;
+  height: 44px;
+  background: #dce8df;
+}
+
+.timeline-content {
+  padding-top: 3px;
+}
+
+.timeline-content strong {
+  color: #304737;
+  font-size: 11px;
+}
+
+.timeline-content span {
+  margin-top: 4px;
+  color: #849188;
+  font-size: 9px;
+}
+
+/* IMAGE PREVIEW / LIGHTBOX */
+
+.complaint-image-lightbox {
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+}
+
+/* FOCUS ACCESSIBILITY */
+
+.complaints-page button:focus-visible {
+  outline: 3px solid rgba(39, 112, 67, 0.32);
+  outline-offset: 2px;
+}
+
+/* SUBTLE ENTRY ANIMATION */
+
+@media (prefers-reduced-motion: no-preference) {
+  .complaints-list-panel,
+  .complaint-details-panel {
+    animation: premiumPanelEnter 0.28s ease both;
+  }
+
+  .complaint-card {
+    animation: premiumCardEnter 0.22s ease both;
+  }
+
+  @keyframes premiumPanelEnter {
+    from {
+      opacity: 0.7;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes premiumCardEnter {
+    from {
+      opacity: 0.8;
+      transform: translateY(3px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* RESPONSIVE LAYOUT */
+
+@media (max-width: 1250px) {
+  .complaints-page {
+    padding: 22px 22px 30px;
+  }
+
+  .complaints-layout {
+    grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.25fr);
+    gap: 16px;
+  }
+
+  .complaint-card {
+    grid-template-columns: 66px minmax(0, 1fr) auto;
+    gap: 9px;
+  }
+
+  .complaint-thumbnail {
+    width: 66px;
+    height: 66px;
+    min-width: 66px;
+    max-width: 66px;
+  }
+
+  .complaint-summary {
+    grid-template-columns: 140px minmax(0, 1fr);
+    padding: 18px;
+    gap: 15px;
+  }
+
+  .complaint-summary > img {
+    width: 140px;
+    height: 118px;
+    min-width: 140px;
+    max-width: 140px;
+  }
+}
+
+@media (max-width: 950px) {
+  .complaints-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .complaint-details-panel,
+  .complaint-cards {
+    max-height: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .complaints-page {
+    padding: 16px 12px 24px;
+  }
+
+  .header-title h1 {
+    font-size: 24px;
+  }
+
+  .complaints-search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-button {
+    width: 100%;
+  }
+
+  .complaint-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .complaint-thumbnail {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    max-width: 64px;
+  }
+
+  .complaint-card > .status-badge {
+    display: none;
+  }
+
+  .complaint-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .complaint-summary > img {
+    width: 100%;
+    height: 190px;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .summary-title-row {
+    flex-wrap: wrap;
+  }
+
+  .location-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .assignment-card,
+  .update-progress-card,
+  .ai-analysis-card {
+    margin: 14px 12px;
+  }
+
+  .detail-section {
+    padding: 17px 15px;
+  }
+
+  .ai-insights {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .complaint-photo-button {
+    width: 155px;
+    height: 116px;
+  }
+}
+
+/* =========================================================
+   PREMIUM GREEN — FINAL LAYOUT REFINEMENTS
+========================================================= */
+
+/* Keep the details panel roomy without making it feel cramped. */
+.complaint-details-panel {
+  scrollbar-width: thin;
+  scrollbar-color: #c8d9cc transparent;
+}
+
+.complaint-details-panel::-webkit-scrollbar {
+  width: 5px;
+}
+
+.complaint-details-panel::-webkit-scrollbar-thumb {
+  background: #c8d9cc;
+  border-radius: 10px;
+}
+
+/* Reduce unnecessary vertical spacing around the evidence photo. */
+.photos-section {
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+}
+
+.photos-section .section-heading {
+  margin-bottom: 10px !important;
+}
+
+.photo-grid.single-photo {
+  align-items: flex-start !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+.complaint-photo-button {
+  width: 150px !important;
+  height: 112px !important;
+}
+
+/* Improve alignment in the department assignment card. */
+.assignment-card {
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+
+.assignment-card > div:last-child {
+  flex: 1;
+  min-width: 130px;
+}
+
+/* Prevent long department names from breaking the layout. */
+.assignment-card strong {
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+/* Give progress and AI sections consistent spacing. */
+.update-progress-card,
+.ai-analysis-card {
+  border-radius: 13px;
+}
+
+/* Slightly compact the complaint list so more entries are visible. */
+.complaint-cards {
+  padding: 12px;
+  gap: 9px;
+}
+
+.complaint-card {
+  min-height: 94px;
+  padding: 9px;
+}
+
+/* Keep the layout responsive. */
+@media (max-width: 600px) {
+  .complaint-photo-button {
+    width: 140px !important;
+    height: 105px !important;
+  }
+}
+
+/* =========================================================
+   FINAL UI CLEANUP — ADMIN COMPLAINTS
+   Based on the CSS file supplied by the user.
+   Visual-only overrides; existing component behavior is kept.
+========================================================= */
+
+/* A calmer page frame and more balanced two-column layout. */
+.complaints-page {
+  padding: 24px clamp(14px, 2vw, 30px) 32px;
+  background: #f5f8f5;
+}
+
+.complaints-header {
+  margin-bottom: 20px;
+}
+
+.header-title h1 {
+  font-size: clamp(23px, 2vw, 28px);
+  letter-spacing: -0.45px;
+}
+
+.complaints-layout {
+  grid-template-columns: minmax(290px, 0.82fr) minmax(0, 1.35fr);
+  gap: 18px;
+}
+
+.complaints-list-panel,
+.complaint-details-panel {
+  border-color: #e2eae3;
+  border-radius: 14px;
+  box-shadow: 0 3px 14px rgba(25, 61, 39, 0.035);
+}
+
+/* Keep the detail panel readable without making the whole page cramped. */
+.complaint-details-panel {
+  max-height: calc(100vh - 125px);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Search and status filters: consistent height and quieter borders. */
+.complaints-search-row {
+  padding: 14px;
+  gap: 9px;
+}
+
+.search-box,
+.filter-button {
+  min-height: 42px;
+  height: 42px;
+  border-radius: 9px;
+}
+
+.search-box input {
+  font-size: 12px;
+}
+
+.complaint-tabs {
+  padding: 10px 13px;
+  gap: 5px;
+}
+
+.complaint-tabs button {
+  height: 32px;
+  padding: 0 11px;
+  border-radius: 8px;
+}
+
+/* Complaint list: tighter cards with more breathing room for text. */
+.complaint-cards {
+  padding: 11px;
+  gap: 8px;
+  max-height: calc(100vh - 250px);
+}
+
+.complaint-card {
+  min-height: 88px;
+  padding: 9px;
+  grid-template-columns: 70px minmax(0, 1fr) auto;
+  gap: 10px;
+  border-radius: 10px;
+}
+
+.complaint-thumbnail {
+  width: 70px;
+  height: 66px;
+  min-width: 70px;
+  max-width: 70px;
+  border-radius: 8px;
+}
+
+.complaint-title-row h3 {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.reported-by {
+  margin: 5px 0;
+  font-size: 10px;
+}
+
+.complaint-card .complaint-meta {
+  gap: 5px 8px;
+  font-size: 9px;
+}
+
+/* Selected card remains clear without a heavy shadow. */
+.complaint-card.selected {
+  border-color: #75a985;
+  background: #f0f7f1;
+  box-shadow: inset 3px 0 0 #287345;
+}
+
+/* Detail header and summary. */
+.details-header {
+  min-height: 60px;
+  padding: 13px 18px;
+}
+
+.details-heading h2 {
+  font-size: 15px;
+}
+
+.complaint-summary {
+  padding: 19px;
+  grid-template-columns: 145px minmax(0, 1fr);
+  gap: 17px;
+  align-items: start;
+}
+
+.complaint-summary > img {
+  width: 145px;
+  height: 116px;
+  min-width: 145px;
+  max-width: 145px;
+  border-radius: 10px;
+}
+
+.summary-title-row h2 {
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.summary-info p {
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+/* Make detail sections visually consistent and easier to scan. */
+.detail-section {
+  padding: 17px 19px;
+}
+
+.section-heading {
+  margin-bottom: 10px;
+}
+
+.section-heading h3 {
+  font-size: 12px;
+}
+
+.location-row > span,
+.description-text {
+  font-size: 11px;
+}
+
+.description-text {
+  line-height: 1.75;
+}
+
+/* Evidence photo: obvious click target, but not an oversized tile. */
+.photos-section {
+  padding-top: 15px !important;
+  padding-bottom: 16px !important;
+}
+
+.photos-section .section-heading {
+  margin-bottom: 10px;
+}
+
+.photo-grid.single-photo {
+  display: flex !important;
+  align-items: flex-start !important;
+  flex-wrap: wrap;
+  gap: 10px;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0;
+  padding: 0;
+}
+
+.complaint-photo-button {
+  position: relative;
+  display: block;
+  width: 150px !important;
+  height: 112px !important;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #dce8df;
+  border-radius: 10px;
+  background: #f0f5f1;
+  cursor: zoom-in;
+  box-shadow: 0 2px 8px rgba(25, 55, 36, 0.06);
+}
+
+.complaint-photo-button img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.complaint-photo-button:hover img {
+  transform: scale(1.035);
+}
+
+.photo-view-overlay {
+  opacity: 1;
+  padding: 6px 8px;
+  font-size: 10px;
+  background: linear-gradient(transparent, rgba(17, 26, 21, 0.72));
+}
+
+/* Department assignment: align its contents and action buttons. */
+.assignment-card {
+  margin: 15px 18px;
+  padding: 13px 14px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-wrap: wrap;
+  border-radius: 11px;
+}
+
+.assignment-card > div:last-child {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
+.assignment-card strong {
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+/* Progress and AI cards share a lighter, less box-heavy treatment. */
+.update-progress-card,
+.ai-analysis-card {
+  margin: 15px 18px;
+  padding: 15px;
+  border-radius: 11px;
+  box-shadow: none;
+}
+
+.update-progress-header,
+.ai-analysis-header {
+  gap: 10px;
+}
+
+.update-progress-actions {
+  gap: 8px;
+}
+
+.progress-option {
+  min-height: 36px;
+  border-radius: 8px;
+}
+
+.ai-insights {
+  gap: 8px;
+}
+
+.ai-insight {
+  min-height: 48px;
+  padding: 9px;
+  border-radius: 8px;
+}
+
+.ai-summary {
+  line-height: 1.7;
+}
+
+/* Full image viewer: show the entire image, never crop it. */
+.complaint-image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px 54px;
+  box-sizing: border-box;
+  background: rgba(10, 18, 13, 0.92);
+  backdrop-filter: blur(5px);
+}
+
+.complaint-image-lightbox .lightbox-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(94vw, 1500px);
+  max-height: calc(100vh - 130px);
+  object-fit: contain;
+  border-radius: 9px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.38);
+}
+
+.complaint-image-lightbox .lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.13);
+  color: #fff;
+  cursor: pointer;
+}
+
+.complaint-image-lightbox .lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.complaint-image-lightbox .lightbox-caption {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 13px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Keyboard focus remains visible. */
+.complaints-page button:focus-visible,
+.complaint-image-lightbox button:focus-visible {
+  outline: 3px solid rgba(39, 112, 67, 0.38);
+  outline-offset: 2px;
+}
+
+/* Tablet. */
+@media (max-width: 1100px) {
+  .complaints-layout {
+    grid-template-columns: minmax(270px, 0.78fr) minmax(0, 1.25fr);
+    gap: 14px;
+  }
+
+  .complaint-card {
+    grid-template-columns: 62px minmax(0, 1fr);
+  }
+
+  .complaint-thumbnail {
+    width: 62px;
+    height: 60px;
+    min-width: 62px;
+    max-width: 62px;
+  }
+
+  .complaint-card > .status-badge {
+    display: none;
+  }
+
+  .complaint-summary {
+    grid-template-columns: 125px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .complaint-summary > img {
+    width: 125px;
+    height: 105px;
+    min-width: 125px;
+    max-width: 125px;
+  }
+}
+
+/* Mobile: stack panels and avoid narrow, crowded columns. */
+@media (max-width: 850px) {
+  .complaints-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .complaint-details-panel {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .complaint-cards {
+    max-height: 420px;
+  }
+}
+
+@media (max-width: 600px) {
+  .complaints-page {
+    padding: 15px 11px 22px;
+  }
+
+  .complaints-search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-button {
+    width: 100%;
+  }
+
+  .complaint-card {
+    grid-template-columns: 62px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .complaint-thumbnail {
+    width: 62px;
+    height: 60px;
+    min-width: 62px;
+    max-width: 62px;
+  }
+
+  .complaint-summary {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 15px;
+  }
+
+  .complaint-summary > img {
+    width: 100%;
+    height: 185px;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .summary-title-row {
+    flex-wrap: wrap;
+  }
+
+  .detail-section {
+    padding: 15px 14px;
+  }
+
+  .assignment-card,
+  .update-progress-card,
+  .ai-analysis-card {
+    margin: 12px;
+  }
+
+  .ai-insights {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .complaint-photo-button {
+    width: 140px !important;
+    height: 105px !important;
+  }
+
+  .complaint-image-lightbox {
+    padding: 58px 10px 48px;
+  }
+
+  .complaint-image-lightbox .lightbox-image {
+    max-width: 96vw;
+    max-height: calc(100vh - 118px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .complaints-page *,
+  .complaints-page *::before,
+  .complaints-page *::after,
+  .complaint-image-lightbox,
+  .complaint-image-lightbox * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* =========================================================
+   FINAL CLEANUP — remove decorative lines and restore actions
+========================================================= */
+
+/* The timeline should read as four clean milestones, without connector stems. */
+.timeline-line {
+  display: none !important;
+}
+.timeline-item {
+  min-height: 48px;
+}
+
+/* Remove the divider beneath the photo gallery. */
+.complaint-photos-section,
+.photos-section,
+.detail-photos-section {
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Department action controls: visible, compact, and clickable. */
+.assignment-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.assignment-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.assignment-change-button,
+.assignment-delete-button {
+  appearance: none;
+  border: 1px solid #cfe3d5;
+  border-radius: 9px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  background: #ffffff;
+  color: #176b42;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+  transition: background .18s ease, border-color .18s ease;
+}
+.assignment-change-button:hover {
+  background: #eaf6ee;
+  border-color: #83bd98;
+}
+.assignment-delete-button {
+  width: 36px;
+  padding: 0;
+  color: #b42318;
+  border-color: #f0d1ce;
+}
+.assignment-delete-button:hover {
+  background: #fff1f0;
+  border-color: #e7a6a0;
+}
+.assignment-change-button:disabled,
+.assignment-delete-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* Department modal must sit above every scrollable panel. */
+.department-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(20, 36, 27, .48);
+  backdrop-filter: blur(3px);
+}
+.department-modal {
+  width: min(100%, 470px);
+  max-height: min(90vh, 720px);
+  overflow-y: auto;
+  padding: 22px;
+  border: 1px solid #d8e8dc;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 22px 70px rgba(20, 45, 29, .22);
+  color: #263c2e;
+}
+.department-modal-header,
+.department-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.department-modal-header {
+  margin-bottom: 20px;
+}
+.department-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.department-modal-header p {
+  margin: 5px 0 0;
+  color: #75877b;
+  font-size: 12px;
+}
+.department-modal-header > button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dce9df;
+  border-radius: 9px;
+  background: #fff;
+  color: #53685a;
+  cursor: pointer;
+}
+.department-modal-field {
+  display: grid;
+  gap: 7px;
+  margin: 14px 0;
+}
+.department-modal-field label {
+  color: #53685a;
+  font-size: 12px;
+  font-weight: 650;
+}
+.department-modal-field label span {
+  color: #91a096;
+  font-weight: 400;
+}
+.current-department,
+.department-modal-field select,
+.department-modal-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d9e6dd;
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: #f8fbf8;
+  color: #304737;
+  font: inherit;
+  font-size: 13px;
+}
+.department-modal-field textarea {
+  resize: vertical;
+  min-height: 82px;
+}
+.department-modal-actions {
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+.department-cancel-button,
+.department-save-button {
+  min-height: 38px;
+  padding: 0 15px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.department-cancel-button {
+  border: 1px solid #d8e5dc;
+  background: #fff;
+  color: #52675a;
+}
+.department-save-button {
+  border: 1px solid #16834b;
+  background: #16834b;
+  color: #fff;
+}
+.department-save-button:disabled,
+.department-cancel-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+  .assignment-card {
+    flex-wrap: wrap;
+  }
+  .assignment-info {
+    flex-basis: calc(100% - 55px);
+  }
+  .assignment-change-button {
+    margin-left: auto;
+  }
+}

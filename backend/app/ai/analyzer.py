@@ -1,3 +1,4 @@
+
 from google import genai
 from google.genai import types
 from pydantic import BaseModel
@@ -6,10 +7,24 @@ import time
 from ..config import settings
 
 
+# =========================================================
+# GEMINI CLIENT
+# =========================================================
+
 client = genai.Client(
-    api_key=settings.gemini_api_key
+    api_key=settings.gemini_api_key,
+    http_options=types.HttpOptions(
+        timeout=120000,
+        retry_options=types.HttpRetryOptions(
+            attempts=3,
+        ),
+    ),
 )
 
+
+# =========================================================
+# ALLOWED COMPLAINT CATEGORIES
+# =========================================================
 
 CATEGORIES = [
     "Other",
@@ -21,6 +36,10 @@ CATEGORIES = [
     "Road Damage",
 ]
 
+
+# =========================================================
+# STRUCTURED AI RESPONSE
+# =========================================================
 
 class ComplaintAnalysis(BaseModel):
     detected_category: str
@@ -35,13 +54,74 @@ class ComplaintAnalysis(BaseModel):
     summary: str
 
 
+# =========================================================
+# GEMINI MODELS
+# =========================================================
+
+# Try the intended lower-cost/free-tier candidate first.
+# Availability and free quotas depend on your Gemini API project.
 MODELS = [
-    "gemini-3.8-flash",
-    "gemini-3.7-flash",
-    "gemini-3.6-flash",
     "gemini-3.5-flash-lite",
+    "gemini-3.1-flash-lite",
 ]
 
+# =========================================================
+# ERROR DETECTION
+# =========================================================
+
+def is_quota_error(error: Exception) -> bool:
+    """Identify quota and rate-limit errors."""
+    error_text = str(error).lower()
+
+    quota_messages = [
+        "resource exhausted",
+        "quota exceeded",
+        "generate_content_free_tier_requests",
+        "rate limit",
+        "429",
+        "too many requests",
+    ]
+
+    return any(message in error_text for message in quota_messages)
+
+
+def is_retryable_error(error: Exception) -> bool:
+    """Identify temporary/network errors worth retrying."""
+    error_text = str(error).lower()
+
+    retryable_messages = [
+        "503",
+        "500",
+        "502",
+        "504",
+        "unavailable",
+        "high demand",
+        "resource exhausted",
+        "quota exceeded",
+        "rate limit",
+        "429",
+        "timeout",
+        "timed out",
+        "readerror",
+        "connectionerror",
+        "connection reset",
+        "connection aborted",
+        "server disconnected",
+        "winerror 10053",
+        "winerror 10054",
+        "temporarily unavailable",
+        "too many requests",
+    ]
+
+    return any(
+        message in error_text
+        for message in retryable_messages
+    )
+
+
+# =========================================================
+# GEMINI COMPLAINT ANALYSIS
+# =========================================================
 
 def analyze_complaint_image(
     image_bytes: bytes,
@@ -51,9 +131,9 @@ def analyze_complaint_image(
     departments: list[str],
 ) -> ComplaintAnalysis:
 
-    # ---------------------------------------------------------
-    # Validate the current department list
-    # ---------------------------------------------------------
+    # -----------------------------------------------------
+    # Validate departments
+    # -----------------------------------------------------
 
     departments = [
         department.strip()
@@ -65,6 +145,22 @@ def analyze_complaint_image(
         raise ValueError(
             "No departments are available for AI assignment."
         )
+
+    # -----------------------------------------------------
+    # Basic image validation
+    # -----------------------------------------------------
+
+    if not image_bytes:
+        raise ValueError(
+            "No image data was provided for AI analysis."
+        )
+
+    if not mime_type:
+        mime_type = "image/jpeg"
+
+    # -----------------------------------------------------
+    # Prompt
+    # -----------------------------------------------------
 
     prompt = f"""
 You are an AI system for a public grievance management platform.
@@ -117,6 +213,7 @@ Description rules:
 Duplicate rules:
 - The duplicate fields are only an AI estimate.
 - Do NOT claim that you searched the complaint database.
+- Do NOT state that actual duplicate complaints were found.
 
 General rules:
 - Use ONLY the category names provided above.
@@ -126,12 +223,21 @@ General rules:
 - Use description and location as supporting information.
 - If the image is unclear, lower the confidence.
 - Do not claim certainty when evidence is insufficient.
+- Return valid JSON matching the required schema.
 """
 
     last_error = None
 
+    # =====================================================
+    # TRY AVAILABLE GEMINI MODELS
+    # =====================================================
+
     for model_name in MODELS:
+
+        # Quota errors skip the current model immediately.
+        # Temporary network/server errors get one retry.
         for attempt in range(2):
+
             try:
                 print(
                     f"Trying Gemini model: {model_name} "
@@ -147,31 +253,54 @@ General rules:
                             mime_type=mime_type,
                         ),
                     ],
-                    config={
-                        "response_mime_type": "application/json",
-                        "response_schema": ComplaintAnalysis,
-                    },
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=ComplaintAnalysis,
+                        temperature=0.2,
+                    ),
                 )
+
+                # -------------------------------------------------
+                # Validate response
+                # -------------------------------------------------
+
+                if not response:
+                    raise RuntimeError(
+                        "Gemini returned an empty response."
+                    )
+
+                if not response.text:
+                    raise RuntimeError(
+                        "Gemini returned an empty text response."
+                    )
 
                 result = ComplaintAnalysis.model_validate_json(
                     response.text
                 )
 
                 # -------------------------------------------------
-                # Backend validation
+                # Validate category
                 # -------------------------------------------------
 
                 if result.detected_category not in CATEGORIES:
                     raise ValueError(
-                        f"AI returned an invalid category: "
+                        "AI returned an invalid category: "
                         f"{result.detected_category}"
                     )
 
+                # -------------------------------------------------
+                # Validate department
+                # -------------------------------------------------
+
                 if result.recommended_department not in departments:
                     raise ValueError(
-                        f"AI returned an invalid department: "
+                        "AI returned an invalid department: "
                         f"{result.recommended_department}"
                     )
+
+                # -------------------------------------------------
+                # Validate priority
+                # -------------------------------------------------
 
                 if result.predicted_priority not in [
                     "Low",
@@ -179,53 +308,118 @@ General rules:
                     "High",
                 ]:
                     raise ValueError(
-                        f"AI returned an invalid priority: "
+                        "AI returned an invalid priority: "
                         f"{result.predicted_priority}"
                     )
+
+                # -------------------------------------------------
+                # Validate duplicate risk
+                # -------------------------------------------------
+
+                if result.duplicate_risk not in [
+                    "Low",
+                    "Medium",
+                    "High",
+                ]:
+                    raise ValueError(
+                        "AI returned an invalid duplicate risk: "
+                        f"{result.duplicate_risk}"
+                    )
+
+                # -------------------------------------------------
+                # Validate confidence
+                # -------------------------------------------------
+
+                if not 0.0 <= result.image_confidence <= 1.0:
+                    raise ValueError(
+                        "AI returned an invalid image confidence: "
+                        f"{result.image_confidence}"
+                    )
+
+                # -------------------------------------------------
+                # Validate duplicate score
+                # -------------------------------------------------
+
+                if not 0.0 <= result.duplicate_score <= 1.0:
+                    raise ValueError(
+                        "AI returned an invalid duplicate score: "
+                        f"{result.duplicate_score}"
+                    )
+
+                # -------------------------------------------------
+                # Validate duplicate count
+                # -------------------------------------------------
+
+                if result.duplicate_count < 0:
+                    raise ValueError(
+                        "AI returned an invalid duplicate count: "
+                        f"{result.duplicate_count}"
+                    )
+
+                # =================================================
+                # SUCCESS
+                # =================================================
 
                 print(
                     f"Gemini analysis completed with {model_name}"
                 )
 
-                print(
-                    f"AI category: {result.detected_category}"
-                )
-
-                print(
-                    f"AI department: {result.recommended_department}"
-                )
-
-                print(
-                    f"AI priority: {result.predicted_priority}"
-                )
+                print(f"AI category: {result.detected_category}")
+                print(f"AI department: {result.recommended_department}")
+                print(f"AI priority: {result.predicted_priority}")
+                print(f"AI confidence: {result.image_confidence}")
 
                 return result
 
             except Exception as error:
-                last_error = error
-                error_text = str(error)
 
-                is_temporary_error = (
-                    "503" in error_text
-                    or "UNAVAILABLE" in error_text
-                    or "high demand" in error_text.lower()
+                last_error = error
+
+                print(
+                    f"Gemini error using {model_name}: "
+                    f"{type(error).__name__}: {error}"
                 )
 
-                if not is_temporary_error:
+                # Do not retry a model whose quota is exhausted.
+                if is_quota_error(error):
+                    print(
+                        f"Quota/rate limit reached for {model_name}. "
+                        "Skipping to the next model."
+                    )
+                    break
+
+                # Do not retry permanent errors.
+                if not is_retryable_error(error):
+                    print(
+                        f"Non-retryable Gemini error from "
+                        f"{model_name}."
+                    )
                     raise
 
+                # Retry temporary network/server errors once.
                 if attempt == 0:
                     print(
-                        f"{model_name} is temporarily unavailable. "
-                        "Retrying once..."
+                        f"{model_name} encountered a temporary "
+                        "network/API error. Waiting 3 seconds "
+                        "before retry..."
                     )
-
-                    time.sleep(2)
-
+                    time.sleep(3)
                 else:
                     print(
-                        f"{model_name} is still unavailable. "
+                        f"{model_name} failed after retry. "
                         "Trying the next Gemini model..."
                     )
 
-    raise last_error
+    # =====================================================
+    # ALL MODELS FAILED
+    # =====================================================
+
+    if last_error:
+        raise RuntimeError(
+            "Gemini AI analysis failed after trying all "
+            f"configured models. Last error: {last_error}"
+        ) from last_error
+
+    raise RuntimeError(
+        "Gemini AI analysis failed for an unknown reason."
+    )
