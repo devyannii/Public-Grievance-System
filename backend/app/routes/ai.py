@@ -6,6 +6,7 @@ from ..supabase import supabase
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from math import radians, sin, cos, sqrt, atan2
+import time
 
 
 router = APIRouter()
@@ -478,12 +479,21 @@ def analyze_complaint(complaint_id: str):
     # 6. Analyze image with Gemini
     # ---------------------------------------------------------
 
+    ai_start = time.perf_counter()
+    print("AI IMAGE ANALYSIS STARTED")
+
     analysis = analyze_complaint_image(
         image_bytes=image_bytes,
         mime_type=image.get("file_type") or "image/jpeg",
         description=complaint.get("description") or "",
         location=complaint.get("location_text") or "",
         departments=department_names,
+    )
+
+    ai_end = time.perf_counter()
+    print(
+        f"GEMINI ANALYSIS TIME: "
+        f"{ai_end - ai_start:.2f} seconds"
     )
 
     analysis_data = analysis.model_dump()
